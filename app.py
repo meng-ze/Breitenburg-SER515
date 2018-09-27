@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_PASSWORD'] = 'root123'
 app.config['MYSQL_DATABASE_DB'] = 'web_forum'
 app.secret_key = 'super secret key'
 mysql.init_app(app)
@@ -44,13 +44,18 @@ def register():
         name = form.name.data
         email = form.email.data
         password = form.password.data
+        register_flag = 0
 
         conn = mysql.connect()
         cur = conn.cursor()
         cur.execute("INSERT INTO user(username, emailid, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s)", (name, email, password, "", "", 'M'))
         conn.commit()
+        register_flag = 1
         cur.close()
-        return redirect(url_for('index'))
+        
+        if register_flag == 1 :
+            flash('You have registered successfully')
+            return redirect(url_for('index'))
     return render_template('register.html', form=form)
 
 # User login
