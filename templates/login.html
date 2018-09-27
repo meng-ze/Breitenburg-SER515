@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+ <h1>Login</h1>
+<form method="POST" action="">
+    <div class="container">
+      <label for="email"><b>Username</b></label>
+        <input type="text" placeholder="Enter Email" name="email" required>
+        <br><br>
+        <label for="password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" required>
+        <br><br>
+        <button type="submit">Login</button>
+      <label>
+      <input type="checkbox" checked="checked" name="remember"> Remember me
+    </label>
+    {% with msgs = get_flashed_messages() %}
+      {% if msgs %}
+        <ul class=flashes>
+          {% for msg in msgs %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+  </form>
+</body>
+</html>
