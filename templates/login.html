@@ -1,33 +1,41 @@
 {% include 'menu.html' %}
-<div class="container">
-<h1>Login</h1>
-
+<div class = "container-fluid">
+<div class = "row">
+<table class = "table table-borderless table-hover">
+<thead class = "thead-dark"><th><h1>Login</h1></th><th></th><th></th></thead>
 <form method="POST" action="">
+    <div class = "row">
     <div class="container">
-      <label for="email"><b>Username</b></label>
-        <input type="text" placeholder="Enter Email" name="email" required>
-        <br><br>
-        <label for="password"><b>Password</b></label>
-        <input type="password" placeholder="Enter Password" name="password" required>
-        <br><br>
-        <button type="submit">Login</button>
-      <label>
-      <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label>
-    {% with msgs = get_flashed_messages() %}
-      {% if msgs %}
-      <div class="card card-body">
-        {% include 'error_layout.html' %}
-      </div>
-      {% endif %}
-    {% endwith %}
-    <br><br>
-    <div> Don't have an account? </div>
-    <br>
-    <div> <a href="/register"> Sign up </a></div>
+      <tr>
+      <td><label for="email"><b>Username</b></label></td>
+      <td><input type="text" placeholder="Enter Email" name="email" required></td>
+      <br><br>
+      </tr>
+      <tr>
+      <td><label for="password"><b>Password</b></label></td>
+      <td><input type="password" placeholder="Enter Password" name="password" required></td>
+      <br><br>
+      </tr>
+      <tr>
+      <td style = "text-align:left;"><button type="submit">Login</button></td>
+      <td><label><input type="checkbox" checked="checked" name="remember"> Remember me </label></td>
+      {% include 'error_layout.html' %}
+      <br><br>
+      </tr>
+      <tr>
+        <td></td><td style = "text-align:left;"><div> Don't have an account? </div></td>
+      </tr>
+      <tr>
+        <td></td><td style="padding-top:0px;text-align:left;"><div> <a href="/register"> Sign up </a></td></div>
+      </tr>
   </div>
-  </form>
 </div>
-
-
-{% include 'footer.html' %}
+  </form>
+</table>
+</div>
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</html>

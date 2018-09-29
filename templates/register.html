@@ -1,26 +1,39 @@
 {% include 'menu.html' %}
-
-<div class="container">
-<h1>Register</h1>
+<div class="container-fluid">
+<div class="row">
+<table class = "table table-borderless table-hover">
+<thead class="thead-dark"><th><h1>Register</h1><th></th><th></th></thead>
   <form method="POST" action="">
-    <div class="form-group">
-      Name: <input type="text" name="name"><br>
-    </div>
-    <div class="form-group">
-      EMail: <input type="text" name="email"><br>
-    </div>
-    <div class="form-group">
-      Password: <input type="text" name="password"><br>
-    </div>
-    <div class="form-group">
-      Confirm Password: <input type="text" name="confirm"><br>
-    </div>
-    <p><input type="submit" class="btn btn-primary" value="Submit"></p>
-    {% extends 'error_layout.html' %}
+    <tr>
+      <div class="form-group">
+        <td>Name:</td> <td><input type="text" name="name"></td><br>
+      </div>
+    </tr>
+    <tr>
+      <div class="form-group">
+      <td>E-mail:</td> <td><input type="text" name="email"></td><br>
+      </div>
+    </tr>
+    <tr>
+      <div class="form-group">
+        <td>Password:</td> <td><input type="text" name="password"></td><br>
+      </div>
+    </tr>
+    <tr>
+      <div class="form-group">
+        <td>Confirm Password:</td> <td><input type="text" name="confirm"><td><br>
+      </div>
+   </tr>
+   <tr>
+     <td><p><input type="submit" class="btn btn-primary" value="Submit"></p>
+     {% extends 'error_layout.html' %}</td>
+  </tr>
+  </table>
   </form>
 </div>
-{% include 'footer.html' %}
-
-
-
-
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</html>
