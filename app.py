@@ -18,7 +18,7 @@ mysql.init_app(app)
 
 @app.route('/')
 def index():
-    
+
     return render_template('index.html')
 
 
@@ -53,11 +53,11 @@ def register():
         conn.commit()
         register_flag = 1
         cur.close()
-        
-        if register_flag == 1 :
+
+        if register_flag == 1:
             flash('You have registered successfully')
             return redirect(url_for('login'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', title='Get Registered', form=form)
 
 # User login
 
@@ -66,7 +66,6 @@ def register():
 def logout():
     session['logged_in'] = False
     return render_template('index.html')
-
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -91,21 +90,33 @@ def login():
         else:
             session['logged_in'] = True
             flash('You were successfully logged in')
-            return redirect(url_for('index'))
-    return render_template('login.html', form=form)
+            return redirect(url_for('view'))
+    return render_template('login.html', title='Login', form=form)
 
 
 @app.route('/view')
 def view():
-    return render_template('view.html')
+    if session['logged_in'] == True:
+        return render_template('view.html')
+    else:
+        return render_template('index.html', title='View Post')
+
 
 @app.route('/post')
 def post():
-    return render_template('post.html')
+    if session['logged_in'] == True:
+        return render_template('post.html')
+    else:
+        return render_template('index.html', title='Post')
+
 
 @app.route('/createPost')
 def createPost():
-    return render_template('createPost.html')
+    if session['logged_in'] == True:
+        return render_template('createPost.html')
+    else:
+        return render_template('index.html', title='Create Post')
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
