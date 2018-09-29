@@ -40,7 +40,13 @@
       <label>
       <input type="checkbox" checked="checked" name="remember"> Remember me
     </label>
-    {% include 'error_layout.html' %}
+    {% with msgs = get_flashed_messages() %}
+      {% if msgs %}
+      <div class="card card-body">
+        {% include 'error_layout.html' %}
+      </div>
+      {% endif %}
+    {% endwith %}
     <br><br>
     <div> Don't have an account? </div>
     <br>
