@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
 from wtforms import Form, StringField, PasswordField, validators
@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_PASSWORD'] = 'root123'
 app.config['MYSQL_DATABASE_DB'] = 'web_forum'
 app.secret_key = 'super secret key'
 mysql.init_app(app)
@@ -18,6 +18,7 @@ mysql.init_app(app)
 
 @app.route('/')
 def index():
+    
     return render_template('index.html')
 
 
@@ -61,6 +62,13 @@ def register():
 # User login
 
 
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    session['logged_in'] = False
+    return render_template('index.html')
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
@@ -81,6 +89,7 @@ def login():
         if flag == 0:
             flash('Incorrect username/password.')
         else:
+            session['logged_in'] = True
             flash('You were successfully logged in')
             return redirect(url_for('index'))
     return render_template('login.html', form=form)
