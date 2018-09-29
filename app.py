@@ -86,5 +86,17 @@ def login():
     return render_template('login.html', form=form)
 
 
+@app.route('/view')
+def view():
+    return render_template('view.html')
+
+@app.route('/post')
+def post():
+    return render_template('post.html')
+
+@app.route('/createPost')
+def createPost():
+    return render_template('createPost.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

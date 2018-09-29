@@ -7,37 +7,48 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Web Fourm</a>
+    <a class="navbar-brand" href="/">Web Fourm</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
   
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="login">Login</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="register">Register</a>
-          </li>
+        </li>
       </ul>
     </div>
 </nav>
 
 <div class="container">
-    <div class="jumbotron">
-        <h1 class="display-4">Welcome to this Generic Web Fourm!</h1>
-        <p class="lead">On this fourm, you can create posts and converse with other fourm users</p>
-        <hr class="my-4">
-        <p>Create an account to get started</p>
-        <a class="btn btn-primary btn-lg" href="register" role="button">Register</a>
-    </div>
-
-    This site is a work in progress. Feel free to play around with the UI <a href="/view">here</a>
-</div>
+  <div class="jumbotron">
+      <h1 class="display-4">Create a Post</h1>
+      <p class="lead">Tell the world anything</p>
+      <hr class="my-4">
+      <p>Please read the <a href="/">rules</a> before posting</p>
+      <form>
+          <div class="form-group row">
+            <label for="postTitle" class="col-sm-2 col-form-label">Post Title:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="postTitle" value="Title">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="postBody" class="col-sm-2 col-form-label">Body:</label>
+            <div class="col-sm-10">
+              <textarea class="w-100 form-control" id="postBody" rows="4" placeholder="Type some words"></textarea>
+            </div>
+          </div>
+          <a type="submit" class="btn btn-primary" href="/post" role="button">Post</a>
+        </form>
+  </div>
 
 {% include 'error_layout.html' %}
 </body>

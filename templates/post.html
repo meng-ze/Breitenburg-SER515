@@ -7,36 +7,49 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Web Fourm</a>
+    <a class="navbar-brand" href="/">Web Fourm</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
   
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="login">Login</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="register">Register</a>
-          </li>
+        </li>
       </ul>
     </div>
 </nav>
 
 <div class="container">
-    <div class="jumbotron">
-        <h1 class="display-4">Welcome to this Generic Web Fourm!</h1>
-        <p class="lead">On this fourm, you can create posts and converse with other fourm users</p>
-        <hr class="my-4">
-        <p>Create an account to get started</p>
-        <a class="btn btn-primary btn-lg" href="register" role="button">Register</a>
-    </div>
+  <div class="jumbotron">
+      <h1 class="display-4">Post Title</h1>
+      <p class="lead">Post Description</p>
+      <hr class="my-4">
+      <p>Posted by <a href="/">User</a></p>
+  </div>
 
-    This site is a work in progress. Feel free to play around with the UI <a href="/view">here</a>
+  <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+  {# for comment in comments #}
+  {% for i in {1: 1, 2: 2, 3: 3} %}
+  <div class="card">
+    <h5 class="card-title">Username of Commenter {{ i }}</h5>
+    <div class="card-body">
+      Comment
+    </div>
+  </div>
+  <hr>
+  {% endfor %}
+  <form>
+    <textarea class="w-100" rows="4" placeholder="Leave a Comment"></textarea>
+    <a type="submit" class="btn btn-primary" href="#" role="button">Comment</a>
+  </form>
 </div>
 
 {% include 'error_layout.html' %}
