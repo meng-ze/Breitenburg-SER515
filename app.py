@@ -24,10 +24,10 @@ def index():
 
 # Register Form Class
 class RegisterForm(Form):
-    name = StringField('Name')
-    username = StringField('Username')
-    email = StringField('Email')
-    password = PasswordField('Password')
+    name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    email = StringField('Email', [validators.DataRequired(), validators.Length(min=6, max=50)])
+    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
+    confirm = PasswordField('Confirm Password')
 
 # Login Form Class
 

@@ -1,29 +1,14 @@
 {% include 'menu.html' %}
+{% from "includes/_formhelpers.html" import render_field %}
 <div class="container-fluid">
 <div class="row">
 <table class = "table table-borderless table-hover">
 <thead class="thead-dark"><th><h1>Register</h1><th></th><th></th></thead>
   <form method="POST" action="">
-    <tr>
-      <div class="form-group">
-        <td>Name:</td> <td><input type="text" name="name"></td><br>
-      </div>
-    </tr>
-    <tr>
-      <div class="form-group">
-      <td>E-mail:</td> <td><input type="text" name="email"></td><br>
-      </div>
-    </tr>
-    <tr>
-      <div class="form-group">
-        <td>Password:</td> <td><input type="text" name="password"></td><br>
-      </div>
-    </tr>
-    <tr>
-      <div class="form-group">
-        <td>Confirm Password:</td> <td><input type="text" name="confirm"><td><br>
-      </div>
-   </tr>
+	{{ render_field(form.name) }}  
+    {{ render_field(form.email) }}
+    {{ render_field(form.password) }}
+    {{ render_field(form.confirm) }}
    <tr>
      <td><p><input type="submit" class="btn btn-primary" value="Submit"></p>
      {% extends 'error_layout.html' %}</td>
