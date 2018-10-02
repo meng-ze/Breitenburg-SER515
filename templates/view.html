@@ -1,0 +1,27 @@
+{% include 'menu.html' %}
+
+
+<div class="container">
+  <div class="jumbotron">
+      <h1 class="display-4">Generic Web Fourm</h1>
+      <p class="lead">Create posts and discuss with other users</p>
+      <hr class="my-4">
+      <p>Please read the <a href="/">rules</a> before posting</p>
+  </div>
+
+  <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+  {# for post in posts #}
+  {% for i in {1: 1, 2: 2, 3: 3, 4: 4, 5: 5} %}
+  <div class="card">
+    <a href="/post"><h5 class="card-title">Post Title {{ i }}</h5></a>
+    <div class="card-body">
+      Post Description
+    </div>
+  </div>
+  <hr>
+  {% endfor %}
+  <a class="btn btn-primary" href="/createPost" role="button">Create a Post</a>
+</div>
+
+{% include 'error_layout.html' %}
+{% include 'footer.html' %}

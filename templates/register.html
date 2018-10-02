@@ -1,0 +1,20 @@
+{% include 'menu.html' %}
+{% from "includes/_formhelpers.html" import render_field %}
+<div class="container-fluid">
+<div class="row">
+<table class = "table table-borderless table-hover">
+<thead class="thead-dark"><th><h1>Register</h1><th></th><th></th></thead>
+  <form method="POST" action="">
+	{{ render_field(form.name) }}  
+    {{ render_field(form.email) }}
+    {{ render_field(form.password) }}
+    {{ render_field(form.confirm) }}
+   <tr>
+     <td><p><input type="submit" class="btn btn-primary" value="Submit"></p>
+     {% extends 'error_layout.html' %}</td>
+  </tr>
+  </table>
+  </form>
+</div>
+</div>
+{% include 'footer.html' %}

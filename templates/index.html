@@ -1,0 +1,28 @@
+{% include 'menu.html' %}
+
+
+<div class="container">
+    {% block body %}
+    {% if session['logged_in'] %}
+    This site is a work in progress. Feel free to play around with the UI <a href="/view">here</a>
+         {% else %}
+
+    <div class="jumbotron">
+
+        <h1 class="display-4">Welcome to this Generic Web Fourm!</h1>
+        <p class="lead">On this fourm, you can create posts and converse with other fourm users</p>
+        <hr class="my-4">
+        {% if session['logged_in'] %}
+          {% include 'error_layout.html' %}
+        {% else %}
+          <p>Create an account to get started</p>
+          <a class="btn btn-primary btn-lg" href="register" role="button">Register</a>
+        {% endif %}
+    </div>
+     {% endif %}
+     {% endblock %}
+
+</div>
+
+{% include 'error_layout.html' %}
+{% include 'footer.html' %}
