@@ -16,9 +16,11 @@ app.secret_key = 'super secret key'
 mysql.init_app(app)
 
 
+
 @app.route('/')
 def index():
-
+    if session.get('logged_in') is None:
+        session['logged_in'] = False
     return render_template('index.html')
 
 
@@ -64,6 +66,9 @@ def register():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
+    if session.get('logged_in') is None:
+        session['logged_in'] = False
+
     session['logged_in'] = False
     return render_template('index.html')
 
@@ -96,6 +101,9 @@ def login():
 
 @app.route('/view')
 def view():
+    if session.get('logged_in') is None:
+        session['logged_in'] = False
+
     if session['logged_in'] == True:
         return render_template('view.html')
     else:
@@ -104,6 +112,9 @@ def view():
 
 @app.route('/post')
 def post():
+    if session.get('logged_in') is None:
+        session['logged_in'] = False
+
     if session['logged_in'] == True:
         return render_template('post.html')
     else:
@@ -112,6 +123,9 @@ def post():
 
 @app.route('/createPost')
 def createPost():
+    if session.get('logged_in') is None:
+        session['logged_in'] = False
+
     if session['logged_in'] == True:
         return render_template('createPost.html')
     else:
