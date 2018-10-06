@@ -127,10 +127,23 @@ def createPost():
         session['logged_in'] = False
 
     if session['logged_in'] == True:
-        return render_template('createPost.html')
+        category_list = getCategoryList()
+        print(category_list)
+        return render_template('createPost.html', category_list = category_list)
     else:
         return render_template('index.html', title='Create Post')
 
 
+
+def getCategoryList():
+    conn = mysql.connect()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM category")
+    result = cur.fetchall()
+    category_list = [list(i) for i in result]
+    
+    return category_list
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+    
