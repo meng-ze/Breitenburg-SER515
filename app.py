@@ -127,16 +127,7 @@ def createPost():
         session['logged_in'] = False
 
     if session['logged_in'] == True:
-        conn = mysql.connect()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM category")
-        categories = []
-        for (category) in cur:
-            print("{}".format(category))
-            categories.append(category)
-        cur.close()
-
-        return render_template('createPost.html', categories=categories)
+        return render_template('createPost.html')
     else:
         return render_template('index.html', title='Create Post')
 
