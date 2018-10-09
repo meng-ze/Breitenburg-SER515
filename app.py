@@ -141,5 +141,16 @@ def createPost():
         return render_template('index.html', title='Create Post')
 
 
+
+def getCategoryList():
+    conn = mysql.connect()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM category")
+    result = cur.fetchall()
+    category_list = [list(i) for i in result]
+    
+    return category_list
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+    
