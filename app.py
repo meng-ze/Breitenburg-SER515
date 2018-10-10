@@ -67,6 +67,7 @@ def logout():
         session['logged_in'] = False
 
     session['logged_in'] = False
+    session['logged_user_id'] = ""
     return render_template('index.html')
 
 
@@ -91,6 +92,7 @@ def login():
             flash('Incorrect username/password.')
         else:
             session['logged_in'] = True
+            session['logged_user_id'] = form.email.data
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
@@ -135,7 +137,7 @@ def createPost():
             title = form.title.data
             body = form.body.data
             category = request.form["category"]
-            
+            user_id = session['logged_user_id']            
             #write code to insert values in database here
             
             return render_template('post.html')
