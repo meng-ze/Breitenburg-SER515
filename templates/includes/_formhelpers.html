@@ -1,7 +1,7 @@
 {% macro render_field(field) %}
   <div class="form-group">
   <tr>
-	  <td>{{ field.label }}<td/>
+	  <td class="col-form-label">{{ field.label }} : <td/>
 	  <td>{{ field(**kwargs)|safe }}
 	  {% if field.errors %}
 	    <ul class=errors>
@@ -15,5 +15,3 @@
   </div>
   <br>
 {% endmacro %}
-
-

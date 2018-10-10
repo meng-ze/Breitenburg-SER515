@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
-from wtforms import Form, StringField, PasswordField, validators
+from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 
 
 mysql = MySQL()
@@ -32,12 +32,9 @@ class RegisterForm(Form):
     confirm = PasswordField('Confirm Password')
 
 # Login Form Class
-
-
 class LoginForm(Form):
     email = StringField('Email')
     password = PasswordField('Password')
-
 
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
@@ -120,23 +117,39 @@ def post():
     else:
         return render_template('index.html', title='Post')
 
+# Post Form Class
+class CreatePostForm(Form):
+    title = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    body = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
+    
 
-@app.route('/createPost')
+@app.route('/createPost' , methods=['GET', 'POST'])
 def createPost():
     if session.get('logged_in') is None:
         session['logged_in'] = False
 
     if session['logged_in'] == True:
+        form = CreatePostForm(request.form)
+        if request.method == 'POST' and form.validate():
+            
+            title = form.title.data
+            body = form.body.data
+            category = request.form["category"]
+            
+            #write code to insert values in database here
+            
+            return render_template('post.html')
+        
+        
         conn = mysql.connect()
         cur = conn.cursor()
         cur.execute("SELECT * FROM category")
         categories = []
         for (category) in cur:
-            print("{}".format(category))
             categories.append(category)
         cur.close()
-
-        return render_template('createPost.html', categories=categories)
+        
+        return render_template('createPost.html', categories=categories, form = form)
     else:
         return render_template('index.html', title='Create Post')
 
