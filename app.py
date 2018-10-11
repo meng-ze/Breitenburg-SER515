@@ -123,7 +123,7 @@ def post():
 class CreatePostForm(Form):
     title = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
     body = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
-    
+
 
 @app.route('/createPost' , methods=['GET', 'POST'])
 def createPost():
@@ -133,16 +133,16 @@ def createPost():
     if session['logged_in'] == True:
         form = CreatePostForm(request.form)
         if request.method == 'POST' and form.validate():
-            
+
             title = form.title.data
             body = form.body.data
             category = request.form["category"]
-            user_id = session['logged_user_id']            
+            user_id = session['logged_user_id']
             #write code to insert values in database here
-            
+
             return render_template('post.html')
-        
-        
+
+
         conn = mysql.connect()
         cur = conn.cursor()
         cur.execute("SELECT * FROM category")
@@ -150,10 +150,20 @@ def createPost():
         for (category) in cur:
             categories.append(category)
         cur.close()
-        
+
         return render_template('createPost.html', categories=categories, form = form)
     else:
         return render_template('index.html', title='Create Post')
+
+# new changes -- aneesh to work on this.
+def getPostData():
+    conn = mysql.connect()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM post")
+    result = cur.fetchall()
+    post_list = [list(i) for i in result]
+
+    return post_list
 
 
 
@@ -163,9 +173,9 @@ def getCategoryList():
     cur.execute("SELECT * FROM category")
     result = cur.fetchall()
     category_list = [list(i) for i in result]
-    
+
     return category_list
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-    
+
