@@ -137,8 +137,17 @@ def createPost():
             title = form.title.data
             body = form.body.data
             category = request.form["category"]
-            user_id = session['logged_user_id']            
-            #write code to insert values in database here
+            user_email = session['logged_user_id'] 
+
+            conn = mysql.connect()
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM user WHERE emailid = %s", (user_email))
+            for (user) in cur:
+                user_id = str(user[0])
+            conn = mysql.connect()
+            cur = conn.cursor()
+            cur.execute("INSERT INTO post(category_id, post_text, post_title, timestamp, user_id) VALUES(%s, %s, %s, %s, %s)", (category, body, title, "", user_id))
+            conn.commit()
             
             return render_template('post.html')
         
@@ -167,5 +176,5 @@ def getCategoryList():
     return category_list
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='127.0.0.1')
     
