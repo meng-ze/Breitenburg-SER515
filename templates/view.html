@@ -15,10 +15,12 @@
       <input type=text name=search value="{{ request.form.search}}"></br>
       <div class="actions"><input type=submit value="Search"></div>
       {% for item in searched_posts %}
+        {% for i in item %}
       <tr>
-          <td>{{item[3]}}</td>
+          <td>{{i}}</td><br>
+        {% endfor %}
       </tr>
-    {% endfor %}
+     {% endfor %}
   </form>
   </div>
   {% for message in get_flashed_messages() %}
