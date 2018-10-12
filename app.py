@@ -179,12 +179,12 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select post_title from Post where post_title = %s''', request.form['search'])
+        cur.execute('''select * from Post where post_title = %s''', request.form['search'])
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
-
-        return redirect(url_for('search'))  # <- Here you jump away from whatever result you create
-    return render_template('view.html')
+        # print(searched_posts)
+        return render_template('view.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
+   # return render_template('view.html')
 
 
 def getCategoryList():
