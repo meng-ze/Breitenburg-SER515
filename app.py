@@ -16,7 +16,6 @@ app.secret_key = 'super secret key'
 mysql.init_app(app)
 
 
-
 @app.route('/')
 def index():
     if session.get('logged_in') is None:
@@ -32,11 +31,23 @@ class RegisterForm(Form):
     confirm = PasswordField('Confirm Password')
 
 # Login Form Class
+
+
 class LoginForm(Form):
     email = StringField('Email')
     password = PasswordField('Password')
 
+# search class
+
+
+class Post(Form):
+    title = StringField('Post Title')
+    desc = StringField('Decription')
+
+
 # User Register
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm(request.form)
@@ -98,13 +109,16 @@ def login():
     return render_template('login.html', title='Login', form=form)
 
 
-@app.route('/view')
+@app.route('/view', methods=['GET', 'POST'])
 def view():
     if session.get('logged_in') is None:
         session['logged_in'] = False
 
     if session['logged_in'] == True:
-        return render_template('view.html')
+        search = Post(request.form)
+        if request.method == 'POST':
+            returnsearch_results(search)
+        return render_template('view.html', form=search)
     else:
         return render_template('index.html', title='View Post')
 
@@ -120,12 +134,14 @@ def post():
         return render_template('index.html', title='Post')
 
 # Post Form Class
+
+
 class CreatePostForm(Form):
     title = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
     body = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
 
 
-@app.route('/createPost' , methods=['GET', 'POST'])
+@app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
     if session.get('logged_in') is None:
         session['logged_in'] = False
@@ -138,10 +154,9 @@ def createPost():
             body = form.body.data
             category = request.form["category"]
             user_id = session['logged_user_id']
-            #write code to insert values in database here
+            # write code to insert values in database here
 
             return render_template('post.html')
-
 
         conn = mysql.connect()
         cur = conn.cursor()
@@ -151,20 +166,25 @@ def createPost():
             categories.append(category)
         cur.close()
 
-        return render_template('createPost.html', categories=categories, form = form)
+        return render_template('createPost.html', categories=categories, form=form)
     else:
         return render_template('index.html', title='Create Post')
 
+
 # new changes -- aneesh to work on this.
-def getPostData():
-    conn = mysql.connect()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM post")
-    result = cur.fetchall()
-    post_list = [list(i) for i in result]
 
-    return post_list
 
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == "POST":
+        conn = mysql.connect()
+        cur = conn.cursor()
+        cur.execute('''select post_title from Post where post_title = %s''', request.form['search'])
+        result = cur.fetchall()
+        searched_posts = [list(i) for i in result]
+
+        return redirect(url_for('search'))  # <- Here you jump away from whatever result you create
+    return render_template('view.html')
 
 
 def getCategoryList():
@@ -176,6 +196,6 @@ def getCategoryList():
 
     return category_list
 
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-

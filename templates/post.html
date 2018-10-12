@@ -1,12 +1,14 @@
 {% include 'menu.html' %}
 
+{% for post in posts %}
 <div class="container">
   <div class="jumbotron">
-      <h1 class="display-4">Post Title</h1>
-      <p class="lead">Post Description</p>
+      <h1 class="display-4">{{post.title}}</h1>
+      <p class="lead">{{post.text}}</p>
       <hr class="my-4">
       <p>Posted by <a href="/">User</a></p>
   </div>
+{% endfor %}
 
   <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
   {# for comment in comments #}
