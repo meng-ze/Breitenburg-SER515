@@ -183,6 +183,11 @@ def search():
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
+        if len(searched_posts) is 0:
+            flash('No results Found!')
+        else:
+            print
+            flash('Values Found!')
         return render_template('view.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
 
