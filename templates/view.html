@@ -24,6 +24,12 @@
       <tr>
           <td>{{i}}</td><br>
         {% endfor %}
+          <div class="card">
+    <a href="/post"><h5 class="card-title">{{ item[2] }}</h5></a>
+    <div class="card-body">
+      {{item[3]}}
+    </div>
+         </div>
       </tr>
      {% endfor %}
   </form>
