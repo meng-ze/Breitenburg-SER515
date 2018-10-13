@@ -25,7 +25,7 @@
 </div>
 
 
- <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+ <!– This will show the registered/unregistered users the posts without registration –>
   {# for post in posts #}
   {% for i in {1: 1, 2: 2, 3: 3, 4: 4, 5: 5} %}
   <div class="container">
@@ -37,7 +37,7 @@
   </div>
   <hr>
 </div>
-  {% endfor %}
+ {% endfor %}
 
 
 {% include 'error_layout.html' %}
