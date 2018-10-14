@@ -20,6 +20,7 @@
 *.zip
 *.tar.gz
 *.rar
+*.idea
 
 #Folder
 __pycache__/

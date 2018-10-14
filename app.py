@@ -115,10 +115,17 @@ def view():
         session['logged_in'] = False
 
     if session['logged_in'] == True:
-        search = Post(request.form)
-        if request.method == 'POST':
-            returnsearch_results(search)
-        return render_template('view.html', form=search)
+        conn = mysql.connect()
+        cur = conn.cursor()
+        cur.execute('''select * from Post''')
+        result = cur.fetchall()
+        view_posts = [list(i) for i in result]
+        #print(view_posts)
+        if len(view_posts) is 0:
+            flash('No posts to display')
+        else:
+            print('to check if itw working')
+        return render_template('view.html', view_posts=view_posts)
     else:
         return render_template('index.html', title='View Post')
 
@@ -188,7 +195,7 @@ def search():
         else:
             print
             flash('Values Found!')
-        return render_template('view.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
+        return render_template('search.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
 
 

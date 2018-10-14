@@ -2,53 +2,54 @@
 
 
 <div class="container">
-  <div class="jumbotron">
-      <h1 class="display-4">Generic Web Fourm</h1>
-      <p class="lead">Create posts and discuss with other users</p>
-      <hr class="my-4">
-      <p>Please read the <a href="/">rules</a> before posting</p>
-  </div>
-
-{% block content %}
-  <div class="search">
-  <form action="/search" method="POST">
-      <input type=text name=search value="{{ request.form.search}}"></br>
-      <div class="actions"><input type=submit value="Search"></div>
-       </div>
+    <div class="jumbotron">
+        <h1 class="display-4">Generic Web Fourm</h1>
+        <p class="lead">Create posts and discuss with other users</p>
+        <hr class="my-4">
+        <p>Please read the <a href="/">rules</a> before posting</p>
+    </div>
+    <div id="searchResults">
+        {% block content %}
+        <div class="search">
+            <form action="/search" method="POST">
+                <input type=text name=search value="{{ request.form.search}}"></br>
+                <div class="actions"><input type=submit value="Search"></div>
+        </div>
         {% for message1 in get_flashed_messages() %}
         <div class=flash>
             {{ message1 }}
         </div>
-      {% for item in searched_posts %}
+        {% for item in searched_posts %}
         {% for i in item %}
-      <tr>
-          <td>{{i}}</td><br>
+        <tr>
+            <td>{{i}}</td><br>
+            {% endfor %}
+            <div class="card">
+                <a href="/post"><h5 class="card-title">{{ item[2] }}</h5></a>
+                <div class="card-body">
+                    {{item[3]}}
+                </div>
+            </div>
+        </tr>
         {% endfor %}
-          <div class="card">
-    <a href="/post"><h5 class="card-title">{{ item[2] }}</h5></a>
-    <div class="card-body">
-      {{item[3]}}
+        </form>
     </div>
-         </div>
-      </tr>
-     {% endfor %}
-  </form>
 
-  {% endfor %}
-  {% endblock %}
-
-  <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
-  {# for post in posts #}
-  {% for i in {1: 1, 2: 2, 3: 3, 4: 4, 5: 5} %}
-  <div class="card">
-    <a href="/post"><h5 class="card-title">Post Title {{ i }}</h5></a>
-    <div class="card-body">
-      Post Description
+    {% endfor %}
+    {% endblock %}
+    <div id = "defaultResults">
+        <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+        {% for post in view_posts %}
+        <div class="card">
+            <a href="/post"><h5 class="card-title">{{ post[2] }}</h5></a>
+            <div class="card-body">
+                {{ post[3] }}
+            </div>
+        </div>
+        {% endfor %}
+        <hr>
     </div>
-  </div>
-  <hr>
-  {% endfor %}
-  <a class="btn btn-primary" href="/createPost" role="button">Create a Post</a>
+    <a class="btn btn-primary" href="/createPost" role="button">Create a Post</a>
 </div>
 
 {% include 'error_layout.html' %}
