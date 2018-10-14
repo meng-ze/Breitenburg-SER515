@@ -1,15 +1,30 @@
 from ConstantTable import AccountInfo
-ERROR_CODE = {
-    0: "success!", 
-    1: "user does not permission to delete this post/comment",
-    2: "post/comment does not exist!"
-}
 
 # ---
 # class Account <Database>
-    """
+"""
         *** not finished yet ***
-    """
+"""
+def verify_login_password(email, password, website):
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cur.execute("SELECT * FROM user WHERE %s = %s and %s = %s", (
+            AccountInfo.EMAIL, email, AccountInfo.PASSWORD, password)
+        )
+        for email_id in cur:
+            print("{}".format(email_id))
+            cursor.close()
+            return True
+
+    except Exception as e:
+        print('Error!')
+        print(e)
+
+    if cursor != None:
+        cursor.close()
+    return False
+
 def create_account(username: str, other_info: {str: None}, website):
     try:
         connection_handler = website.mysql_server.connect()
@@ -19,10 +34,10 @@ def create_account(username: str, other_info: {str: None}, website):
             AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
 
             username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.PASSWORD],
-            other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER]
+            other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER])
         )
         connection_handler.commit()
-        cur.close()
+        cursor.close()
     except Exception as e:
         print('Error!')
         print(e)

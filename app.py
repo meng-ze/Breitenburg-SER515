@@ -19,11 +19,6 @@ def index():
         session['logged_in'] = False
     return render_template('index.html')
 
-# Login Form Class
-class LoginForm(Form):
-    email = StringField('Email')
-    password = PasswordField('Password')
-
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -60,26 +55,17 @@ def logout():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm(request.form)
+    form = CustomForm.LoginForm(request.form, main_website)
     if request.method == 'POST' and form.validate():
-        email = form.email.data
-        password = form.password.data
-        flag = 0
+        email = form.email_field.data
+        password = form.password_field.data
 
-        conn = mysql.connect()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
-
-        for email_id in cur:
-            print("{}".format(email_id))
-            flag = 1
-
-        cur.close()
-        if flag == 0:
+        login_success = WebsiteAPI.verify_login_password(email, password, main_website)
+        if not login_success:
             flash('Incorrect username/password.')
         else:
             session['logged_in'] = True
-            session['logged_user_id'] = form.email.data
+            session['logged_user_id'] = form.email_field.data
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)

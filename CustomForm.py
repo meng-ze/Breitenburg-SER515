@@ -9,5 +9,6 @@ class RegisterForm(Form):
         self.confirm_field = PasswordField('Confirm Password')
 
 class LoginForm(Form):
-    email = StringField('Email')
-    password = PasswordField('Password')
+    def __init__(self, formdata, website):
+        self.email_field = StringField('Email')
+        self.password_field = PasswordField('Password')
