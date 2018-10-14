@@ -10,20 +10,19 @@
     </div>
     <div id="searchResults">
         {% block content %}
+         {% include 'error_layout.html' %}
         <div class="search">
             <form action="/search" method="POST">
                 <input type=text name=search value="{{ request.form.search}}"></br>
                 <div class="actions"><input type=submit value="Search"></div>
         </div>
-        {% for message1 in get_flashed_messages() %}
-        <div class=flash>
-            {{ message1 }}
-        </div>
+
         {% for item in searched_posts %}
-        {% for i in item %}
-        <tr>
-            <td>{{i}}</td><br>
-            {% endfor %}
+        {#% for i in item %#}
+        <!-- <tr>
+            <td>{{i}}</td><br> -->
+            {#% endfor %#}
+
             <div class="card">
                 <a href="/post"><h5 class="card-title">{{ item[2] }}</h5></a>
                 <div class="card-body">
@@ -32,10 +31,11 @@
             </div>
         </tr>
         {% endfor %}
+
         </form>
     </div>
 
-    {% endfor %}
+
     {% endblock %}
     <div id = "defaultResults">
         <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
@@ -52,5 +52,5 @@
     <a class="btn btn-primary" href="/createPost" role="button">Create a Post</a>
 </div>
 
-{% include 'error_layout.html' %}
+
 {% include 'footer.html' %}
