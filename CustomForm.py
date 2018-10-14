@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, PasswordField, validators
+from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 
 # Register Form Class
 class RegisterForm(Form):
@@ -12,3 +12,8 @@ class LoginForm(Form):
     def __init__(self, formdata, website):
         self.email_field = StringField('Email')
         self.password_field = PasswordField('Password')
+
+class CreatePostForm(Form):
+    def __init__(self, formdata, website):
+        self.title = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
+        self.body = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])

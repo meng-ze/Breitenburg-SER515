@@ -5,7 +5,7 @@ from flaskext.mysql import MySQL
 from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 import CustomForm
 import WebsiteAPI
-from ConstantTable import AccountInfo
+from ConstantTable import AccountInfo, WebsiteLoginStatus
 
 import time, datetime
 
@@ -15,8 +15,8 @@ main_website = Website(app, mysql_server)
 
 @app.route('/')
 def index():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
     return render_template('index.html')
 
 # User Register
@@ -45,11 +45,11 @@ def register():
 # User login
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    session['logged_in'] = False
-    session['logged_user_id'] = ""
+    session[WebsiteLoginStatus.LOGGED_IN] = False
+    session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = ""
     return render_template('index.html')
 
 
@@ -64,8 +64,8 @@ def login():
         if not login_success:
             flash('Incorrect username/password.')
         else:
-            session['logged_in'] = True
-            session['logged_user_id'] = form.email_field.data
+            session[WebsiteLoginStatus.LOGGED_IN] = True
+            session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = form.email_field.data
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
@@ -73,10 +73,10 @@ def login():
 
 @app.route('/view')
 def view():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    if session['logged_in'] == True:
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
         return render_template('view.html')
     else:
         return render_template('index.html', title='View Post')
@@ -84,10 +84,10 @@ def view():
 
 @app.route('/post')
 def post():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    if session['logged_in'] == True:
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
         return render_template('post.html')
     else:
         return render_template('index.html', title='Post')
@@ -100,10 +100,10 @@ class CreatePostForm(Form):
 
 @app.route('/createPost' , methods=['GET', 'POST'])
 def createPost():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    if session['logged_in'] == True:
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
         form = CreatePostForm(request.form)
         if request.method == 'POST' and form.validate():
             
@@ -111,22 +111,13 @@ def createPost():
             title = form.title.data
             body = form.body.data
             category = request.form["category"]
-            user_email = session['logged_user_id']
+            email = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]
 
-            conn = mysql.connect()
-            cur = conn.cursor()
-            cur.execute("SELECT * FROM user WHERE email_id = %s", (user_email))
-            for (user) in cur:
-                user_id = str(user[0])
-            conn = mysql.connect()
-            cur = conn.cursor()
-            cur.execute("INSERT INTO post(category_id, post_text, post_title, timestamp, user_id) VALUES(%s, %s, %s, %s, %s)", (category, body, title, timestamp, user_id))
-            conn.commit()
-            
-            return render_template('post.html')
+            post_create_success = WebsiteAPI.create_post(email, title, body, category, timestamp, main_website)
+            if post_create_success:
+                return render_template('post.html')
         
-        
-        conn = mysql.connect()
+        conn = main_website.mysql_server.connect()
         cur = conn.cursor()
         cur.execute("SELECT * FROM category")
         categories = []
@@ -141,7 +132,7 @@ def createPost():
 
 
 def getCategoryList():
-    conn = mysql.connect()
+    conn = main_website.mysql_server.connect()
     cur = conn.cursor()
     cur.execute("SELECT * FROM category")
     result = cur.fetchall()
