@@ -15,8 +15,11 @@ def create_account(username: str, other_info: {str: None}, website):
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
         cursor.execute("INSERT INTO user(%s, %s, %s, %s, %s, %s) VALUES(%s, %s, %s, %s, %s, %s)", (
-            AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD, AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
-            name, email, password, "", "", 'M')
+            AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD,
+            AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
+
+            username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.PASSWORD],
+            other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER]
         )
         connection_handler.commit()
         cur.close()

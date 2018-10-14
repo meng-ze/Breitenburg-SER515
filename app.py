@@ -32,7 +32,6 @@ def register():
         name = form.name_field.data
         email = form.email_field.data
         password = form.password_field.data
-        register_flag = False
 
         info_package = {
             AccountInfo.EMAIL: email, 
@@ -49,8 +48,6 @@ def register():
     return render_template('register.html', title='Get Registered', form=form)
 
 # User login
-
-
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     if session.get('logged_in') is None:
@@ -71,10 +68,10 @@ def login():
 
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM user WHERE emailid = %s and password = %s", (email, password))
+        cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
 
-        for (emailid) in cur:
-            print("{}".format(emailid))
+        for email_id in cur:
+            print("{}".format(email_id))
             flag = 1
 
         cur.close()
@@ -132,7 +129,7 @@ def createPost():
 
             conn = mysql.connect()
             cur = conn.cursor()
-            cur.execute("SELECT * FROM user WHERE emailid = %s", (user_email))
+            cur.execute("SELECT * FROM user WHERE email_id = %s", (user_email))
             for (user) in cur:
                 user_id = str(user[0])
             conn = mysql.connect()
