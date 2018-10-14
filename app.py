@@ -5,19 +5,19 @@ from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 
 import time, datetime
 
+class App(Flask):
+    def __init__(self, import_name):
+        super.__init__(__name__)
+        self.mysql = MySQL()
+        self.config_app()
 
-mysql = MySQL()
-app = Flask(__name__)
-
-# Config MySQL
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = 'web_forum'
-app.secret_key = 'super secret key'
-mysql.init_app(app)
-
-
+    def config_app(self):
+        self.config['MYSQL_DATABASE_HOST'] = 'localhost'
+        self.config['MYSQL_DATABASE_USER'] = 'root'
+        self.config['MYSQL_DATABASE_PASSWORD'] = ''
+        self.config['MYSQL_DATABASE_DB'] = 'web_forum'
+        self.secret_key = 'super secret key'
+        self.mysql.init_app(self)
 
 @app.route('/')
 def index():
