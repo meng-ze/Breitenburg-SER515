@@ -79,7 +79,7 @@ CREATE TABLE `post` (
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `emailid` varchar(100) NOT NULL,
+  `email_id` varchar(100) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `password` varchar(50) NOT NULL,
   `dob` varchar(10) NOT NULL,

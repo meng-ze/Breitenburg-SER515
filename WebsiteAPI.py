@@ -1,21 +1,37 @@
+from ConstantTable import AccountInfo
 ERROR_CODE = {
     0: "success!", 
     1: "user does not permission to delete this post/comment",
     2: "post/comment does not exist!"
 }
 
----
-class Account <Database>
+# ---
+# class Account <Database>
     """
         *** not finished yet ***
     """
-def create_account(username: str, other_info: {str: None})
+def create_account(username: str, other_info: {str: None}, website):
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute("INSERT INTO user(%s, %s, %s, %s, %s, %s) VALUES(%s, %s, %s, %s, %s, %s)", (
+            AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD, AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
+            name, email, password, "", "", 'M')
+        )
+        connection_handler.commit()
+        cur.close()
+    except Exception as e:
+        print('Error!')
+        print(e)
+        return False
+    return True
+
 def modify_account(username: str, key: str, value: None)
 def delete_account(username: str)
 def get_account_info(username: str) -> {str: None}
 
----
-class Post <Database>
+# ---
+# class Post <Database>
 """ Actions below SHOULD include timestamp """
 
 def create_post(username: Account, descript: str) -> post_id:

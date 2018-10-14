@@ -1,37 +1,23 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
+from Website import Website
 from flaskext.mysql import MySQL
 from wtforms import Form, StringField, PasswordField, TextAreaField, validators
+import CustomForm
+import WebsiteAPI
+from ConstantTable import AccountInfo
 
 import time, datetime
 
-class App(Flask):
-    def __init__(self, import_name):
-        super.__init__(__name__)
-        self.mysql = MySQL()
-        self.config_app()
-
-    def config_app(self):
-        self.config['MYSQL_DATABASE_HOST'] = 'localhost'
-        self.config['MYSQL_DATABASE_USER'] = 'root'
-        self.config['MYSQL_DATABASE_PASSWORD'] = ''
-        self.config['MYSQL_DATABASE_DB'] = 'web_forum'
-        self.secret_key = 'super secret key'
-        self.mysql.init_app(self)
+app = Flask(__name__)
+mysql_server = MySQL()
+main_website = Website(app, mysql_server)
 
 @app.route('/')
 def index():
     if session.get('logged_in') is None:
         session['logged_in'] = False
     return render_template('index.html')
-
-
-# Register Form Class
-class RegisterForm(Form):
-    name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
-    email = StringField('Email', [validators.DataRequired(), validators.Length(min=6, max=50)])
-    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
-    confirm = PasswordField('Confirm Password')
 
 # Login Form Class
 class LoginForm(Form):
@@ -41,21 +27,23 @@ class LoginForm(Form):
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm(request.form)
+    form = CustomForm.RegisterForm(request.form, main_website)
     if request.method == 'POST' and form.validate():
-        name = form.name.data
-        email = form.email.data
-        password = form.password.data
-        register_flag = 0
+        name = form.name_field.data
+        email = form.email_field.data
+        password = form.password_field.data
+        register_flag = False
 
-        conn = mysql.connect()
-        cur = conn.cursor()
-        cur.execute("INSERT INTO user(username, emailid, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s)", (name, email, password, "", "", 'M'))
-        conn.commit()
-        register_flag = 1
-        cur.close()
+        info_package = {
+            AccountInfo.EMAIL: email, 
+            AccountInfo.PASSWORD: password, 
+            AccountInfo.PHONE: '', 
+            AccountInfo.DATE_OF_BIRTH: '', 
+            AccountInfo.GENDER: 'M'
+        } 
+        register_flag = WebsiteAPI.create_account(name, info_package, main_website)
 
-        if register_flag == 1:
+        if register_flag:
             flash('You have registered successfully')
             return redirect(url_for('login'))
     return render_template('register.html', title='Get Registered', form=form)
