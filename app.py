@@ -20,7 +20,18 @@ mysql.init_app(app)
 def index():
     if session.get('logged_in') is None:
         session['logged_in'] = False
-    return render_template('index.html')
+
+    conn = mysql.connect()
+    cur = conn.cursor()
+    cur.execute('''select * from Post''')
+    result = cur.fetchall()
+    view_posts = [list(i) for i in result]
+    # print(view_posts)
+    if len(view_posts) is 0:
+        flash('No posts to display')
+    else:
+        print('to check if itw working')
+    return render_template('index.html', view_posts=view_posts)
 
 
 # Register Form Class
@@ -120,7 +131,7 @@ def view():
         cur.execute('''select * from Post''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
-        #print(view_posts)
+        # print(view_posts)
         if len(view_posts) is 0:
             flash('No posts to display')
         else:
