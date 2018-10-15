@@ -1,0 +1,42 @@
+{% include 'menu.html' %}
+
+
+<div class="container">
+  <div class="jumbotron">
+      <h1 class="display-4">Generic Web Fourm</h1>
+      <p class="lead">Create posts and discuss with other users</p>
+      <hr class="my-4">
+      <p>Please read the <a href="/">rules</a> before posting</p>
+  </div>
+<div id="searchResults">
+{% block content %}
+  <div class="search">
+  <form action="/search" method="POST">
+      <input type=text name=search value="{{ request.form.search}}"></br>
+      <div class="actions"><input type=submit value="Search"></div>
+       </div>
+        {% for message1 in get_flashed_messages() %}
+        <div class=flash>
+            {{ message1 }}
+        </div>
+      {% for item in searched_posts %}
+        {% for i in item %}
+      <tr>
+        {% endfor %}
+          <div class="card">
+    <a href="/post"><h5 class="card-title">{{ item[2] }}</h5></a>
+    <div class="card-body">
+      {{item[3]}}
+    </div>
+         </div>
+      </tr>
+     {% endfor %}
+
+</div>
+    </form>
+</div>
+  {% endfor %}
+  {% endblock %}
+
+{% include 'error_layout.html' %}
+{% include 'footer.html' %}

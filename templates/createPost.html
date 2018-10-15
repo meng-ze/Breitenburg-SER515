@@ -1,5 +1,6 @@
 {% include 'menu.html' %}
 {% from "includes/_formhelpers.html" import render_field %}
+{% from "includes/_formhelpers.html" import render_field_cp %}
 <div class="container">
 
   <div class="jumbotron">
@@ -11,20 +12,22 @@
     <form method="POST" action="">
       <div class="form-group row">
         <label for="category" class="col-sm-2 col-form-label">Category:</label>
-        <div class="col-sm-10">
-          <select id="category" name="category">
+        <div class="col-sm-10 ">
+          <select id="category" class="form-control" name="category">
               {% for c in categories %}
                 <option value="{{ c[0] }}">{{ c[1] }}</option>
               {% endfor %}
           </select>
         </div>
       </div>
+      <br>
+      {{ render_field_cp(form.title) }}  
+      {{ render_field_cp(form.body) }}
       
-      {{ render_field(form.title) }}  
-      {{ render_field(form.body) }}
+      
       
       <tr>
-	     <td><p><input type="submit" class="btn btn-primary" value="Post"></p>
+	     <td><p align="center"><input type="submit" class="btn btn-primary" style="align:center;width:50%" value="Post"></p>
 	     {% extends 'error_layout.html' %}</td>
 	  </tr>
       

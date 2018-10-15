@@ -24,5 +24,19 @@
 
 </div>
 
+
+ <!– This will show the registered/unregistered users the posts without registration –>
+    {% for post in view_posts %}
+    <div class="container">
+        <div class="card">
+            <a href="#"><h5 class="card-title">{{ post[2] }}</h5></a>
+            <div class="card-body">
+                {{ post[3] }}
+            </div>
+        </div>
+      </div>
+        {% endfor %}
+
+
 {% include 'error_layout.html' %}
 {% include 'footer.html' %}
