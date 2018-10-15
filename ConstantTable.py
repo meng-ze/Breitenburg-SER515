@@ -1,10 +1,8 @@
-from enum import Enum
-
-class WebsiteLoginStatus(Enum):
+class WebsiteLoginStatus:
     LOGGED_IN = 'logged_in'
     LOGGED_USER_EMAIL = 'logged_user_email'
     
-class AccountInfo(Enum):
+class AccountInfo:
     USERNAME = 'username'
     USER_ID = 'user_id'
     EMAIL = 'email_id'
@@ -13,7 +11,7 @@ class AccountInfo(Enum):
     DATE_OF_BIRTH = 'dob'
     GENDER = 'gender'
 
-class PostInfo(Enum):
+class PostInfo:
     POST_ID  = 'post_id'
     USER_ID = 'user_id'
     POST_TITLE = 'post_title'
@@ -21,7 +19,7 @@ class PostInfo(Enum):
     CATEGORY_ID = 'category_id'
     TIMESTAMP = 'timestamp'
 
-class ErrorCode(Enum):
+class ErrorCode:
     SUCCESS: "success!"
     OPERATION_NOT_PERMITTED: "user does not permission to delete this post/comment"
     POST_NOT_EXIST: "post/comment does not exist!"

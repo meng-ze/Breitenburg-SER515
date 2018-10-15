@@ -92,19 +92,13 @@ def post():
     else:
         return render_template('index.html', title='Post')
 
-# Post Form Class
-class CreatePostForm(Form):
-    title = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
-    body = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
-    
-
 @app.route('/createPost' , methods=['GET', 'POST'])
 def createPost():
     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
         session[WebsiteLoginStatus.LOGGED_IN] = False
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
-        form = CreatePostForm(request.form)
+        form = CustomForm.CreatePostForm(request.form, main_website)
         if request.method == 'POST' and form.validate():
             
             timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -128,8 +122,6 @@ def createPost():
         return render_template('createPost.html', categories=categories, form = form)
     else:
         return render_template('index.html', title='Create Post')
-
-
 
 def getCategoryList():
     conn = main_website.mysql_server.connect()
