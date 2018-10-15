@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 #from data import Articles
 from flaskext.mysql import MySQL
 from wtforms import Form, StringField, PasswordField, TextAreaField, validators
+from wtforms.fields.html5 import EmailField
 
 import time
 import datetime
@@ -40,7 +41,7 @@ def index():
 # Register Form Class
 class RegisterForm(Form):
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
-    email = StringField('Email', [validators.DataRequired(), validators.Length(min=6, max=50)])
+    email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
     password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
     confirm = PasswordField('Confirm Password')
 
