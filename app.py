@@ -131,7 +131,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post''')
+        cur.execute('''select * from Post order by timestamp DESC''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
