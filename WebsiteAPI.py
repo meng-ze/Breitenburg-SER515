@@ -1,15 +1,10 @@
-from ConstantTable import AccountInfo, PostInfo
+from ConstantTable import DatabaseModel, AccountInfo, PostInfo
 
-# ---
-# class Account <Database>
-"""
-        *** not finished yet ***
-"""
 def verify_login_password(email, password, website):
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute("SELECT * FROM user WHERE %s = %s and %s = %s", (
+        cursor.execute('SELECT * FROM {} WHERE {} = "{}" and {} = "{}"'.format(DatabaseModel.USER,
             AccountInfo.EMAIL, email, AccountInfo.PASSWORD, password)
         )
         for email_id in cursor:
@@ -30,7 +25,7 @@ def create_account(username: str, other_info: {str: None}, website):
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute("INSERT INTO user(%s, %s, %s, %s, %s, %s) VALUES(%s, %s, %s, %s, %s, %s)", (
+        cursor.execute('INSERT INTO {}({}, {}, {}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}", "{}", "{}");'.format(DatabaseModel.USER,
             AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD,
             AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
 
@@ -54,8 +49,7 @@ def create_account(username: str, other_info: {str: None}, website):
 # def get_account_info(username: str) -> {str: None}
 
 # ---
-# class Post <Database>
-""" Actions below SHOULD include timestamp """
+""" Actions below MUST include timestamp """
 
 def create_post(email, title, body, category, timestamp, website):
     """
@@ -65,15 +59,16 @@ def create_post(email, title, body, category, timestamp, website):
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute("SELECT * FROM user WHERE %s = %s", (AccountInfo.EMAIL, email))
+        cursor.execute('SELECT * FROM {} WHERE {} = "{}"'.format(DatabaseModel.USER, AccountInfo.EMAIL, email))
         for user in cursor:
             user_id = str(user[0])
         connection_handler = website.mysql_server.connect()
-        cursor= connection_handler.cursor()
-        cursor.execute("INSERT INTO post(%s, %s, %s, %s, %s) VALUES(%s, %s, %s, %s, %s)", (
+        cursor = connection_handler.cursor()
+        command = 'INSERT INTO {}({}, {}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}", "{}");'.format(DatabaseModel.POST,
             PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.TIMESTAMP, PostInfo.USER_ID,
             category, body, title, timestamp, user_id)
-        )
+
+        cursor.execute(command)
         connection_handler.commit()
         cursor.close()
 
@@ -85,6 +80,15 @@ def create_post(email, title, body, category, timestamp, website):
         return False
 
     return True
+
+def get_category_list(website):
+    connection_handler = website.mysql_server.connect()
+    cursor = connection_handler.cursor()
+    cursor.execute("SELECT * FROM {}".format(DatabaseModel.CATEGORY))
+    result = cursor.fetchall()
+    category_list = [list(i) for i in result]
+    
+    return category_list
 
 # def modify_post(username: Account, post_id: address, description: str) -> bool:
 #     """

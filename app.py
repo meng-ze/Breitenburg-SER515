@@ -5,7 +5,7 @@ from flaskext.mysql import MySQL
 from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 import CustomForm
 import WebsiteAPI
-from ConstantTable import AccountInfo, WebsiteLoginStatus
+from ConstantTable import DatabaseModel, AccountInfo, WebsiteLoginStatus 
 
 import time, datetime
 
@@ -104,33 +104,17 @@ def createPost():
             timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
             title = form.title.data
             body = form.body.data
-            category = request.form["category"]
+            category = request.form[DatabaseModel.CATEGORY]
             email = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]
 
             post_create_success = WebsiteAPI.create_post(email, title, body, category, timestamp, main_website)
             if post_create_success:
                 return render_template('post.html')
         
-        conn = main_website.mysql_server.connect()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM category")
-        categories = []
-        for (category) in cur:
-            categories.append(category)
-        cur.close()
-        
+        categories = WebsiteAPI.get_category_list(main_website)
         return render_template('createPost.html', categories=categories, form = form)
     else:
         return render_template('index.html', title='Create Post')
-
-def getCategoryList():
-    conn = main_website.mysql_server.connect()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM category")
-    result = cur.fetchall()
-    category_list = [list(i) for i in result]
-    
-    return category_list
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1')

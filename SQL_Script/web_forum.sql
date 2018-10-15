@@ -44,10 +44,10 @@ INSERT INTO `category` (`category_id`, `value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `comments`
+-- Table structure for table `comment`
 --
 
-CREATE TABLE `comments` (
+CREATE TABLE `comment` (
   `comment_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -98,9 +98,9 @@ ALTER TABLE `category`
   ADD PRIMARY KEY (`category_id`);
 
 --
--- Indexes for table `comments`
+-- Indexes for table `comment`
 --
-ALTER TABLE `comments`
+ALTER TABLE `comment`
   ADD PRIMARY KEY (`comment_id`),
   ADD KEY `post_id` (`post_id`),
   ADD KEY `user_id` (`user_id`);
@@ -129,9 +129,9 @@ ALTER TABLE `user`
 ALTER TABLE `category`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `comments`
+-- AUTO_INCREMENT for table `comment`
 --
-ALTER TABLE `comments`
+ALTER TABLE `comment`
   MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `post`
@@ -148,11 +148,11 @@ ALTER TABLE `user`
 --
 
 --
--- Constraints for table `comments`
+-- Constraints for table `comment`
 --
-ALTER TABLE `comments`
-  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`) ON UPDATE CASCADE;
+ALTER TABLE `comment`
+  ADD CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `post`
