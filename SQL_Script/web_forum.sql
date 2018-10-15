@@ -31,6 +31,16 @@ CREATE TABLE `category` (
   `value` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`category_id`, `value`) VALUES
+(1, 'Sports'),
+(2, 'College'),
+(3, 'General');
+
 -- --------------------------------------------------------
 
 --
