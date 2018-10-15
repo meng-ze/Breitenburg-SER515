@@ -1,0 +1,23 @@
+{% include 'menu.html' %}
+
+<div class="container">
+  <div class="jumbotron">
+  
+    {% for item in posts %}
+    <form method="POST" action="/edit_post">
+    <h1 class="display-4">Post Id - {{item[0]}}</h1>
+    <input type="hidden" id="post_id" name="post_id" value="{{item[0]}}">
+    <button type="submit" class="btn btn-primary">
+          <span class="glyphicon glyphicon-pencil"></span> Edit 
+    </button>
+    <!--<input type="submit" class="ion-md-create" name="submit_button" value="Edit">-->
+      <h1 class="display-4">{{item[2]}}</h1>
+      <p class="lead">{{item[3]}}</p>
+      <hr class="my-4">
+    </form>
+    {% endfor %}
+  </div>
+</div>
+
+{% include 'error_layout.html' %}
+{% include 'footer.html' %}
