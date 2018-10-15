@@ -9,9 +9,12 @@
     <br>
     <h2>Already added value to update. Make it editable</h2>
     <br>
-    <h4 class="display-4">id - {{post[1]}}</h4>
-    <h4 class="display-4">title - {{post[2]}}</h4>
-    <h4 class="display-4">desc - {{post[3]}}</h4>  
+    <h5 class="display-5"><b>ID - {{post[1]}}</b></h5>
+    <span><b>Title</b><span> &nbsp;<textarea class="display-5" rows="1">{{post[2]}}</textarea><br/>
+    <span><b>Desc</b></span>&nbsp;<textarea class="display-5" rows="7">{{post[3]}}</textarea><br/>
+    <button type="submit" class="btn btn-primary">
+          <span class="glyphicon glyphicon-pencil"></span> Edit
+    </button>
 </div>
 
 {% include 'error_layout.html' %}
