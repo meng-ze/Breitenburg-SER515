@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 24, 2018 at 05:07 AM
+-- Generation Time: Oct 24, 2018 at 05:19 AM
 -- Server version: 5.7.14
 -- PHP Version: 5.6.25
 
@@ -95,6 +95,14 @@ CREATE TABLE `user` (
   `gender` char(1) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`user_id`, `username`, `emailid`, `user_role`, `phone`, `password`, `dob`, `gender`, `timestamp`) VALUES
+(1, 'Viraj Hemant Talaty', 'virajtalaty@gmail.com', 1, '', '123', '', 'M', '2018-09-27 02:10:59'),
+(5, 'Viraj Talaty', 'vtalaty@asu.edu', 2, '', '1234', '', 'M', '2018-10-15 04:30:52');
 
 -- --------------------------------------------------------
 
