@@ -192,6 +192,11 @@ def post():
         session['logged_in'] = False
 
     if session['logged_in'] == True:
+        conn = mysql.connect()
+        cur = conn.cursor()
+        cur.execute('select * from comments where post_id = %s', "id")
+        result = cur.fetchall()
+        searched_posts = [list(i) for i in result]
         return render_template('post.html')
     else:
         return render_template('index.html', title='Post')
@@ -277,4 +282,4 @@ def getCategoryList():
 
 if __name__ == '__main__':
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='127.0.0.1')
