@@ -9,14 +9,16 @@
 
     <div class="jumbotron">
 
-        <h1 class="display-4">Welcome to this Generic Web Fourm!</h1>
-        <p class="lead">On this fourm, you can create posts and converse with other fourm users</p>
+        <h1 class="display-4" align="center">Welcome to this Generic Web Forum!</h1>
+        <p class="lead" align="center">On this forum, you can create posts and converse with other fourm users</p>
         <hr class="my-4">
         {% if session['logged_in'] %}
           {% include 'error_layout.html' %}
         {% else %}
+        <div align="center">
           <p>Create an account to get started</p>
           <a class="btn btn-primary btn-lg" href="register" role="button">Register</a>
+        </div>
         {% endif %}
     </div>
      {% endif %}

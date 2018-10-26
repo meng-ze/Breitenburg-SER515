@@ -14,7 +14,7 @@ app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'root123'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
 app.config['MYSQL_DATABASE_DB'] = 'web_forum'
 app.secret_key = 'super secret key'
 mysql.init_app(app)
@@ -131,12 +131,12 @@ def my_posts():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        
+
         cur.execute('''select * from post where user_id = (Select user_id from user where emailid = %s Limit 1)''', session['logged_user_id'])
         result = cur.fetchall()
         posts = [list(i) for i in result]
-        
-        
+
+
         return render_template('my_posts.html', title='My Posts', posts=posts)
     else:
         return render_template('index.html', title='Home')
@@ -156,7 +156,7 @@ def edit_post():
             cur.execute('''select * from post where post_id = %s''', post_id)
             result = cur.fetchone()
             post = result
-            
+
         return render_template('edit_post.html', title='Edit Post', post=post)
     else:
         return render_template('index.html', title='Home')
