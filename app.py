@@ -14,7 +14,7 @@ app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'root123'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
 app.config['MYSQL_DATABASE_DB'] = 'web_forum'
 app.secret_key = 'super secret key'
 mysql.init_app(app)
@@ -112,6 +112,7 @@ def login():
         for (emailid) in cur:
             print("{}".format(emailid))
             flag = 1
+            user_id = emailid[0]
 
         cur.close()
         if flag == 0:
@@ -119,6 +120,7 @@ def login():
         else:
             session['logged_in'] = True
             session['logged_user_id'] = form.email.data
+            session['logged_user_id_num'] = user_id
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
@@ -186,7 +188,7 @@ def view():
         return render_template('index.html', title='View Post')
 
 
-@app.route('/post')
+@app.route('/post', methods=['GET', 'POST'])
 def post():
     if session.get('logged_in') is None:
         session['logged_in'] = False
@@ -194,10 +196,30 @@ def post():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('select * from comments where post_id = %s', "id")
+        if request.method == 'POST':
+            post_id = request.form['id']
+            c = request.form['comment']
+            cur.execute("INSERT INTO comments(post_id, user_id, comment_text) VALUES(%s, %s, %s)", (post_id, session['logged_user_id_num'], c))
+            conn.commit()
+        else:
+            post_id = request.args.get('id')
+
+        cur.execute('select * from post where post_id = %s', post_id)
+        post = cur.fetchone()
+        cur.execute('select * from user where user_id = %s', post[1])
+        user = cur.fetchone()
+
+        cur.execute('select * from comments where post_id = %s', post_id)
         result = cur.fetchall()
-        searched_posts = [list(i) for i in result]
-        return render_template('post.html')
+        comments = [list(i) for i in result]
+        # Not sure if we need to sort by date, so remove comment if we need to
+        # comments = sorted(comments, key=lambda comment: comment[4])
+        for i, c in enumerate(comments):
+            cur.execute('select * from user where user_id = %s', c[2])
+            commentUser = cur.fetchone()
+            c.append(commentUser[1])
+            comments[i] = c
+        return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]))
     else:
         return render_template('index.html', title='Post')
 
