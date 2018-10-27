@@ -163,6 +163,10 @@ ALTER TABLE `post`
   ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `post_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`) ON UPDATE CASCADE;
 
+  --- Dummy posts for testing search functionality
+  --- Added test data in the posts table
+  INSERT INTO `post` (`post_id`, `user_id`, `post_title`, `post_text`, `category_id`, `timestamp`) VALUES ('1', '3', 'Post 1', 'Test Post 1', '2', CURRENT_TIMESTAMP), (NULL, '5', 'Post 2', 'Test Post 2', '3', CURRENT_TIMESTAMP);
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
