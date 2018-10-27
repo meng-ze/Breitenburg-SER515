@@ -29,6 +29,12 @@
             <a class="nav-link" href="my_posts">My Posts</a>
          </li>
          
+         {% if session['role'] == 'admin' %}
+         	<li class="nav-item">
+            	<a class="nav-link" href="my_posts">Create Admins</a>
+         	</li>
+         {% endif %}
+         
          <li class="nav-item">
             <a class="nav-link" href="logout">Logout</a>
          </li>
