@@ -1,3 +1,4 @@
+from dateutil.parser import parse
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
@@ -27,7 +28,7 @@ def index():
 
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''select * from Post''')
+    cur.execute('''select * from Post inner join user on post.user_id = user.user_id''')
     result = cur.fetchall()
     view_posts = [list(i) for i in result]
     # print(view_posts)
@@ -170,7 +171,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post''')
+        cur.execute('''select * from Post inner join user on post.user_id = user.user_id''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
@@ -249,7 +250,7 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post where post_title = %s''', request.form['search'])
+        cur.execute('''select * from Post inner join user on post.user_id = user.user_id where post_title = %s''', request.form['search'])
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)

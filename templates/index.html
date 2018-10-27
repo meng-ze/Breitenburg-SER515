@@ -26,18 +26,44 @@
 
 </div>
 
-
- <!– This will show the registered/unregistered users the posts without registration –>
+<main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+           <!– This will show the registered/unregistered users the posts without registration –>
     {% for post in view_posts %}
-    <div class="container">
-        <div class="card">
-            <a href="#"><h5 class="card-title">{{ post[2] }}</h5></a>
-            <div class="card-body">
-                {{ post[3] }}
+
+      <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{post[7]}}</a>
+              <small class="text-muted" >{{post[5]}}</small><hr>
             </div>
+            <h2><a class="article-title" href="#">{{ post[2] }}</a></h2>
+            <p class="article-content">{{ post[3] }}</p>
+          </div>
+        </article>
+
+        {% endfor %}
+        </div>
+        <div class="col-md-4">
+          <div class="content-section">
+            <h3>Our Sidebar</h3>
+            <p class='text-muted'>You can put any information here you'd like.
+              <ul class="list-group">
+                <li class="list-group-item list-group-item-light">Latest Posts</li>
+                <li class="list-group-item list-group-item-light">Announcements</li>
+                <li class="list-group-item list-group-item-light">Calendars</li>
+                <li class="list-group-item list-group-item-light">etc</li>
+              </ul>
+            </p>
+          </div>
         </div>
       </div>
-        {% endfor %}
+
+
+    </main>
+
+
 
 
 {% include 'error_layout.html' %}
