@@ -62,6 +62,12 @@ class Post(Form):
 
 # User Register
 
+# Admin Register Form
+class AdminRegisterForm(Form):
+    name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
+    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
+    confirm = PasswordField('Confirm Password')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -84,9 +90,30 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html', title='Get Registered', form=form)
 
+
+@app.route('/admin_register', methods=['GET', 'POST'])
+def admin_register():
+    form = AdminRegisterForm(request.form)
+    if request.method == 'POST' and form.validate():
+        name = form.name.data
+        email = form.email.data
+        password = form.password.data
+        register_flag = 0
+
+        conn = mysql.connect()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO user(username, emailid, user_role, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s, %s)", (name, email, "2", password, "", "", 'M'))
+        conn.commit()
+        register_flag = 1
+        cur.close()
+
+        if register_flag == 1:
+            flash('New Admin created successfully')
+            return redirect(url_for('admin_register'))
+    return render_template('admin_register.html', title='Get Registered', form=form)
+
+
 # User login
-
-
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     if session.get('logged_in') is None:
