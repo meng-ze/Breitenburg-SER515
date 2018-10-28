@@ -1,3 +1,4 @@
+from dateutil.parser import parse
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
@@ -9,7 +10,7 @@ import datetime
 
 
 mysql = MySQL()
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
@@ -27,7 +28,7 @@ def index():
 
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''select * from Post''')
+    cur.execute('''select * from Post inner join user on post.user_id = user.user_id''')
     result = cur.fetchall()
     view_posts = [list(i) for i in result]
     # print(view_posts)
@@ -158,6 +159,7 @@ def login():
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
 
+
 @app.route('/my_posts', methods=['GET', 'POST'])
 def my_posts():
     if session.get('logged_in') is None:
@@ -166,13 +168,13 @@ def my_posts():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
+
         cur.execute('''select * from post where user_id = (Select user_id from user where emailid = %s Limit 1)''', session['logged_user_id'])
         
         result = cur.fetchall()
         
         posts = [list(i) for i in result]
-        
-        
+
         return render_template('my_posts.html', title='My Posts', posts=posts)
     else:
         return render_template('index.html', title='Home')
@@ -192,13 +194,10 @@ def edit_post():
             cur.execute('''select * from post where post_id = %s''', post_id)
             result = cur.fetchone()
             post = result
-            
+
         return render_template('edit_post.html', title='Edit Post', post=post)
     else:
         return render_template('index.html', title='Home')
-
-
-
 
 
 @app.route('/view', methods=['GET', 'POST'])
@@ -209,7 +208,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post''')
+        cur.execute('''select * from Post inner join user on post.user_id = user.user_id''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
@@ -288,7 +287,7 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post where post_title = %s''', request.form['search'])
+        cur.execute('''select * from Post inner join user on post.user_id = user.user_id where post_title = %s''', request.form['search'])
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)

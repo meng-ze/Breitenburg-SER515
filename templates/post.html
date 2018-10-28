@@ -12,20 +12,23 @@
 
   <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
   {# for comment in comments #}
-  {% for i in {1: 1, 2: 2, 3: 3} %}
-  <div class="card">
-    <h5 class="card-title">Username of Commenter {{ i }}</h5>
-    <div class="card-body">
-      Comment
-    </div>
-  </div>
-  <hr>
-  {% endfor %}
+
+  <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">Username of Commenter</a>
+              <small class="text-muted" >time</small><hr>
+            </div>
+            <p class="article-content">Comment Body</p>
+        </div>
+  </article>
   <form>
     <textarea class="w-100" rows="4" placeholder="Leave a Comment"></textarea>
     <a type="submit" class="btn btn-primary" href="#" role="button">Comment</a>
   </form>
-</div>
+
+
+
 
 {% include 'error_layout.html' %}
 {% include 'footer.html' %}
