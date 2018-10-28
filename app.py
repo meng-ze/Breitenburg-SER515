@@ -28,7 +28,7 @@ def index():
 
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''select * from Post inner join user on post.user_id = user.user_id''')
+    cur.execute('''select * from post inner join user on post.user_id = user.user_id''')
     result = cur.fetchall()
     view_posts = [list(i) for i in result]
     # print(view_posts)
@@ -141,7 +141,7 @@ def login():
 
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM user inner join user_Role on user.user_role = user_role.id WHERE emailid = %s and password = %s", (email, password))
+        cur.execute("SELECT * FROM user inner join user_role on user.user_role = user_role.id WHERE emailid = %s and password = %s", (email, password))
         user_role_id = 0
         for (row) in cur:
             user_role_id = row[10] 
@@ -208,7 +208,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post inner join user on post.user_id = user.user_id''')
+        cur.execute('''select * from post inner join user on post.user_id = user.user_id''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
@@ -287,7 +287,7 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post inner join user on post.user_id = user.user_id where post_title = %s''', request.form['search'])
+        cur.execute('''select * from post inner join user on post.user_id = user.user_id where post_title = %s''', request.form['search'])
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)

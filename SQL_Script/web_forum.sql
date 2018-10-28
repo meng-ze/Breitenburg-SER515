@@ -6,6 +6,8 @@
 -- Generation Time: Oct 24, 2018 at 05:19 AM
 -- Server version: 5.7.14
 -- PHP Version: 5.6.25
+CREATE DATABASE web_forum;
+USE web_forum;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
