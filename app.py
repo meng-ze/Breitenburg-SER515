@@ -115,7 +115,7 @@ def create_admin():
 
         if register_flag == 1:
             flash('New Admin created successfully')
-            return redirect(url_for('admin_register'))
+            return redirect(url_for('create_admin'))
     return render_template('create_admin.html', title='Get Registered', form=form)
 
 
