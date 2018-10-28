@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <html>
 <head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
     {% if title %}
         <title>{{ title }}</title>
     {% else %}
@@ -12,8 +14,8 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-   <a class="navbar-brand" href="/">Web Fourm</a>
+<nav class="navbar-expand-lg navbar-dark bg-dark navbar-default" role="navigation">
+   <a class="navbar-brand" href="/">Web Forum</a>
    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
    <span class="navbar-toggler-icon"></span>
    </button>
@@ -24,18 +26,19 @@
          </li>
          {% block body %}
          {% if session['logged_in'] %}
-         
+
          <li class="nav-item">
             <a class="nav-link" href="my_posts">My Posts</a>
          </li>
-         
+
          {% if session['role'] == 'admin' %}
          	<li class="nav-item">
             	<a class="nav-link" href="my_posts">Create Admins</a>
          	</li>
          {% endif %}
-         
+
          <li class="nav-item">
+
             <a class="nav-link" href="logout">Logout</a>
          </li>
          {% else %}
@@ -50,3 +53,5 @@
       </ul>
    </div>
 </nav>
+
+
