@@ -1,0 +1,63 @@
+{% include 'menu.html' %} 
+{% from "includes/_formhelpers.html" import render_field %}
+<div class="container-fluid" >
+	<div class="row">
+		<table class="table table-borderless table-hover">
+			<thead class="thead-dark">
+				<th><h1>List of Admins</h1></th>
+				<th></th>
+				<th></th>
+			</thead>
+		</table>	
+	</div>
+</div>
+		
+
+		
+		
+		
+<main role = "main" class="container">
+<div class = "row">
+	<div class="col-md-7" style="padding-right: 30px;padding-left: 30px;border:1px solid black;">
+		<span></span>
+		<br>
+		<div class="row">
+		<table class="table" border = "2">
+		<thead>
+			<tr>
+				<th>Username</th>
+				<th>Email Id</th>
+			</tr>
+		</thead>
+		<tbody>	
+			{% for list in admins_list %}
+			<tr>
+				<td>
+					{{list[1]}}
+				</td>
+				<td>
+					{{list[2]}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+			
+		</div>
+	</div>
+	{% include 'side_menu_admin.html' %}
+	
+</div>
+</main>		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+
+{% include 'footer.html' %}
+

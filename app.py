@@ -63,6 +63,12 @@ class Post(Form):
 
 # User Register
 
+# Create Admin Form
+class CreateAdminForm(Form):
+    name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
+    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
+    confirm = PasswordField('Confirm Password')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -85,9 +91,36 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html', title='Get Registered', form=form)
 
+
+@app.route('/create_admin', methods=['GET', 'POST'])
+def create_admin():
+    form = CreateAdminForm(request.form)
+    if request.method == 'POST' and form.validate():
+        name = form.name.data
+        email = form.email.data
+        password = form.password.data
+        register_flag = 0
+
+        conn = mysql.connect()
+        cur = conn.cursor()
+        
+        
+        number_of_rows= cur.execute("SELECT * FROM user WHERE emailid = %s", (email))
+        if(number_of_rows == 0):
+            cur.execute("INSERT INTO user(username, emailid, user_role, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s, %s)", (name, email, "2", password, "", "", '-'))
+            conn.commit()
+            register_flag = 1
+            cur.close()
+        else:
+            flash('User with the following email id exists')
+
+        if register_flag == 1:
+            flash('New Admin created successfully')
+            return redirect(url_for('create_admin'))
+    return render_template('create_admin.html', title='Get Registered', form=form)
+
+
 # User login
-
-
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     if session.get('logged_in') is None:
@@ -137,7 +170,9 @@ def my_posts():
         cur = conn.cursor()
 
         cur.execute('''select * from post where user_id = (Select user_id from user where emailid = %s Limit 1)''', session['logged_user_id'])
+        
         result = cur.fetchall()
+        
         posts = [list(i) for i in result]
 
         return render_template('my_posts.html', title='My Posts', posts=posts)
@@ -263,6 +298,20 @@ def search():
             flash('Values Found!')
         return render_template('search.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
+
+
+
+@app.route('/list_admin', methods=['GET', 'POST'])
+def list_admin():
+    conn = mysql.connect()
+    cur = conn.cursor()
+    cur.execute('''select * from user where user_role = 2''')
+    result = cur.fetchall()
+    admins_list = [list(i) for i in result]
+    
+    return render_template('list_admin.html',admins_list=admins_list)  # <- Here you jump away from whatever result you create
+   # return render_template('view.html')
+
 
 
 def getCategoryList():
