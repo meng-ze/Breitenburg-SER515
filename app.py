@@ -27,7 +27,7 @@ def index():
 
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''select * from Post''')
+    cur.execute('''select * from post''')
     result = cur.fetchall()
     view_posts = [list(i) for i in result]
     # print(view_posts)
@@ -74,10 +74,11 @@ def register():
 
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute("INSERT INTO user(username, emailid, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s)", (name, email, password, "", "", 'M'))
+        cur.execute("INSERT INTO user(username, email_id, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s)", (name, email, password, "", "", 'M'))
         conn.commit()
         register_flag = 1
         cur.close()
+        print(email, password)
 
         if register_flag == 1:
             flash('You have registered successfully')
@@ -107,7 +108,7 @@ def login():
 
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM user WHERE emailid = %s and password = %s", (email, password))
+        cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
 
         for (emailid) in cur:
             print("{}".format(emailid))
@@ -134,7 +135,7 @@ def my_posts():
         conn = mysql.connect()
         cur = conn.cursor()
         
-        cur.execute('''select * from post where user_id = (Select user_id from user where emailid = %s Limit 1)''', session['logged_user_id'])
+        cur.execute('''select * from post where user_id = (Select user_id from user where email_id = %s Limit 1)''', session['logged_user_id'])
         result = cur.fetchall()
         posts = [list(i) for i in result]
         
@@ -175,7 +176,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post''')
+        cur.execute('''select * from post''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
@@ -248,7 +249,7 @@ def createPost():
 
             conn = mysql.connect()
             cur = conn.cursor()
-            cur.execute("SELECT * FROM user WHERE emailid = %s", (user_email))
+            cur.execute("SELECT * FROM user WHERE email_id = %s", (user_email))
             for (user) in cur:
                 user_id = str(user[0])
             conn = mysql.connect()
@@ -279,7 +280,7 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post where post_title = %s''', request.form['search'])
+        cur.execute('''select * from post where post_title = %s''', request.form['search'])
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
