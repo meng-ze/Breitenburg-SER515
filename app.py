@@ -108,20 +108,19 @@ def login():
 
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
-
-        for (emailid) in cur:
-            print("{}".format(emailid))
+        cur.execute("SELECT * FROM user inner join user_role on user.user_role = user_role.id WHERE email_id = %s and password = %s", (email, password))
+        user_role_id = 0
+        for (row) in cur:
+            user_role_id = row[10] 
             flag = 1
-            user_id = emailid[0]
 
         cur.close()
         if flag == 0:
             flash('Incorrect username/password.')
         else:
+            session['role'] = user_role_id
             session['logged_in'] = True
             session['logged_user_id'] = form.email.data
-            session['logged_user_id_num'] = user_id
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
