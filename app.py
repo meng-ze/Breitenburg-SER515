@@ -28,7 +28,7 @@ def index():
 
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''select * from post inner join user on post.user_id = user.user_id''')
+    cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id''')
     result = cur.fetchall()
     view_posts = [list(i) for i in result]
     # print(view_posts)
@@ -169,7 +169,7 @@ def my_posts():
         conn = mysql.connect()
         cur = conn.cursor()
         
-        cur.execute('''select * from post where user_id = (Select user_id from user where email_id = %s Limit 1)''', session['logged_user_id'])
+        cur.execute('''SELECT * from post where user_id = (Select user_id from user where email_id = %s Limit 1)''', (session['logged_user_id']))
         result = cur.fetchall()
         posts = [list(i) for i in result]
         
@@ -193,7 +193,7 @@ def edit_post():
             print(post_id)
             conn = mysql.connect()
             cur = conn.cursor()
-            cur.execute('''select * from post where post_id = %s''', post_id)
+            cur.execute('''SELECT * from post where post_id = %s''', (post_id))
             result = cur.fetchone()
             post = result
 
@@ -210,7 +210,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from post inner join user on post.user_id = user.user_id''')
+        cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
@@ -234,23 +234,23 @@ def post():
         if request.method == 'POST':
             post_id = request.form['id']
             c = request.form['comment']
-            cur.execute("INSERT INTO comments(post_id, user_id, comment_text) VALUES(%s, %s, %s)", (post_id, session['logged_user_id_num'], c))
+            cur.execute("INSERT INTO comment(post_id, user_id, comment_text) VALUES(%s, %s, %s)", (post_id, session['logged_user_id_num'], c))
             conn.commit()
         else:
             post_id = request.args.get('id')
 
-        cur.execute('select * from post where post_id = %s', post_id)
+        cur.execute("SELECT * from post where post_id = %s", (post_id))
         post = cur.fetchone()
-        cur.execute('select * from user where user_id = %s', post[1])
+        cur.execute("SELECT * from user where user_id = %s", (post[1]))
         user = cur.fetchone()
 
-        cur.execute('select * from comments where post_id = %s', post_id)
+        cur.execute("SELECT * from comment where post_id = %s", (post_id))
         result = cur.fetchall()
         comments = [list(i) for i in result]
         # Not sure if we need to sort by date, so remove comment if we need to
         # comments = sorted(comments, key=lambda comment: comment[4])
         for i, c in enumerate(comments):
-            cur.execute('select * from user where user_id = %s', c[2])
+            cur.execute("SELECT * from user where user_id = %s", (c[2]))
             commentUser = cur.fetchone()
             c.append(commentUser[1])
             comments[i] = c
@@ -314,7 +314,7 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from post inner join user on post.user_id = user.user_id where post_title = %s''', request.form['search'])
+        cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id where post_title = %s''', (request.form['search']))
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
@@ -332,7 +332,7 @@ def search():
 def list_admin():
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''select * from user where user_role = 2''')
+    cur.execute('''SELECT * from user where user_role = 2''')
     result = cur.fetchall()
     admins_list = [list(i) for i in result]
     
