@@ -2,10 +2,10 @@
 
 <div class="container">
     <div class="jumbotron">
-        <h1 class="display-4">Generic Web Fourm</h1>
-        <p class="lead">Create posts and discuss with other users</p>
+        <h1 class="display-4" align="center">Generic Web Fourm</h1>
+        <p class="lead" align="center">Start Posting! Create new posts and discuss on topics with each other about anything you like!</p>
         <hr class="my-4">
-        <p>Please read the <a href="/">rules</a> before posting</p>
+        <p align="center">Please read the <a href="/">rules</a> before posting</p>
     </div>
     <div id="searchResults">
         {% block content %}
@@ -36,6 +36,7 @@
 
 
     {% endblock %}
+<<<<<<< HEAD
     <div id = "defaultResults">
         <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
         {% for post in view_posts %}
@@ -46,11 +47,32 @@
             </form>
             <div class="card-body">
                 {{ post[3] }}
+=======
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+    {% for post in view_posts %}
+
+      <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{post[7]}}</a>
+              <small class="text-muted" >{{post[5]}}</small><hr>
+>>>>>>> sprint3
             </div>
-        </div>
+            <h2><a class="article-title" href="/post">{{ post[2] }}</a></h2>
+            <p class="article-content">{{ post[3] }}</p>
+          </div>
+        </article>
+
         {% endfor %}
-        <hr>
-    </div>
+        </div>
+       {% include 'sidebar.html' %}
+      </div>
+    </main>
+
+
     <a class="btn btn-primary" href="/createPost" role="button">Create a Post</a>
 </div>
 
