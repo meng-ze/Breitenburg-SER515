@@ -102,7 +102,7 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `username`, `emailid`, `user_role`, `phone`, `password`, `dob`, `gender`, `timestamp`) VALUES
+INSERT INTO `user` (`user_id`, `username`, `email_id`, `user_role`, `phone`, `password`, `dob`, `gender`, `timestamp`) VALUES
 (1, 'Viraj Hemant Talaty', 'virajtalaty@gmail.com', 1, '', '123', '', 'M', '2018-09-27 02:10:59'),
 (5, 'Viraj Talaty', 'vtalaty@asu.edu', 2, '', '1234', '', 'M', '2018-10-15 04:30:52');
 

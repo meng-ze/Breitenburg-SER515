@@ -217,7 +217,7 @@ def view():
         if len(view_posts) is 0:
             flash('No posts to display')
         else:
-            print('to check if itw working')
+            print('to check if it working')
         return render_template('view.html', view_posts=view_posts)
     else:
         return render_template('index.html', title='View Post')
