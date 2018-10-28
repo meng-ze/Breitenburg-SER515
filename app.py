@@ -14,7 +14,7 @@ app = Flask(__name__)
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'root123'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
 app.config['MYSQL_DATABASE_DB'] = 'web_forum'
 app.secret_key = 'super secret key'
 mysql.init_app(app)
@@ -62,8 +62,8 @@ class Post(Form):
 
 # User Register
 
-# Admin Register Form
-class AdminRegisterForm(Form):
+# Create Admin Form
+class CreateAdminForm(Form):
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
     email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
     password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
@@ -91,9 +91,9 @@ def register():
     return render_template('register.html', title='Get Registered', form=form)
 
 
-@app.route('/admin_register', methods=['GET', 'POST'])
-def admin_register():
-    form = AdminRegisterForm(request.form)
+@app.route('/create_admin', methods=['GET', 'POST'])
+def create_admin():
+    form = CreateAdminForm(request.form)
     if request.method == 'POST' and form.validate():
         name = form.name.data
         email = form.email.data
@@ -102,15 +102,21 @@ def admin_register():
 
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute("INSERT INTO user(username, emailid, user_role, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s, %s)", (name, email, "2", password, "", "", 'M'))
-        conn.commit()
-        register_flag = 1
-        cur.close()
+        
+        
+        number_of_rows= cur.execute("SELECT * FROM user WHERE emailid = %s", (email))
+        if(number_of_rows == 0):
+            cur.execute("INSERT INTO user(username, emailid, user_role, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s, %s)", (name, email, "2", password, "", "", '-'))
+            conn.commit()
+            register_flag = 1
+            cur.close()
+        else:
+            flash('User with the following email id exists')
 
         if register_flag == 1:
             flash('New Admin created successfully')
             return redirect(url_for('admin_register'))
-    return render_template('admin_register.html', title='Get Registered', form=form)
+    return render_template('create_admin.html', title='Get Registered', form=form)
 
 
 # User login
@@ -160,9 +166,10 @@ def my_posts():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        
         cur.execute('''select * from post where user_id = (Select user_id from user where emailid = %s Limit 1)''', session['logged_user_id'])
+        
         result = cur.fetchall()
+        
         posts = [list(i) for i in result]
         
         
@@ -292,6 +299,20 @@ def search():
             flash('Values Found!')
         return render_template('search.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
+
+
+
+@app.route('/list_admin', methods=['GET', 'POST'])
+def list_admin():
+    conn = mysql.connect()
+    cur = conn.cursor()
+    cur.execute('''select * from user where user_role = 2''')
+    result = cur.fetchall()
+    admins_list = [list(i) for i in result]
+    
+    return render_template('list_admin.html',admins_list=admins_list)  # <- Here you jump away from whatever result you create
+   # return render_template('view.html')
+
 
 
 def getCategoryList():
