@@ -174,7 +174,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post inner join user on post.user_id = user.user_id''')
+        cur.execute('''select * from Post inner join user on post.user_id = user.user_id order by post.timestamp desc''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
@@ -261,7 +261,6 @@ def search():
             flash('No results Found!')
         else:
             print
-            flash('Values Found!')
         return render_template('search.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
 
