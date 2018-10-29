@@ -1,6 +1,5 @@
 {% include 'menu.html' %}
 
-
 <div class="container">
     <div class="jumbotron">
         <h1 class="display-4">Generic Web Fourm</h1>
@@ -41,7 +40,10 @@
         <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
         {% for post in view_posts %}
         <div class="card">
-            <a href="/post"><h5 class="card-title">{{ post[2] }}</h5></a>
+            <form action="/post">
+                <button type="button submit" class="btn btn-link"><h5 class="card-title">{{ post[2] }}</h5></button>
+                <input type="hidden" name="id" value="{{ post[0] }}">
+            </form>
             <div class="card-body">
                 {{ post[3] }}
             </div>

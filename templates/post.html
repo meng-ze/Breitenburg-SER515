@@ -1,30 +1,29 @@
 {% include 'menu.html' %}
 
-
 <div class="container">
-  <div class="jumbotron">
-      <h1 class="display-4">Post Title</h1>
-      <p class="lead">Post Description</p>
-      <hr class="my-4">
-      <p>Posted by <a href="/">User</a></p>
-  </div>
+	<div class="jumbotron">
+		<h1 class="display-4">Post Title</h1>
+		<p class="lead">Post Description</p>
+		<hr class="my-4">
+		<p>Posted by <a href="/">User</a></p>
+	</div>
 
-
-  <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
-  {# for comment in comments #}
-  {% for i in {1: 1, 2: 2, 3: 3} %}
-  <div class="card">
-    <h5 class="card-title">Username of Commenter {{ i }}</h5>
-    <div class="card-body">
-      Comment
-    </div>
-  </div>
-  <hr>
-  {% endfor %}
-  <form>
-    <textarea class="w-100" rows="4" placeholder="Leave a Comment"></textarea>
-    <a type="submit" class="btn btn-primary" href="#" role="button">Comment</a>
-  </form>
+	<!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+	{% for c in comments %}
+	<div class="card">
+			<h5 class="card-title">{{ c[5] }}</h5>
+			<h6 class="card-subtitle mb-2 text-muted">{{ c[4] }}</h6>
+		<div class="card-body">
+			{{ c[3] }}
+		</div>
+	</div>
+	<hr>
+	{% endfor %}
+	<form action="post" method="post">
+	<input type="hidden" name="id" value="{{ post[0] }}">
+	<textarea name="comment" class="w-100" rows="4" placeholder="Leave a Comment"></textarea>
+	<button type="button submit" class="btn btn-primary">Comment</button>
+	</form>
 </div>
 
 {% include 'error_layout.html' %}

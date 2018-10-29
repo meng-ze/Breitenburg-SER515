@@ -1,0 +1,38 @@
+{% include 'menu.html' %}
+<div class = "container-fluid">
+<div class = "row">
+<table class = "table table-borderless table-hover">
+<thead class = "thead-dark"><th><h1>Login</h1></th><th></th><th></th></thead>
+<form method="POST" action="">
+    <div class = "row">
+    <div class="container">
+      <tr>
+      <td><label for="email"><b>Username</b></label></td>
+      <td><input type="text" placeholder="Enter Email" name="email_field" required></td>
+      <br><br>
+      </tr>
+      <tr>
+      <td><label for="password"><b>Password</b></label></td>
+      <td><input type="password" placeholder="Enter Password" name="password_field" required></td>
+      <br><br>
+      </tr>
+      <tr>
+      <td style = "text-align:left;"><button type="submit">Login</button></td>
+      <td><label><input type="checkbox" checked="checked" name="remember"> Remember me </label></td>
+      {% include 'error_layout.html' %}
+      <br><br>
+      </tr>
+      <tr>
+        <td></td><td style = "text-align:left;"><div> Don't have an account? </div></td>
+      </tr>
+      <tr>
+        <td></td><td style="padding-top:0px;text-align:left;"><div> <a href="/register"> Sign up </a></td></div>
+      </tr>
+  </div>
+</div>
+  </form>
+</table>
+</div>
+</div>
+</body>
+{% include 'footer.html' %}
