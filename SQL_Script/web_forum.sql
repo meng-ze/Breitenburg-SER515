@@ -6,6 +6,8 @@
 -- Generation Time: Oct 24, 2018 at 05:19 AM
 -- Server version: 5.7.14
 -- PHP Version: 5.6.25
+CREATE DATABASE web_forum;
+USE web_forum;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -43,10 +45,10 @@ INSERT INTO `category` (`category_id`, `value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `comments`
+-- Table structure for table `comment`
 --
 
-CREATE TABLE `comments` (
+CREATE TABLE `comment` (
   `comment_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
@@ -87,7 +89,7 @@ INSERT INTO `post` (`post_id`, `user_id`, `post_title`, `post_text`, `category_i
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `emailid` varchar(100) NOT NULL,
+  `email_id` varchar(100) NOT NULL,
   `user_role` int(11) NOT NULL DEFAULT '1',
   `phone` varchar(20) DEFAULT NULL,
   `password` varchar(50) NOT NULL,
@@ -100,7 +102,7 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `username`, `emailid`, `user_role`, `phone`, `password`, `dob`, `gender`, `timestamp`) VALUES
+INSERT INTO `user` (`user_id`, `username`, `email_id`, `user_role`, `phone`, `password`, `dob`, `gender`, `timestamp`) VALUES
 (1, 'Viraj Hemant Talaty', 'virajtalaty@gmail.com', 1, '', '123', '', 'M', '2018-09-27 02:10:59'),
 (5, 'Viraj Talaty', 'vtalaty@asu.edu', 2, '', '1234', '', 'M', '2018-10-15 04:30:52');
 
@@ -134,9 +136,9 @@ ALTER TABLE `category`
   ADD PRIMARY KEY (`category_id`);
 
 --
--- Indexes for table `comments`
+-- Indexes for table `comment`
 --
-ALTER TABLE `comments`
+ALTER TABLE `comment`
   ADD PRIMARY KEY (`comment_id`),
   ADD KEY `post_id` (`post_id`),
   ADD KEY `user_id` (`user_id`);
@@ -172,9 +174,9 @@ ALTER TABLE `user_role`
 ALTER TABLE `category`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
--- AUTO_INCREMENT for table `comments`
+-- AUTO_INCREMENT for table `comment`
 --
-ALTER TABLE `comments`
+ALTER TABLE `comment`
   MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `post`
@@ -196,11 +198,11 @@ ALTER TABLE `user_role`
 --
 
 --
--- Constraints for table `comments`
+-- Constraints for table `comment`
 --
-ALTER TABLE `comments`
-  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`) ON UPDATE CASCADE;
+ALTER TABLE `comment`
+  ADD CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `user` (`user_id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `post`
