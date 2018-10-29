@@ -1,0 +1,35 @@
+{% include 'menu.html' %} 
+{% from "includes/_formhelpers.html" import render_field %}
+<div class="container-fluid" >
+		<div class="row">
+		<table class="table table-borderless table-hover">
+			<thead class="thead-dark">
+				<th><h1>Create Admin</h1></th>
+				<th></th>
+				<th></th>
+			</thead>
+		</table>	
+		</div>
+	<div class="col-md-8">
+	<div class="row">
+		<table>
+			<form method="POST" action="">
+				{{ render_field(form.name) }} 
+				{{ render_field(form.email) }} 
+				{{ render_field(form.password) }} 
+				{{ render_field(form.confirm) }}
+				<tr>
+					<td>
+						<p>
+							<input type="submit" class="btn btn-primary" value="Submit">
+						</p> {% include 'error_layout.html' %}
+					</td>
+				</tr>
+			</form>
+		</table>
+		</div>
+	</div>
+	{% include 'side_menu_admin.html' %}
+</div>
+
+{% include 'footer.html' %}

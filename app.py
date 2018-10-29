@@ -1,3 +1,5 @@
+# pip install python-dateutil
+from dateutil.parser import parse
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
@@ -9,7 +11,7 @@ import datetime
 
 
 mysql = MySQL()
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
@@ -27,7 +29,7 @@ def index():
 
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''select * from post''')
+    cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id''')
     result = cur.fetchall()
     view_posts = [list(i) for i in result]
     # print(view_posts)
@@ -62,6 +64,12 @@ class Post(Form):
 
 # User Register
 
+# Create Admin Form
+class CreateAdminForm(Form):
+    name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
+    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
+    confirm = PasswordField('Confirm Password')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -85,9 +93,36 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html', title='Get Registered', form=form)
 
+
+@app.route('/create_admin', methods=['GET', 'POST'])
+def create_admin():
+    form = CreateAdminForm(request.form)
+    if request.method == 'POST' and form.validate():
+        name = form.name.data
+        email = form.email.data
+        password = form.password.data
+        register_flag = 0
+
+        conn = mysql.connect()
+        cur = conn.cursor()
+        
+        
+        number_of_rows= cur.execute("SELECT * FROM user WHERE email_id = %s", (email))
+        if(number_of_rows == 0):
+            cur.execute("INSERT INTO user(username, email_id, user_role, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s, %s)", (name, email, "2", password, "", "", '-'))
+            conn.commit()
+            register_flag = 1
+            cur.close()
+        else:
+            flash('User with the following email id exists')
+
+        if register_flag == 1:
+            flash('New Admin created successfully')
+            return redirect(url_for('create_admin'))
+    return render_template('create_admin.html', title='Get Registered', form=form)
+
+
 # User login
-
-
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     if session.get('logged_in') is None:
@@ -125,6 +160,7 @@ def login():
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
 
+
 @app.route('/my_posts', methods=['GET', 'POST'])
 def my_posts():
     if session.get('logged_in') is None:
@@ -134,11 +170,11 @@ def my_posts():
         conn = mysql.connect()
         cur = conn.cursor()
         
-        cur.execute('''select * from post where user_id = (Select user_id from user where email_id = %s Limit 1)''', session['logged_user_id'])
+        cur.execute('''SELECT * from post where user_id = (Select user_id from user where email_id = %s Limit 1)''', (session['logged_user_id']))
         result = cur.fetchall()
         posts = [list(i) for i in result]
         
-        
+
         return render_template('my_posts.html', title='My Posts', posts=posts)
     else:
         return render_template('index.html', title='Home')
@@ -155,16 +191,13 @@ def edit_post():
             print(post_id)
             conn = mysql.connect()
             cur = conn.cursor()
-            cur.execute('''select * from post where post_id = %s''', post_id)
+            cur.execute('''SELECT * from post where post_id = %s''', (post_id))
             result = cur.fetchone()
             post = result
-            
+
         return render_template('edit_post.html', title='Edit Post', post=post)
     else:
         return render_template('index.html', title='Home')
-
-
-
 
 
 @app.route('/view', methods=['GET', 'POST'])
@@ -175,14 +208,14 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from post''')
+        cur.execute('''select * from post inner join user on post.user_id = user.user_id order by post.timestamp desc''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
         if len(view_posts) is 0:
             flash('No posts to display')
         else:
-            print('to check if itw working')
+            print('to check if it working')
         return render_template('view.html', view_posts=view_posts)
     else:
         return render_template('index.html', title='View Post')
@@ -222,8 +255,6 @@ def post():
         return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]))
     else:
         return render_template('index.html', title='Post')
-
-# Post Form Class
 
 
 class CreatePostForm(Form):
@@ -279,7 +310,7 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from post where post_title = %s''', request.form['search'])
+        cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id where post_title = %s''', (request.form['search']))
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
@@ -287,9 +318,22 @@ def search():
             flash('No results Found!')
         else:
             print
-            flash('Values Found!')
         return render_template('search.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
+
+
+
+@app.route('/list_admin', methods=['GET', 'POST'])
+def list_admin():
+    conn = mysql.connect()
+    cur = conn.cursor()
+    cur.execute('''SELECT * from user where user_role = 2''')
+    result = cur.fetchall()
+    admins_list = [list(i) for i in result]
+    
+    return render_template('list_admin.html',admins_list=admins_list)  # <- Here you jump away from whatever result you create
+   # return render_template('view.html')
+
 
 
 def getCategoryList():
@@ -304,4 +348,4 @@ def getCategoryList():
 
 if __name__ == '__main__':
 
-    app.run(debug=True, host='127.0.0.1')
+    app.run(debug=True, host='0.0.0.0')
