@@ -199,7 +199,7 @@ def post():
         if request.method == 'POST':
             post_id = request.form['id']
             c = request.form['comment']
-            cur.execute("INSERT INTO comments(post_id, user_id, comment_text) VALUES(%s, %s, %s)", (post_id, session['logged_user_id_num'], c))
+            cur.execute("INSERT INTO comment(post_id, user_id, comment_text) VALUES(%s, %s, %s)", (post_id, session['logged_user_id_num'], c))
             conn.commit()
         else:
             post_id = request.args.get('id')
@@ -209,7 +209,7 @@ def post():
         cur.execute('select * from user where user_id = %s', post[1])
         user = cur.fetchone()
 
-        cur.execute('select * from comments where post_id = %s', post_id)
+        cur.execute('select * from comment where post_id = %s', post_id)
         result = cur.fetchall()
         comments = [list(i) for i in result]
         # Not sure if we need to sort by date, so remove comment if we need to
@@ -240,7 +240,7 @@ def createPost():
         form = CreatePostForm(request.form)
         if request.method == 'POST' and form.validate():
 
-            timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+            # timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
             title = form.title.data
             body = form.body.data
             category = request.form["category"]
@@ -251,12 +251,12 @@ def createPost():
             cur.execute("SELECT * FROM user WHERE email_id = %s", (user_email))
             for (user) in cur:
                 user_id = str(user[0])
-            conn = mysql.connect()
-            cur = conn.cursor()
-            cur.execute("INSERT INTO post(category_id, post_text, post_title, timestamp, user_id) VALUES(%s, %s, %s, %s, %s)", (category, body, title, timestamp, user_id))
+            
+            cur.execute("INSERT INTO post(category_id, post_text, post_title, user_id) VALUES(%s, %s, %s, %s)", (category, body, title, user_id))
+            id = cur.lastrowid
             conn.commit()
 
-            return render_template('post.html')
+            return redirect('/post?id=' + str(id))
 
         conn = mysql.connect()
         cur = conn.cursor()
@@ -304,4 +304,4 @@ def getCategoryList():
 
 if __name__ == '__main__':
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='127.0.0.1')
