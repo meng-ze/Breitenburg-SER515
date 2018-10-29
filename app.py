@@ -174,9 +174,6 @@ def my_posts():
         result = cur.fetchall()
         posts = [list(i) for i in result]
         
-        result = cur.fetchall()
-        
-        posts = [list(i) for i in result]
 
         return render_template('my_posts.html', title='My Posts', posts=posts)
     else:
