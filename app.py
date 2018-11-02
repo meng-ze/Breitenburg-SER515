@@ -131,8 +131,6 @@ def logout():
     session['logged_in'] = False
     session['logged_user_id'] = ""
     return render_template('index.html')
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
@@ -149,6 +147,13 @@ def login():
             user_role_id = row[10] 
             flag = 1
 
+        cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
+
+        for (emailid) in cur:
+            print("{}".format(emailid))
+            flag = 1
+            user_id = emailid[0]
+
         cur.close()
         if flag == 0:
             flash('Incorrect username/password.')
@@ -156,10 +161,10 @@ def login():
             session['role'] = user_role_id
             session['logged_in'] = True
             session['logged_user_id'] = form.email.data
+            session['logged_user_id_num'] = user_id
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
-
 
 @app.route('/my_posts', methods=['GET', 'POST'])
 def my_posts():
