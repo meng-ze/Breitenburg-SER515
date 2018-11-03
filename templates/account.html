@@ -1,0 +1,32 @@
+{% include 'menu.html' %}
+<br><br>
+<div class="col-md-8">
+    <div class="content-section">
+        <h3>Profile Details</h3>
+    <hr>
+      <div class="media">
+        <img class="rounded-circle account-img" src="{{ image_file }}">
+        <div class="media-body">
+          <h2 class="account-heading">User Name</h2>
+          <p class="text-secondary">User Email</p>
+        </div>
+      </div>
+      <hr>
+      <p class="text-secondary">You can update your information here</p>
+          <form action="/action_page.php">
+              <div class="form-group">
+                <label for="email">Username:</label>
+                <input type="email" class="form-control" id="email">
+              </div>
+              <div class="form-group">
+                <label for="email">Email address:</label>
+                <input type="email" class="form-control" id="email">
+              </div>
+              <button type="submit" class="btn btn-default">Update</button>
+              </div>
+
+            </form>
+    </div>
+</div>
+    {% include 'sidebar.html' %}
+{% include 'footer.html' %}

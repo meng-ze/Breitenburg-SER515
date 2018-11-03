@@ -36,21 +36,29 @@
 
 
     {% endblock %}
-    <div id = "defaultResults">
-        <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
-        {% for post in view_posts %}
-        <div class="card">
-            <form action="/post">
-                <button type="button submit" class="btn btn-link"><h5 class="card-title">{{ post[2] }}</h5></button>
-                <input type="hidden" name="id" value="{{ post[0] }}">
-            </form>
-            <div class="card-body">
-                {{ post[3] }}
+    <main role="main" class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+    {% for post in view_posts %}
+
+      <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{post[7]}}</a>
+              <small class="text-muted" >{{post[5]}}</small><hr>
             </div>
-        </div>
+            <h2><a class="article-title" href="/post">{{ post[2] }}</a></h2>
+            <p class="article-content">{{ post[3] }}</p>
+          </div>
+        </article>
+
         {% endfor %}
-        <hr>
-    </div>
+        </div>
+       {% include 'sidebar.html' %}
+      </div>
+    </main>
+
     <a class="btn btn-primary" href="/createPost" role="button">Create a Post</a>
 </div>
 
