@@ -71,6 +71,22 @@ class CreateAdminForm(Form):
     password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
     confirm = PasswordField('Confirm Password')
 
+# create Update Account Form
+
+
+class UpdateAccountForm(Form):
+    name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
+    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
+    # picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
+    # submit = SubmitField('Update')
+
+    # def validate_username(self, username):
+    #     if username.data != current_user.username:
+    #         user = User.query.filter_by(username=username.data).first()
+    #         if user:
+    #             raise ValidationError('That username is taken. Please choose a different one.')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -343,10 +359,17 @@ def list_admin():
 # route for User Profile
 
 
-@app.route("/account")
+@app.route("/account", methods=['GET', 'POST'])
 def account():
+    form = UpdateAccountForm()
     return render_template('account.html', title='Account')
 
+
+# def validate_email(self, email):
+#     if email.data != current_user.email:
+#         user = User.query.filter_by(email=email.data).first()
+#         if user:
+#             raise ValidationError('That email is taken. Please choose a different one.')
 
 def getCategoryList():
     conn = mysql.connect()
