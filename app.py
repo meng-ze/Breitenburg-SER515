@@ -131,8 +131,6 @@ def logout():
     session['logged_in'] = False
     session['logged_user_id'] = ""
     return render_template('index.html')
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
@@ -149,6 +147,13 @@ def login():
             user_role_id = row[10] 
             flag = 1
 
+        cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
+
+        for (emailid) in cur:
+            print("{}".format(emailid))
+            flag = 1
+            user_id = emailid[0]
+
         cur.close()
         if flag == 0:
             flash('Incorrect username/password.')
@@ -156,10 +161,10 @@ def login():
             session['role'] = user_role_id
             session['logged_in'] = True
             session['logged_user_id'] = form.email.data
+            session['logged_user_id_num'] = user_id
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
-
 
 @app.route('/my_posts', methods=['GET', 'POST'])
 def my_posts():
@@ -208,7 +213,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from Post inner join user on post.user_id = user.user_id order by post.timestamp desc''')
+        cur.execute('''select * from post inner join user on post.user_id = user.user_id order by post.timestamp desc''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
@@ -221,13 +226,38 @@ def view():
         return render_template('index.html', title='View Post')
 
 
-@app.route('/post')
+@app.route('/post', methods=['GET', 'POST'])
 def post():
     if session.get('logged_in') is None:
         session['logged_in'] = False
 
     if session['logged_in'] == True:
-        return render_template('post.html')
+        conn = mysql.connect()
+        cur = conn.cursor()
+        if request.method == 'POST':
+            post_id = request.form['id']
+            c = request.form['comment']
+            cur.execute("INSERT INTO comment(post_id, user_id, comment_text) VALUES(%s, %s, %s)", (post_id, session['logged_user_id_num'], c))
+            conn.commit()
+        else:
+            post_id = request.args.get('id')
+
+        cur.execute('select * from post where post_id = %s', post_id)
+        post = cur.fetchone()
+        cur.execute('select * from user where user_id = %s', post[1])
+        user = cur.fetchone()
+
+        cur.execute('select * from comment where post_id = %s', post_id)
+        result = cur.fetchall()
+        comments = [list(i) for i in result]
+        # Not sure if we need to sort by date, so remove comment if we need to
+        # comments = sorted(comments, key=lambda comment: comment[4])
+        for i, c in enumerate(comments):
+            cur.execute('select * from user where user_id = %s', c[2])
+            commentUser = cur.fetchone()
+            c.append(commentUser[1])
+            comments[i] = c
+        return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]))
     else:
         return render_template('index.html', title='Post')
 
@@ -246,7 +276,7 @@ def createPost():
         form = CreatePostForm(request.form)
         if request.method == 'POST' and form.validate():
 
-            timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+            # timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
             title = form.title.data
             body = form.body.data
             category = request.form["category"]
@@ -257,12 +287,12 @@ def createPost():
             cur.execute("SELECT * FROM user WHERE email_id = %s", (user_email))
             for (user) in cur:
                 user_id = str(user[0])
-            conn = mysql.connect()
-            cur = conn.cursor()
-            cur.execute("INSERT INTO post(category_id, post_text, post_title, timestamp, user_id) VALUES(%s, %s, %s, %s, %s)", (category, body, title, timestamp, user_id))
+            
+            cur.execute("INSERT INTO post(category_id, post_text, post_title, user_id) VALUES(%s, %s, %s, %s)", (category, body, title, user_id))
+            id = cur.lastrowid
             conn.commit()
 
-            return render_template('post.html')
+            return redirect('/post?id=' + str(id))
 
         conn = mysql.connect()
         cur = conn.cursor()
