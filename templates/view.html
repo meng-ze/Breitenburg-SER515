@@ -12,7 +12,13 @@
          {% include 'error_layout.html' %}
         <div class="search">
             <form action="/search" method="POST">
-                <input type=text name=search value="{{ request.form.search}}"></br>
+                <input type=text name=search value="{{ request.form.search}}">
+                <select name="filter_by">
+				  <option value="user">User</option>
+				  <option value="category">Category</option>
+				  <option value="text">Text</option>
+				</select>
+                </br>
                 <div class="actions"><input type=submit value="Search"></div>
         </div>
 
