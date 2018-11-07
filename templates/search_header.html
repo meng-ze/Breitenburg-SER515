@@ -1,0 +1,22 @@
+<div class="search">
+            <form action="/search" method="POST">
+      			<table>
+      				<tr>
+      					<td>
+		                	<input type=text name=search value="{{ request.form.search}}">
+		                </td>
+		                <td style="padding-left:10px; padding-right:10px">
+			                <select name="filter_by">
+							  <option value="user">User</option>
+							  <option value="category">Category</option>
+							  <option value="text">Title Text</option>
+							</select>
+						</td>
+						<td>
+							<input type=submit value="Search">
+						</td>
+	                </tr>
+	                </br>
+                </table>
+            </form>
+        </div>
