@@ -2,13 +2,17 @@
 
 <div class="container">
 	<div class="jumbotron">
-		<h1 class="display-4">Post Title</h1>
-		<p class="lead">Post Description</p>
+		<h1 class="display-4">{{ post[2] }}</h1>
+		<p class="lead">{{ post[3] }}</p>
 		<hr class="my-4">
 		<p>Posted by <a href="/">User</a></p>
+		{% if admin %}
+			<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletePostModal">
+				Delete
+			</button>
+		{% endif %}
 	</div>
-
-	<!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+	<!-- Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now -->
 	{% for c in comments %}
 	<div class="card">
 			<h5 class="card-title">{{ c[5] }}</h5>
@@ -25,6 +29,33 @@
 	<button type="button submit" class="btn btn-primary">Comment</button>
 	</form>
 </div>
+
+{% if admin %}
+<!-- Delete Post Modal -->
+<div class="modal fade" id="deletePostModal" tabindex="-1" role="dialog" aria-labelledby="deletePostModal" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="deletePostModalTitle">Delete this Post?</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			Are you sure you want to delete this post?
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+			<form action="/adminDelete" method="POST">
+                <button type="button submit" class="btn btn-danger">Yes</button>
+				<input type="hidden" name="post_id" value="{{ post[0] }}">
+				<input type="hidden" name="comment_id" value="-1">
+            </form>
+		</div>
+	</div>
+</div>
+</div>
+{% endif %}
 
 {% include 'error_layout.html' %}
 {% include 'footer.html' %}

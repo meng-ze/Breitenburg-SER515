@@ -246,6 +246,11 @@ def post():
         post = cur.fetchone()
         cur.execute('select * from user where user_id = %s', post[1])
         user = cur.fetchone()
+        cur.execute('select * from user where user_id = %s', session['logged_user_id_num'])
+        role = cur.fetchone()[3]
+        admin = False
+        if role == 2: # If the current user's role is admin
+            admin = True
 
         cur.execute('select * from comment where post_id = %s', post_id)
         result = cur.fetchall()
@@ -257,7 +262,7 @@ def post():
             commentUser = cur.fetchone()
             c.append(commentUser[1])
             comments[i] = c
-        return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]))
+        return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]), admin=admin)
     else:
         return render_template('index.html', title='Post')
 
@@ -339,6 +344,10 @@ def list_admin():
     return render_template('list_admin.html',admins_list=admins_list)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
 
+@app.route('/adminDelete', methods=['POST'])
+def adminDelete():
+    return redirect(url_for('view'))
+
 
 
 def getCategoryList():
@@ -353,4 +362,4 @@ def getCategoryList():
 
 if __name__ == '__main__':
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='127.0.0.1')
