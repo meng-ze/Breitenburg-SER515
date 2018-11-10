@@ -29,7 +29,7 @@ def index():
 
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id''')
+    cur.execute('''SELECT * FROM post inner join user on post.user_id = user.user_id''')
     result = cur.fetchall()
     view_posts = [list(i) for i in result]
     # print(view_posts)
@@ -145,6 +145,8 @@ def login():
         user_role_id = 0
         for (row) in cur:
             user_role_id = row[10] 
+            user_id = row[0]
+            print(row)
             flag = 1
 
         cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
@@ -175,7 +177,7 @@ def my_posts():
         conn = mysql.connect()
         cur = conn.cursor()
         
-        cur.execute('''SELECT * from post where user_id = (Select user_id from user where email_id = %s Limit 1)''', (session['logged_user_id']))
+        cur.execute('''SELECT * FROM post WHERE user_id = (SELECT user_id FROM user WHERE email_id = %s Limit 1)''', (session['logged_user_id']))
         result = cur.fetchall()
         posts = [list(i) for i in result]
         
@@ -196,7 +198,7 @@ def edit_post():
             print(post_id)
             conn = mysql.connect()
             cur = conn.cursor()
-            cur.execute('''SELECT * from post where post_id = %s''', (post_id))
+            cur.execute('''SELECT * from post WHERE post_id = %s''', (post_id))
             result = cur.fetchone()
             post = result
 
@@ -213,7 +215,7 @@ def view():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''select * from post inner join user on post.user_id = user.user_id order by post.timestamp desc''')
+        cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id order by post.timestamp desc''')
         result = cur.fetchall()
         view_posts = [list(i) for i in result]
         # print(view_posts)
@@ -242,18 +244,18 @@ def post():
         else:
             post_id = request.args.get('id')
 
-        cur.execute('select * from post where post_id = %s', post_id)
+        cur.execute('SELECT * FROM post WHERE post_id = %s', post_id)
         post = cur.fetchone()
-        cur.execute('select * from user where user_id = %s', post[1])
+        cur.execute('SELECT * FROM user WHERE user_id = %s', post[1])
         user = cur.fetchone()
 
-        cur.execute('select * from comment where post_id = %s', post_id)
+        cur.execute('SELECT * FROM comment WHERE post_id = %s', post_id)
         result = cur.fetchall()
         comments = [list(i) for i in result]
         # Not sure if we need to sort by date, so remove comment if we need to
         # comments = sorted(comments, key=lambda comment: comment[4])
         for i, c in enumerate(comments):
-            cur.execute('select * from user where user_id = %s', c[2])
+            cur.execute('SELECT * FROM user WHERE user_id = %s', c[2])
             commentUser = cur.fetchone()
             c.append(commentUser[1])
             comments[i] = c
@@ -315,7 +317,7 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id where post_title = %s''', (request.form['search']))
+        cur.execute('''SELECT * FROM post inner join user on post.user_id = user.user_id WHERE post_title = %s''', (request.form['search']))
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
@@ -332,7 +334,7 @@ def search():
 def list_admin():
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''SELECT * from user where user_role = 2''')
+    cur.execute('''SELECT * FROM user WHERE user_role = 2''')
     result = cur.fetchall()
     admins_list = [list(i) for i in result]
     

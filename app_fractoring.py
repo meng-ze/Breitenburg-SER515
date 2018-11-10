@@ -61,11 +61,13 @@ def login():
         password = form.password_field.data
 
         login_success = WebsiteAPI.verify_login_password(email, password, main_website)
-        if not login_success:
+        if not login_success[0]:
             flash('Incorrect username/password.')
         else:
             session[WebsiteLoginStatus.LOGGED_IN] = True
-            session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = form.email_field.data
+            session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = login_success[1][AccountInfo.EMAIL]
+            session[WebsiteLoginStatus.LOGGED_USER_ID] = login_success[1][AccountInfo.USER_ID]
+            session[WebsiteLoginStatus.LOGGED_USER_ROLE_ID] = login_success[1][AccountInfo.USER_ROLE_ID]
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)

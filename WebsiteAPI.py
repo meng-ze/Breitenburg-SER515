@@ -1,24 +1,28 @@
-from ConstantTable import DatabaseModel, AccountInfo, PostInfo
+from ConstantTable import DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo
 
 def verify_login_password(email, password, website):
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute('SELECT * FROM {} WHERE {} = "{}" and {} = "{}"'.format(DatabaseModel.USER,
-            AccountInfo.EMAIL, email, AccountInfo.PASSWORD, password)
+        cursor.execute('SELECT * FROM {0} INNER JOIN {0}.{1} = "{1}.{2}" WHERE {3} = "{4}" and {5} = "{6}"'.format(DatabaseModel.USER,
+            DatabaseModel.USER_ROLE, AccountRoleInfo.ID, AccountInfo.EMAIL, email, AccountInfo.PASSWORD, password)
         )
-        for email_id in cursor:
-            print("{}".format(email_id))
+        for content in cursor:
             cursor.close()
-            return True
-
+            content_dict = {
+                AccountInfo.EMAIL: email,
+                AccountInfo.USER_ID: content[0],
+                AccountInfo.USER_ROLE_ID: content[10]
+            }
+            return (True, content_dict)
+        
     except Exception as e:
         print('Error!')
         print(e)
 
     if cursor != None:
         cursor.close()
-    return False
+    return (False, None)
 
 def create_account(username: str, other_info: {str: None}, website):
     cursor = None
