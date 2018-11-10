@@ -13,8 +13,8 @@ class LoginForm(Form):
     password_field = PasswordField('Password')
 
 class CreatePostForm(Form):
-    title = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
-    body = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
+    title_field = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    body_field = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
 
 class CreateAdminForm(Form):
     name_field = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])

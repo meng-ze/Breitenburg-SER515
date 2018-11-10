@@ -113,18 +113,17 @@ def createPost():
         form = CustomForm.CreatePostForm(request.form, main_website)
         if request.method == 'POST' and form.validate():
             
-            timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-            title = form.title.data
-            body = form.body.data
+            title = form.title_field.data
+            body = form.body_field.data
             category = request.form[DatabaseModel.CATEGORY]
             email = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]
 
-            post_create_success = WebsiteAPI.create_post(email, title, body, category, timestamp, main_website)
-            if post_create_success:
-                return render_template('post.html')
+            create_post_status = WebsiteAPI.create_post(email, title, body, category, main_website)
+            if create_post_status[0]:
+                return redirect('/post?id=' + str(create_post_status[1]))
         
         categories = WebsiteAPI.get_category_list(main_website)
-        return render_template('createPost.html', categories=categories, form = form)
+        return render_template('createPost.html', categories=categories, form=form)
     else:
         return render_template('index.html', title='Create Post')
 

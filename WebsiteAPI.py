@@ -39,14 +39,16 @@ def create_account(username: str, other_info: {str: None}, website):
         connection_handler.commit()
         cursor.close()
 
+        return True
+
     except Exception as e:
         print('Error!')
         print(e)
-        if cursor != None:
-            cursor.close()
-        return False
 
-    return True
+    if cursor != None:
+        cursor.close()
+    return False
+
 
 # def modify_account(username: str, key: str, value: None)
 # def delete_account(username: str)
@@ -55,7 +57,7 @@ def create_account(username: str, other_info: {str: None}, website):
 # ---
 """ Actions below MUST include timestamp """
 
-def create_post(email, title, body, category, timestamp, website):
+def create_post(email, title, body, category, website):
     """
     Create a post for username 
     This function will create a post for 'username' and insert this post into our database.
@@ -66,24 +68,25 @@ def create_post(email, title, body, category, timestamp, website):
         cursor.execute('SELECT * FROM {} WHERE {} = "{}"'.format(DatabaseModel.USER, AccountInfo.EMAIL, email))
         for user in cursor:
             user_id = str(user[0])
-        connection_handler = website.mysql_server.connect()
-        cursor = connection_handler.cursor()
-        command = 'INSERT INTO {}({}, {}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}", "{}");'.format(DatabaseModel.POST,
-            PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.TIMESTAMP, PostInfo.USER_ID,
-            category, body, title, timestamp, user_id)
+
+        command = 'INSERT INTO {}({}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}");'.format(DatabaseModel.POST,
+            PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID,
+            category, body, title, user_id)
 
         cursor.execute(command)
+        post_id = cursor.lastrowid
         connection_handler.commit()
         cursor.close()
 
+        return (True, post_id)
     except Exception as e:
         print('Error!')
         print(e)
-        if cursor != None:
-            cursor.close()
-        return False
 
-    return True
+    if cursor != None:
+        cursor.close()
+    return (False, None)
+
 
 def get_category_list(website):
     connection_handler = website.mysql_server.connect()
@@ -132,14 +135,15 @@ def get_all_posts(website, order=None):
         posts = cursor.fetchall()
         posts = [list(post) for post in posts]
 
+        return posts
+
     except Exception as e:
         print('Error!')
         print(e)
-        if cursor != None:
-            cursor.close()
-        return []
+    if cursor != None:
+        cursor.close()
+    return []
 
-    return posts
 # def get_comments([comment_id: address]) -> list(Post):
 #     """
 #     Query database for list(comment_id)
