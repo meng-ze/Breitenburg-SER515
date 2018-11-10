@@ -113,7 +113,7 @@ def get_category_list(website):
 #     If the comment_id does exist in our database, and current does have permission to modify this post, then DELETE the Post(post_id) in database, return success -> True
 #     """
 
-def get_all_posts(website):
+def get_all_posts(website, order=None):
     """
     Query database for list(post_id)
     If the our database does NOT exist post_id, return False and return function, print("Error: ERROR_CODE[2]) -> False
@@ -121,11 +121,17 @@ def get_all_posts(website):
     try:
         connection_handler = website.mysql.connect()
         cursor = connection_handler.cursor()
-        cursor.execute('SELECT * FROM {0} INNER JOIN {1} on {0}.{2} = {1}.{3}'.format(
-            DatabaseModel.POST, DatabaseModel.USER, PostInfo.USER_ID, AccountInfo.USER_ID)
-            )
+        if order != None:
+            cursor.execute('SELECT * FROM {0} INNER JOIN {1} on {0}.{2} = {1}.{3} ORDER BY {4} DESC'.format(
+                DatabaseModel.POST, DatabaseModel.USER, PostInfo.USER_ID, AccountInfo.USER_ID, order)
+                )
+        else:
+            cursor.execute('SELECT * FROM {0} INNER JOIN {1} on {0}.{2} = {1}.{3}'.format(
+                DatabaseModel.POST, DatabaseModel.USER, PostInfo.USER_ID, AccountInfo.USER_ID)
+                )
         posts = cursor.fetchall()
         posts = [list(post) for post in posts]
+
     except Exception as e:
         print('Error!')
         print(e)

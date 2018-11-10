@@ -5,7 +5,7 @@ from flaskext.mysql import MySQL
 from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 import CustomForm
 import WebsiteAPI
-from ConstantTable import DatabaseModel, AccountInfo, WebsiteLoginStatus 
+from ConstantTable import DatabaseModel, AccountInfo, PostInfo, WebsiteLoginStatus 
 
 import time, datetime
 
@@ -85,7 +85,11 @@ def view():
         session[WebsiteLoginStatus.LOGGED_IN] = False
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
-        return render_template('view.html')
+        all_posts = WebsiteAPI.get_all_posts(main_website, order='{}.{}'.format(DatabaseModel.POST, PostInfo.TIMESTAMP))
+        # print(view_posts)
+        if len(all_posts) == 0:
+            flash('No posts to display')
+        return render_template('view.html', view_posts=all_posts)
     else:
         return render_template('index.html', title='View Post')
 
