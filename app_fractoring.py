@@ -17,7 +17,11 @@ main_website = Website(app, mysql_server)
 def index():
     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
         session[WebsiteLoginStatus.LOGGED_IN] = False
-    return render_template('index.html')
+    all_posts = WebsiteAPI.get_all_posts(main_website)
+    if len(all_posts) == 0:
+        flash('No posts to display')
+
+    return render_template('index.html', view_posts=all_posts)
 
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
@@ -50,6 +54,8 @@ def logout():
 
     session[WebsiteLoginStatus.LOGGED_IN] = False
     session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = ""
+    session[WebsiteLoginStatus.LOGGED_USER_ID] = 0
+    session[WebsiteLoginStatus.LOGGED_USER_ROLE_ID] = 0
     return render_template('index.html')
 
 
