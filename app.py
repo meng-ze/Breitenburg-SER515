@@ -3,7 +3,7 @@ from dateutil.parser import parse
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
-from wtforms import Form, StringField, PasswordField, TextAreaField, validators
+from wtforms import Form, StringField, PasswordField, TextAreaField, validators, DateField
 from wtforms.fields.html5 import EmailField
 
 import time
@@ -77,7 +77,13 @@ class CreateAdminForm(Form):
 class UpdateAccountForm(Form):
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
     email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
-    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
+    dob = DateField('Date of birth')
+    address = StringField('Address', [validators.DataRequired(), validators.Length(min=6, max=150)])
+    phone = StringField('Phone', [validators.Length(min=10, max=10)])
+    work = StringField('Work', [validators.Length(min=6, max=100)])
+    education = StringField('Education', [validators.Length(min=6, max=150)])
+    details = StringField('Other details', [validators.Length(min=6, max=250)])
+
     # picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     # submit = SubmitField('Update')
 
@@ -123,8 +129,8 @@ def create_admin():
         conn = mysql.connect()
         cur = conn.cursor()
 
-        number_of_rows = cur.execute("SELECT * FROM user WHERE email_id = %s", (email))
-        if(number_of_rows == 0):
+        number_of_rows = cur.execute("SELECT * FROM user WHERE email_id = %s", email)
+        if number_of_rows == 0:
             cur.execute("INSERT INTO user(username, email_id, user_role, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s, %s)", (name, email, "2", password, "", "", '-'))
             conn.commit()
             register_flag = 1
@@ -136,6 +142,52 @@ def create_admin():
             flash('New Admin created successfully')
             return redirect(url_for('create_admin'))
     return render_template('create_admin.html', title='Get Registered', form=form)
+
+
+@app.route('/account', methods=['GET', 'POST'])
+def account1():
+    form = UpdateAccountForm(request.form)
+    if request.method == 'GET':
+        if session.get('logged_in') is None:
+            session['logged_in'] = False
+
+        if session['logged_in']:
+            conn = mysql.connect()
+            cur = conn.cursor()
+
+            cur.execute("SELECT username,email_id,dob,address,phone,work,education,about FROM user WHERE email_id = %s", (session['logged_user_id']))
+            result = cur.fetchall()
+            results = [list(i) for i in result]
+
+            for item in results:
+                form.name.data = item[0]
+                form.email.data = item[1]
+                form.address.data = item[3]
+                form.phone.data = item[4]
+                form.work.data = item[5]
+                form.education.data = item[6]
+                form.details.data = item[7]
+
+            return render_template('account.html', title='My Profile', posts=results, form=form)
+        else:
+            return render_template('index.html', title='Home')
+
+    if request.method == 'POST' and form.validate():
+
+        name = form.name.data
+        dob = form.dob.data
+        address = form.address.data
+        phone = form.phone.data
+        work = form.work.data
+        education = form.education.data
+        details = form.details.data
+
+        conn = mysql.connect()
+        cur = conn.cursor()
+        cur.execute("""UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s WHERE email_id = %s""",(name, dob, address, phone, work, education, details, session['logged_user_id']))
+        conn.commit()
+        cur.close()
+    return render_template('account.html', title='Account', form=form)
 
 
 # User login
@@ -359,10 +411,32 @@ def list_admin():
 # route for User Profile
 
 
-@app.route("/account", methods=['GET', 'POST'])
+@app.route("/account", methods=['POST'])
 def account():
-    form = UpdateAccountForm()
-    return render_template('account.html', title='Account')
+        form = UpdateAccountForm(request.form)
+        if request.method == 'POST' and form.validate():
+            name = form.name.data
+            email = form.email.data
+            dob = form.dob.data
+            address = form.address.data
+            phone = form.phone.data
+            work = form.work.data
+            education = form.education.data
+            details = form.details.data
+
+            conn = mysql.connect()
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO user(username, email_id, dob, address, phone, work, education, details)"
+                " VALUES(%s, %s, %s, %s, %s, %s)",
+                (name, email, dob, address, phone, work, education, details))
+            conn.commit()
+            cur.close()
+        return render_template('account.html', title='Account', form=form)
+
+
+#form = UpdateAccountForm()
+#return render_template('account.html', title='Account')
 
 
 # def validate_email(self, email):
