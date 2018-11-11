@@ -144,6 +144,34 @@ def create_admin():
     return render_template('create_admin.html', title='Get Registered', form=form)
 
 
+@app.route('/name_click', methods=['GET', 'POST'])
+def name_click():
+    if request.method == 'GET':
+        print(request.args['user'])
+
+        if session.get('logged_in') is None:
+            session['logged_in'] = False
+
+        if session['logged_in']:
+            conn = mysql.connect()
+            cur = conn.cursor()
+
+            cur.execute("SELECT username,email_id,dob,address,phone,work,education,about FROM user WHERE username = %s", request.args['user'])
+            result = cur.fetchall()
+            results = [list(i) for i in result]
+
+            for item in results:
+                print(item[0])
+                print(item[1])
+                print(item[2])
+                print(item[3])
+                print(item[4])
+
+            return render_template('ViewProfile.html', title='Profile', posts=results)
+        else:
+            return render_template('index.html', title='Home')
+
+
 @app.route('/account', methods=['GET', 'POST'])
 def account1():
     form = UpdateAccountForm(request.form)

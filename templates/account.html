@@ -78,14 +78,16 @@ font-size: 14px;
     <hr>
       <p class="text-secondary">You can update your information here</p>
     <form method="POST" action="">
-        {{ render_field(form.name) }}
-        {{ render_field(form.email) }}
-        {{ render_field(form.dob) }}
-        {{ render_field(form.address) }}
-        {{ render_field(form.phone) }}
-        {{ render_field(form.work) }}
-        {{ render_field(form.education) }}
-        {{ render_field(form.details) }}
+        <table>
+            {{ render_field(form.name) }}
+            {{ render_field(form.email) }}
+            {{ render_field(form.dob) }}
+            {{ render_field(form.address) }}
+            {{ render_field(form.phone) }}
+            {{ render_field(form.work) }}
+            {{ render_field(form.education) }}
+            {{ render_field(form.details) }}
+        </table>
    <tr>
      <td><p><input type="submit" class="btn btn-primary" value="Update"></p>
      {% extends 'error_layout.html' %}</td>
