@@ -104,7 +104,6 @@ def search():
 
         return render_template('search.html', searched_posts=all_posts)  # <- Here you jump away from whatever result you create
 
-
 @app.route('/post')
 def post():
     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
@@ -141,3 +140,32 @@ def createPost():
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1')
     
+### Admin feature
+
+@app.route('/create_admin', methods=['GET', 'POST'])
+def create_admin():
+    form = CustomForm.CreateAdminForm(request.form)
+    if request.method == 'POST' and form.validate():
+        name = form.name_field.data
+        email = form.email_field.data
+        password = form.password_field.data
+        admin_create_success = False
+
+        if WebsiteAPI.is_user_exist(email, main_website) == False:
+            info_package = {
+                AccountInfo.EMAIL: email, 
+                AccountInfo.PASSWORD: password, 
+                AccountInfo.USER_ROLE_ID: 2,
+                AccountInfo.PHONE: '', 
+                AccountInfo.DATE_OF_BIRTH: '', 
+                AccountInfo.GENDER: '-'
+            } 
+            admin_create_success = WebsiteAPI.create_account(name, info_package, main_website)
+
+        else:
+            flash('User with this email id exists')
+
+        if admin_create_success:
+            flash('New Admin created successfully')
+            return redirect(url_for('create_admin'))
+    return render_template('create_admin.html', title='Get Registered', form=form)

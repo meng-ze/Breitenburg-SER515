@@ -1,5 +1,16 @@
 from ConstantTable import DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo
 
+def is_user_exist(email, website):
+    connection_handler = website.mysql_server.connect()
+    cursor = connection_handler.cursor()
+    number_of_rows = cursor.execute("SELECT * FROM user WHERE email_id = %s", (email))
+    cursor.close()
+
+    if number_of_rows == 0:
+        return True
+    return False
+
+
 def verify_login_password(email, password, website):
     try:
         connection_handler = website.mysql_server.connect()
@@ -29,13 +40,24 @@ def create_account(username: str, other_info: {str: None}, website):
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute('INSERT INTO {}({}, {}, {}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}", "{}", "{}");'.format(DatabaseModel.USER,
-            AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD,
-            AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
+        if AccountInfo.USER_ROLE_ID in other_info:
+            create_user_command = 'INSERT INTO {}({}, {}, {}, {}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}", "{}", "{}", "{}");'.format(DatabaseModel.USER,
+                AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.USER_ROLE_ID, AccountInfo.PASSWORD,
+                AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
 
-            username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.PASSWORD],
-            other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER])
-        )
+                username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.USER_ROLE_ID], other_info[AccountInfo.PASSWORD],
+                other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER]
+                )
+        else:
+            create_user_command = 'INSERT INTO {}({}, {}, {}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}", "{}", "{}");'.format(DatabaseModel.USER,
+                AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD,
+                AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
+
+                username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.PASSWORD],
+                other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER]
+                )
+
+        cursor.execute(create_user_command)
         connection_handler.commit()
         cursor.close()
 
