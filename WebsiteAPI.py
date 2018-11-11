@@ -116,7 +116,7 @@ def get_category_list(website):
 #     If the comment_id does exist in our database, and current does have permission to modify this post, then DELETE the Post(post_id) in database, return success -> True
 #     """
 
-def get_all_posts(website, order=None):
+def get_all_posts(website, order=None, filter_dict=None):
     """
     Query database for list(post_id)
     If the our database does NOT exist post_id, return False and return function, print("Error: ERROR_CODE[2]) -> False
@@ -124,14 +124,25 @@ def get_all_posts(website, order=None):
     try:
         connection_handler = website.mysql.connect()
         cursor = connection_handler.cursor()
+
+        fetch_all_posts_command = 'SELECT * FROM {0} INNER JOIN {1} on {0}.{2} = {1}.{3}'.format(
+            DatabaseModel.POST, DatabaseModel.USER, PostInfo.USER_ID, AccountInfo.USER_ID)
+
+        order_command = ''
         if order != None:
-            cursor.execute('SELECT * FROM {0} INNER JOIN {1} on {0}.{2} = {1}.{3} ORDER BY {4} DESC'.format(
-                DatabaseModel.POST, DatabaseModel.USER, PostInfo.USER_ID, AccountInfo.USER_ID, order)
-                )
-        else:
-            cursor.execute('SELECT * FROM {0} INNER JOIN {1} on {0}.{2} = {1}.{3}'.format(
-                DatabaseModel.POST, DatabaseModel.USER, PostInfo.USER_ID, AccountInfo.USER_ID)
-                )
+            order_command = 'ORDER BY {} DESC'.format(order)
+
+        filter_command = ''
+        if filter_dict != None:
+            decompose_arr = []
+            for key in filter_dict:
+                individual_query = '{} = {}'.format(key, filter_dict[key])
+                decompose_arr.append(individual_query)
+            filter_str = 'WHERE' + 'AND'.join(decompose_arr)
+            filter_command = filter_str
+
+        query_command = ' '.join([fetch_all_posts_command, order_command, filter_command])
+        cursor.execute(query_command)
         posts = cursor.fetchall()
         posts = [list(post) for post in posts]
 

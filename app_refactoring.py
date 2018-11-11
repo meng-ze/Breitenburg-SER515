@@ -86,12 +86,23 @@ def view():
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
         all_posts = WebsiteAPI.get_all_posts(main_website, order='{}.{}'.format(DatabaseModel.POST, PostInfo.TIMESTAMP))
-        # print(view_posts)
         if len(all_posts) == 0:
             flash('No posts to display')
         return render_template('view.html', view_posts=all_posts)
     else:
         return render_template('index.html', title='View Post')
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if request.method == "POST":
+
+        search_target = request.form['search']
+        all_posts = WebsiteAPI.get_all_posts(main_website, filter_dict={PostInfo.POST_TITLE: search_target})
+        if len(all_posts) == 0:
+            flash('No results Found!')
+
+        return render_template('search.html', searched_posts=all_posts)  # <- Here you jump away from whatever result you create
 
 
 @app.route('/post')
