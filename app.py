@@ -225,6 +225,7 @@ def edit_post():
 
 @app.route('/view', methods=['GET', 'POST'])
 def view():
+    categories = getCategoryList()
     if session.get('logged_in') is None:
         session['logged_in'] = False
 
@@ -239,9 +240,9 @@ def view():
             flash('No posts to display')
         else:
             print('to check if it working')
-        return render_template('view.html', view_posts=view_posts)
+        return render_template('view.html', view_posts=view_posts,categories=categories)
     else:
-        return render_template('index.html', title='View Post')
+        return render_template('index.html', title='View Post',categories=categories)
 
 
 @app.route('/post', methods=['GET', 'POST'])
@@ -330,19 +331,35 @@ def createPost():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    categories = getCategoryList()
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
         
         search_text = request.form['search']
         filter_type = request.form['filter_by']
+        category = request.form['category']
         
+        where_string = ""
         if filter_type == 'text':
-            cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id where post_title = %s''', (search_text))
-        else:
-            # write query
-            cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id ''')
+            where_string = where_string + " post_title like '%" +search_text + "%' and"
             
+        if filter_type == 'user':
+            where_string = where_string + " post.user_id IN (SELECT user_id from user where username like '%"+search_text+"%') and"
+        
+        if category!='0' :
+            where_string = where_string + " category_id = " +category + " and"
+        
+        where_string = where_string[:-3]
+        
+        if len(where_string)>0:
+            where_string = "where " + where_string 
+        
+        
+        print(where_string)
+        
+        cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id '''+ where_string + '''''')
+
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
@@ -350,7 +367,7 @@ def search():
             flash('No results Found!')
         else:
             print
-        return render_template('search.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
+        return render_template('search.html', searched_posts=searched_posts, categories=categories)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
 
 
@@ -381,6 +398,7 @@ def account():
 #             raise ValidationError('That email is taken. Please choose a different one.')
 
 def getCategoryList():
+    print("working")
     conn = mysql.connect()
     cur = conn.cursor()
     cur.execute("SELECT * FROM category")

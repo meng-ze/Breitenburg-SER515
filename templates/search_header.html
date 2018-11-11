@@ -1,22 +1,31 @@
 <div class="search">
-            <form action="/search" method="POST">
-      			<table>
-      				<tr>
-      					<td>
-		                	<input type=text name=search value="{{ request.form.search}}">
-		                </td>
-		                <td style="padding-left:10px; padding-right:10px">
-			                <select name="filter_by">
-							  <option value="user">User</option>
-							  <option value="category">Category</option>
-							  <option value="text">Title Text</option>
-							</select>
-						</td>
-						<td>
-							<input type=submit value="Search">
-						</td>
-	                </tr>
-	                </br>
-                </table>
-            </form>
-        </div>
+	<form action="/search" method="POST" onload="">
+		<table>
+			<tr>
+				<td>Search Posts By</td>
+				<td style="padding-left: 10px; padding-right: 10px">
+					<select name="filter_by">
+						<option value="user">User</option>
+						<option value="text">Title Text</option>
+					</select>
+				</td>
+				<td>Having Text&nbsp;&nbsp;</td>
+				<td>
+					<input type=text name=search value="{{ request.form.search}}">
+				</td>
+				<td>&nbsp;&nbsp;In Category</td>
+				
+				<td style="padding-left: 10px; padding-right: 10px">
+					<select id="category" name="category">
+		              <option value="0">All</option>
+		              {% for c in categories %}
+		                <option value="{{ c[0] }}">{{ c[1] }}</option>
+		              {% endfor %}
+		          </select>
+				</td>
+				<td><input type=submit value="Search"></td>
+			</tr>
+			</br>
+		</table>
+	</form>
+</div>
