@@ -16,7 +16,7 @@ app = Flask(__name__, static_url_path='/static')
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_PASSWORD'] = 'root123'
 app.config['MYSQL_DATABASE_DB'] = 'web_forum'
 app.secret_key = 'super secret key'
 mysql.init_app(app)
@@ -333,7 +333,16 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id where post_title = %s''', (request.form['search']))
+        
+        search_text = request.form['search']
+        filter_type = request.form['filter_by']
+        
+        if filter_type == 'text':
+            cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id where post_title = %s''', (search_text))
+        else:
+            # write query
+            cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id ''')
+            
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
