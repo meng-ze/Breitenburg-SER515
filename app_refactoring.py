@@ -137,50 +137,32 @@ def edit_post():
     else:
         return render_template('index.html', title='Home')
 
-
-# @app.route('/post')
-# def post():
-#     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
-#         session[WebsiteLoginStatus.LOGGED_IN] = False
-
-#     if session[WebsiteLoginStatus.LOGGED_IN] == True:
-#         return render_template('post.html')
-#     else:
-#         return render_template('index.html', title='Post')
-
-
 @app.route('/post', methods=['GET', 'POST'])
 def post():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    if session['logged_in'] == True:
-        conn = main_website.mysql_server.connect()
-        cur = conn.cursor()
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
         if request.method == 'POST':
             post_id = request.form['id']
-            c = request.form['comment']
-            cur.execute("INSERT INTO comment(post_id, user_id, comment_text) VALUES(%s, %s, %s)", (post_id, session['logged_user_id_num'], c))
-            conn.commit()
+            comment_content = request.form['comment']
+            print('post_id:', post_id)
+            WebsiteAPI.create_comment(post_id, session[WebsiteLoginStatus.LOGGED_USER_ID], comment_content, main_website)
         else:
             post_id = request.args.get('id')
+            print('post_id:', post_id)
 
-        cur.execute('SELECT * FROM post WHERE post_id = %s', post_id)
-        post = cur.fetchone()
-        cur.execute('SELECT * FROM user WHERE user_id = %s', post[1])
-        user = cur.fetchone()
+        chosen_post = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: post_id})[0]
+        print('Chosen_post: ', chosen_post)
+        user_id_of_chosen_post = chosen_post[1]
+        user_info = WebsiteAPI.get_user_info({AccountInfo.USER_ID: user_id_of_chosen_post}, main_website)
 
-        cur.execute('SELECT * FROM comment WHERE post_id = %s', post_id)
-        result = cur.fetchall()
-        comments = [list(i) for i in result]
-        # Not sure if we need to sort by date, so remove comment if we need to
-        # comments = sorted(comments, key=lambda comment: comment[4])
-        for i, c in enumerate(comments):
-            cur.execute('SELECT * FROM user where user_id = %s', c[2])
-            commentUser = cur.fetchone()
-            c.append(commentUser[1])
-            comments[i] = c
-        return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]))
+        comments = WebsiteAPI.get_all_comments(post_id, main_website, filter_dict={PostInfo.POST_ID: post_id})
+        for idx, comment in enumerate(comments):
+            comment_user = WebsiteAPI.get_user_info(comment[2], main_website)
+            comment.append(comment_user[1])
+            comments[idx] = comment
+        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info, user_info[1]))
     else:
         return render_template('index.html', title='Post')
 
@@ -236,6 +218,12 @@ def create_admin():
             flash('New Admin created successfully')
             return redirect(url_for('create_admin'))
     return render_template('create_admin.html', title='Get Registered', form=form)
+
+
+@app.route('/list_admin', methods=['GET', 'POST'])
+def list_admin():
+    admins_list = WebsiteAPI.get_user_info({AccountInfo.USER_ROLE_ID: 2}, main_website, list_mode=True)
+    return render_template('list_admin.html',admins_list=admins_list)  # <- Here you jump away from whatever result you create
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

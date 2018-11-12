@@ -1,9 +1,9 @@
-from ConstantTable import DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo
+from ConstantTable import DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo, CommentInfo
 
 def is_user_exist(email, website):
     connection_handler = website.mysql_server.connect()
     cursor = connection_handler.cursor()
-    number_of_rows = cursor.execute("SELECT * FROM user WHERE email_id = %s", (email))
+    number_of_rows = cursor.execute("SELECT * FROM user WHERE {} = %s".format(AccountInfo.EMAIL), (email))
     cursor.close()
 
     if number_of_rows != 0:
@@ -103,6 +103,24 @@ def create_post(email, title, body, category, website):
         cursor.close()
     return (False, None)
 
+def create_comment(post_id, user_id, comment_content, website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute('INSERT INTO {}({}, {}, {}) VALUES(%s, %s, %s)'.format(DatabaseModel.COMMENT, 
+        PostInfo.POST_ID, PostInfo.USER_ID, CommentInfo.COMMENT_TEXT), (post_id, user_id, comment_content))
+        connection_handler.commit()
+        cursor.close()
+
+        return True
+    except Exception as e:
+        print('Error!')
+        print(e)
+
+    if cursor != None:
+        cursor.close()
+    return False
 
 def get_category_list(website):
     connection_handler = website.mysql_server.connect()
@@ -162,7 +180,6 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
             filter_command = filter_str
 
         query_command = ' '.join([fetch_all_posts_command, inner_join_command, order_command, filter_command])
-        print('Query command:', query_command)
         cursor.execute(query_command)
         posts = cursor.fetchall()
         posts = [list(post) for post in posts]
@@ -176,7 +193,60 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
         cursor.close()
     return []
 
+def get_all_comments(post_id, website, filter_dict=None):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        fetch_all_comments_command = 'SELECT * FROM {}'.format(DatabaseModel.COMMENT)
+        
+        filter_command = ''
+        if filter_dict != None:
+            decompose_arr = []
+            for key in filter_dict:
+                individual_query = '{} = "{}"'.format(key, filter_dict[key])
+                decompose_arr.append(individual_query)
+            filter_str = 'WHERE ' + 'AND'.join(decompose_arr)
+            filter_command = filter_str
+
+        query_command = ' '.join([fetch_all_comments_command, filter_command])
+        cursor.execute(query_command)
+        comments = cursor.fetchall()
+        comments = [list(comment) for comment in comments]
+
+        return comments
+
+    except Exception as e:
+        print('Error!')
+        print(e)
+    if cursor != None:
+        cursor.close()
+    return []
+
+def get_user_info(query_dict, website, list_mode=False):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+
+        for key in query_dict:
+            cursor.execute('SELECT * FROM {} WHERE {} = %s'.format(DatabaseModel.USER, key), (query_dict[key]))
+        if list_mode == False:
+            user_info = cursor.fetchone()
+        else:
+            user_info = cursor.fetchall()
+
+        return user_info
+
+    except Exception as e:
+        print('Error!')
+        print(e)
+    if cursor != None:
+        cursor.close()
+    return None
+
 def get_user_id(email, website):
+    cursor = None
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
