@@ -67,13 +67,13 @@ font-size: 14px;
 <div class="col-md-8">
     <div class="content-section">
         <h3>Profile Details</h3>
-    <hr>
+   <hr>
       <div class="media">
-        <img class="rounded-circle account-img" src="../static/profile_pics/default.jpg">
+        <img class="rounded-circle account-img" src="{{full_profilepic_path}}">
         <div class="media-body">
-          <h2 class="account-heading">User Name</h2>
-          <p class="text-secondary">User Email</p>
-          <p class="text-secondary">Status - </p>
+          <h2 class="account-heading">{{posts[0][0]}}</h2>
+          <p class="text-secondary">{{posts[0][1]}}</p>
+          <p class="text-secondary">Status - Away</p>
         </div>
       </div>
     <hr>

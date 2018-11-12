@@ -79,17 +79,59 @@ font-size: 14px;
       <p class="text-secondary">You can update your information here</p>
 
     <form method="POST" action="" enctype=multipart/form-data>
-        {{ render_field(form.name) }}
-        {{ render_field(form.email) }}
-        {{ render_field(form.dob) }}
-        {{ render_field(form.address) }}
-        {{ render_field(form.phone) }}
-        {{ render_field(form.work) }}
-        {{ render_field(form.education) }}
-        {{ render_field(form.details) }}
+
+          <form method="GET" action="">
+              <div class="form-group">
+
+                  <table>
+                      <tr>
+                          <td>
+                            {{ render_field(form.name) }}
+                          </td>
+                      </tr>
+
+                      <tr>
+                          <td>
+                              {{ render_field(form.email) }}
+                          </td>
+                      </tr>
+
+                      <tr>
+                          <td>
+                             {{ render_field(form.dob) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              {{ render_field(form.address) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                             {{ render_field(form.phone) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            {{ render_field(form.work) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              {{ render_field(form.education) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              {{ render_field(form.details) }}
+                          </td>
+                      </tr>
+                  </table>
+                  </div>
+          </form>
 
         <p><input type=file name=file>
-         <input type=submit value=Upload></p>
+
 
    <tr>
      <td><p><input type="submit" class="btn btn-primary" value="Update"></p>

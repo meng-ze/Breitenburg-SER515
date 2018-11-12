@@ -6,11 +6,7 @@ import os
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
-<< << << < HEAD
-from wtforms import Form, StringField, PasswordField, TextAreaField, validators, DateField, DateTimeField
-== == == =
-from wtforms import Form, StringField, PasswordField, TextAreaField, validators, DateField, FileField
->>>>>> > new
+from wtforms import Form, StringField, PasswordField, TextAreaField, validators, DateField, DateTimeField, FileField
 from wtforms.fields.html5 import EmailField
 from werkzeug.utils import secure_filename
 
@@ -88,9 +84,6 @@ class CreateAdminForm(Form):
 
 
 class UpdateAccountForm(Form):
-
-
-<< << << < HEAD
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
     email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
     dob = StringField('Date of birth')
@@ -99,17 +92,7 @@ class UpdateAccountForm(Form):
     work = StringField('Work', [validators.Length(min=6, max=100)])
     education = StringField('Education', [validators.Length(min=6, max=150)])
     details = StringField('Other details', [validators.Length(min=6, max=250)])
-== == == =
-    name = StringField('Name')
-    email = EmailField('Email')
-    dob = StringField('Date of birth')
-    address = StringField('Address')
-    phone = StringField('Phone')
-    work = StringField('Work')
-    education = StringField('Education')
-    details = StringField('Other details')
     picture = FileField('Update Profile Picture')
->>>>>> > new
 
 # picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
 # submit = SubmitField('Update')
@@ -183,7 +166,7 @@ def name_click():
             conn = mysql.connect()
             cur = conn.cursor()
 
-            cur.execute("SELECT username,email_id,dob,address,phone,work,education,about FROM user WHERE username = %s", request.args['user'])
+            cur.execute("SELECT username,email_id,dob,address,phone,work,education,about,profile_picture FROM user WHERE username = %s", request.args['user'])
             result = cur.fetchall()
             results = [list(i) for i in result]
 
@@ -193,8 +176,11 @@ def name_click():
                 print(item[2])
                 print(item[3])
                 print(item[4])
-
-            return render_template('ViewProfile.html', title='Profile', posts=results)
+                if item[8]:
+                    full_profilepic_path = "..\\static\\profile_pics\\" + item[8]
+                else:
+                    full_profilepic_path = "..\\static\\profile_pics\\default.jpg"
+            return render_template('ViewProfile.html', title='Profile', posts=results, full_profilepic_path=full_profilepic_path)
         else:
             return render_template('index.html', title='Home')
 
