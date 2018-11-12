@@ -18,7 +18,7 @@ mysql = MySQL()
 app = Flask(__name__, static_url_path='/static')
 
 # config for profile pic
-UPLOAD_FOLDER = 'C:\\Users\\Aneesh Dalvi\\Desktop\\new_project\\Breitenburg-SER515\\static\\profile_pics'
+UPLOAD_FOLDER = 'C:\\Users\\ganga\\Desktop\\Project Sunday\\Breitenburg-SER515\\static\\profile_pics'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -85,6 +85,7 @@ class CreateAdminForm(Form):
 
 class UpdateAccountForm(Form):
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
+    password = PasswordField('Password')
     email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
     dob = StringField('Date of birth')
     address = StringField('Address', [validators.DataRequired(), validators.Length(min=6, max=150)])
@@ -233,24 +234,31 @@ def account():
         education = form.education.data
         details = form.details.data
         #pic = form.picture.data
+        filename = "default.jpg"
 
         # uploading pic
         if 'file' not in request.files:
             flash('No file part')
-        file = request.files['file']
-       # print(file)
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            #print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            file = request.files['file']
+            #    print(file)
+            # if user does not select file, browser also
+            # submit a empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                #print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute("""UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s""", (name, dob, address, phone, work, education, details, filename, session['logged_user_id']))
+        if len(form.password.data) > 0:
+            password = form.password.data
+            cur.execute("""UPDATE user SET username = %s,password = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s""",(name,password, dob, address, phone, work, education, details, filename, session['logged_user_id']))
+            form.password.data = ""
+        else:
+            cur.execute("""UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s""", (name, dob, address, phone, work, education, details, filename, session['logged_user_id']))
         conn.commit()
         cur.close()
     return render_template('account.html', title='Account', form=form)

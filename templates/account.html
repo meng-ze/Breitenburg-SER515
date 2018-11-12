@@ -80,13 +80,18 @@ font-size: 14px;
 
     <form method="POST" action="" enctype=multipart/form-data>
 
-          <form method="GET" action="">
               <div class="form-group">
 
                   <table>
                       <tr>
                           <td>
                             {{ render_field(form.name) }}
+                          </td>
+                      </tr>
+
+                      <tr>
+                          <td>
+                            {{ render_field(form.password) }}
                           </td>
                       </tr>
 
@@ -128,7 +133,6 @@ font-size: 14px;
                       </tr>
                   </table>
                   </div>
-          </form>
 
         <p><input type=file name=file>
 
