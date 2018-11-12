@@ -95,12 +95,8 @@ CREATE TABLE `user` (
   `password` varchar(50) NOT NULL,
   `dob` varchar(10) NOT NULL,
   `gender` char(1) NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `address` varchar(150) NOT NULL,	
-  `work` varchar(100) NOT NULL,
-  `education` varchar(100) NOT NULL,
-  `about` varchar(100) NOT NULL  
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `user`

@@ -4,7 +4,7 @@
 <style>
 /* Basics */
 html, body {
-    width: 100%;
+    width: 122%;
     height: 100%;
     font-family: "Helvetica Neue", Helvetica, sans-serif;
     color: #444;
@@ -14,7 +14,7 @@ html, body {
 label {
     color: #555;
     display: inline-block;
-    margin-left: 18px;
+    margin-left: 10px;
     padding-top: 10px;
     font-size: 14px;
 }
@@ -34,13 +34,13 @@ input[type=password],
     margin-right: 18px;
     width: 290px;
     height: 35px;
-	border: 1px solid #c7d0d2;
+    border: 1px solid #c7d0d2;
     border-radius: 2px;
     box-shadow: inset 0 1.5px 3px rgba(190, 190, 190, .4), 0 0 0 5px #f5f7f8;
 -webkit-transition: all .4s ease;
     -moz-transition: all .4s ease;
     transition: all .4s ease;
-	}
+    }
 input[type=submit] {
     float: right;
     margin-right: 650px;
@@ -68,16 +68,16 @@ font-size: 14px;
         <h3>Profile Details</h3>
     <hr>
       <div class="media">
-        <img class="rounded-circle account-img" src="../static/profile_pics/default.jpg">
+        <img class="rounded-circle account-img" src="{{full_profilepic_path}}">
         <div class="media-body">
-          <h2 class="account-heading">User Name</h2>
-          <p class="text-secondary">User Email</p>
-          <p class="text-secondary">Status - </p>
+          <h2 class="account-heading">{{form.name.data}}</h2>
+          <p class="text-secondary">{{form.email.data}}</p>
+          <p class="textname-secondary">Status - Available </p>
         </div>
       </div>
     <hr>
       <p class="text-secondary">You can update your information here</p>
-    <form method="POST" action="">
+    <form method="POST" action="" enctype=multipart/form-data>
         {{ render_field(form.name) }}
         {{ render_field(form.email) }}
         {{ render_field(form.dob) }}
@@ -86,6 +86,9 @@ font-size: 14px;
         {{ render_field(form.work) }}
         {{ render_field(form.education) }}
         {{ render_field(form.details) }}
+
+        <p><input type=file name=file>
+         <input type=submit value=Upload></p>
    <tr>
      <td><p><input type="submit" class="btn btn-primary" value="Update"></p>
      {% extends 'error_layout.html' %}</td>
