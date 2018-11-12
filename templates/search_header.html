@@ -1,7 +1,7 @@
 <div class="search">
 	<form action="/search" method="POST" onload="">
 		<table>
-			<tr>
+			<tr >
 				<td>Search Posts By</td>
 				<td style="padding-left: 10px; padding-right: 10px">
 					<select name="filter_by">
@@ -11,7 +11,7 @@
 				</td>
 				<td>Having Text&nbsp;&nbsp;</td>
 				<td>
-					<input type=text name=search value="{{ request.form.search}}">
+					<input  style="width:135px"  type=text name=search value="{{ request.form.search}}">
 				</td>
 				<td>&nbsp;&nbsp;In Category</td>
 				
@@ -23,9 +23,22 @@
 		              {% endfor %}
 		          </select>
 				</td>
-				<td><input type=submit value="Search"></td>
+				<td>
+					Less Than
+				</td>
+				<td>
+					<input style="width:135px" type="date" name="less_date">
+				</td>
+				<td>
+					Greater Than
+				</td>
+				<td>
+					<input style="width:135px" type="date" name="great_date">
+				</td>
+				<td rowspan="2"><input type=submit value="Search"></td>
 			</tr>
 			</br>
 		</table>
+		</br>
 	</form>
 </div>

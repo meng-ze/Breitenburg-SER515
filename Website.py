@@ -10,7 +10,7 @@ class Website:
     def config_app(self):
         self.app.config['MYSQL_DATABASE_HOST'] = 'localhost'
         self.app.config['MYSQL_DATABASE_USER'] = 'root'
-        self.app.config['MYSQL_DATABASE_PASSWORD'] = 'root123'
+        self.app.config['MYSQL_DATABASE_PASSWORD'] = ''
         self.app.config['MYSQL_DATABASE_DB'] = 'web_forum'
         self.app.secret_key = 'super secret key'
         self.mysql_server.init_app(self.app)

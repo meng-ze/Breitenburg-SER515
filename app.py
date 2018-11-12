@@ -16,7 +16,7 @@ app = Flask(__name__, static_url_path='/static')
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'root123'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
 app.config['MYSQL_DATABASE_DB'] = 'web_forum'
 app.secret_key = 'super secret key'
 mysql.init_app(app)
@@ -35,8 +35,7 @@ def index():
     # print(view_posts)
     if len(view_posts) is 0:
         flash('No posts to display')
-    else:
-        print('to check if itw working')
+    
     return render_template('index.html', view_posts=view_posts)
 
 
@@ -339,24 +338,33 @@ def search():
         search_text = request.form['search']
         filter_type = request.form['filter_by']
         category = request.form['category']
+        less_date = request.form['less_date']
+        great_date = request.form['great_date']
+        
         
         where_string = ""
-        if filter_type == 'text':
-            where_string = where_string + " post_title like '%" +search_text + "%' and"
+        if len(search_text)>0 :
+            if filter_type == 'text':
+                where_string = where_string + " post_title like '%" +search_text + "%' and"
             
-        if filter_type == 'user':
-            where_string = where_string + " post.user_id IN (SELECT user_id from user where username like '%"+search_text+"%') and"
+            if filter_type == 'user':
+                where_string = where_string + " post.user_id IN (SELECT user_id from user where username like '%"+search_text+"%') and"
         
         if category!='0' :
             where_string = where_string + " category_id = " +category + " and"
+        
+        if len(less_date)>0 :
+            where_string = where_string + " post.timestamp <= '"+less_date+"' and"
+        
+        if len(great_date)>0 :
+            where_string = where_string + " post.timestamp >= '"+great_date+"' and"
+        
         
         where_string = where_string[:-3]
         
         if len(where_string)>0:
             where_string = "where " + where_string 
         
-        
-        print(where_string)
         
         cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id '''+ where_string + '''''')
 
@@ -398,7 +406,6 @@ def account():
 #             raise ValidationError('That email is taken. Please choose a different one.')
 
 def getCategoryList():
-    print("working")
     conn = mysql.connect()
     cur = conn.cursor()
     cur.execute("SELECT * FROM category")
