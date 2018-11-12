@@ -6,7 +6,7 @@ def is_user_exist(email, website):
     number_of_rows = cursor.execute("SELECT * FROM user WHERE email_id = %s", (email))
     cursor.close()
 
-    if number_of_rows == 0:
+    if number_of_rows != 0:
         return True
     return False
 
@@ -14,9 +14,7 @@ def verify_login_password(email, password, website):
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute('SELECT * FROM {0} INNER JOIN {0}.{1} = "{1}.{2}" WHERE {3} = "{4}" and {5} = "{6}"'.format(DatabaseModel.USER,
-            DatabaseModel.USER_ROLE, AccountRoleInfo.ID, AccountInfo.EMAIL, email, AccountInfo.PASSWORD, password)
-        )
+        cursor.execute("SELECT * FROM user inner join user_role on user.user_role = user_role.id WHERE email_id = %s and password = %s", (email, password))
         for content in cursor:
             cursor.close()
             content_dict = {
@@ -40,23 +38,21 @@ def create_account(username: str, other_info: {str: None}, website):
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
         if AccountInfo.USER_ROLE_ID in other_info:
-            create_user_command = 'INSERT INTO {}({}, {}, {}, {}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}", "{}", "{}", "{}");'.format(DatabaseModel.USER,
+            cursor.execute('INSERT INTO {}({}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s);'.format(DatabaseModel.USER,
                 AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.USER_ROLE_ID, AccountInfo.PASSWORD,
-                AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
+                AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER),(
 
                 username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.USER_ROLE_ID], other_info[AccountInfo.PASSWORD],
-                other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER]
+                other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER])
                 )
         else:
-            create_user_command = 'INSERT INTO {}({}, {}, {}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}", "{}", "{}");'.format(DatabaseModel.USER,
+            cursor.execute('INSERT INTO {}({}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s);'.format(DatabaseModel.USER,
                 AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD,
-                AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER,
+                AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER),(
 
                 username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.PASSWORD],
-                other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER]
+                other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER])
                 )
-
-        cursor.execute(create_user_command)
         connection_handler.commit()
         cursor.close()
 
@@ -83,6 +79,7 @@ def create_post(email, title, body, category, website):
     Create a post for username 
     This function will create a post for 'username' and insert this post into our database.
     """
+    cursor = None
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
@@ -90,11 +87,9 @@ def create_post(email, title, body, category, website):
         for user in cursor:
             user_id = str(user[0])
 
-        command = 'INSERT INTO {}({}, {}, {}, {}) VALUES("{}", "{}", "{}", "{}");'.format(DatabaseModel.POST,
-            PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID,
-            category, body, title, user_id)
-
-        cursor.execute(command)
+        cursor.execute('INSERT INTO {}({}, {}, {}, {}) VALUES(%s, %s, %s, %s);'.format(DatabaseModel.POST,
+            PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID), 
+            (category, body, title, user_id))
         post_id = cursor.lastrowid
         connection_handler.commit()
         cursor.close()
@@ -142,8 +137,9 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
     Query database for list(post_id)
     If the our database does NOT exist post_id, return False and return function, print("Error: ERROR_CODE[2]) -> False
     """
+    cursor = None
     try:
-        connection_handler = website.mysql.connect()
+        connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
 
         fetch_all_posts_command = 'SELECT * FROM {}'.format(DatabaseModel.POST)
@@ -160,9 +156,9 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
         if filter_dict != None:
             decompose_arr = []
             for key in filter_dict:
-                individual_query = '{} = {}'.format(key, filter_dict[key])
+                individual_query = '{} = "{}"'.format(key, filter_dict[key])
                 decompose_arr.append(individual_query)
-            filter_str = 'WHERE' + 'AND'.join(decompose_arr)
+            filter_str = 'WHERE ' + 'AND'.join(decompose_arr)
             filter_command = filter_str
 
         query_command = ' '.join([fetch_all_posts_command, inner_join_command, order_command, filter_command])
@@ -182,7 +178,7 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
 
 def get_user_id(email, website):
     try:
-        connection_handler = website.mysql.connect()
+        connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
         cursor.execute('SELECT user_id FROM user WHERE email_id = %s Limit 1', (email))
         user_id = cursor.fetchone()
