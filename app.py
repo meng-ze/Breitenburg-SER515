@@ -3,7 +3,7 @@ from dateutil.parser import parse
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
-from wtforms import Form, StringField, PasswordField, TextAreaField, validators, DateField
+from wtforms import Form, StringField, PasswordField, TextAreaField, validators, DateField, DateTimeField
 from wtforms.fields.html5 import EmailField
 
 import time
@@ -77,7 +77,7 @@ class CreateAdminForm(Form):
 class UpdateAccountForm(Form):
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
     email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
-    dob = DateField('Date of birth')
+    dob = StringField('Date of birth')
     address = StringField('Address', [validators.DataRequired(), validators.Length(min=6, max=150)])
     phone = StringField('Phone', [validators.Length(min=10, max=10)])
     work = StringField('Work', [validators.Length(min=6, max=100)])
@@ -190,6 +190,7 @@ def account1():
             for item in results:
                 form.name.data = item[0]
                 form.email.data = item[1]
+                form.dob.data = item[2]
                 form.address.data = item[3]
                 form.phone.data = item[4]
                 form.work.data = item[5]

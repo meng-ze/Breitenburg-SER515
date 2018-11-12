@@ -1,5 +1,4 @@
 {% macro render_field(field) %}
-<div class="form-group">
 	<tr>
 		<td class="col-form-label" >{{ field.label }} : <td />
 		<td>{{ field(**kwargs)|safe }}
@@ -12,8 +11,6 @@
 			{% endif %}
 		</td>
 	</tr>
-</div>
-<br>
 {% endmacro %}
 
 {% macro render_field_cp(field) %}
