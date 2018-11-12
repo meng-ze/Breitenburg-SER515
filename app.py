@@ -1,10 +1,18 @@
 # pip install python-dateutil
 from dateutil.parser import parse
+import secrets
+import os
+#from PIL import Image
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
 from flaskext.mysql import MySQL
+<< << << < HEAD
 from wtforms import Form, StringField, PasswordField, TextAreaField, validators, DateField, DateTimeField
+== == == =
+from wtforms import Form, StringField, PasswordField, TextAreaField, validators, DateField, FileField
+>>>>>> > new
 from wtforms.fields.html5 import EmailField
+from werkzeug.utils import secure_filename
 
 import time
 import datetime
@@ -12,6 +20,11 @@ import datetime
 
 mysql = MySQL()
 app = Flask(__name__, static_url_path='/static')
+
+# config for profile pic
+UPLOAD_FOLDER = 'C:\\Users\\Aneesh Dalvi\\Desktop\\new_project\\Breitenburg-SER515\\static\\profile_pics'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Config MySQL
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
@@ -75,6 +88,9 @@ class CreateAdminForm(Form):
 
 
 class UpdateAccountForm(Form):
+
+
+<< << << < HEAD
     name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
     email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
     dob = StringField('Date of birth')
@@ -83,15 +99,26 @@ class UpdateAccountForm(Form):
     work = StringField('Work', [validators.Length(min=6, max=100)])
     education = StringField('Education', [validators.Length(min=6, max=150)])
     details = StringField('Other details', [validators.Length(min=6, max=250)])
+== == == =
+    name = StringField('Name')
+    email = EmailField('Email')
+    dob = StringField('Date of birth')
+    address = StringField('Address')
+    phone = StringField('Phone')
+    work = StringField('Work')
+    education = StringField('Education')
+    details = StringField('Other details')
+    picture = FileField('Update Profile Picture')
+>>>>>> > new
 
-    # picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
-    # submit = SubmitField('Update')
+# picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
+# submit = SubmitField('Update')
 
-    # def validate_username(self, username):
-    #     if username.data != current_user.username:
-    #         user = User.query.filter_by(username=username.data).first()
-    #         if user:
-    #             raise ValidationError('That username is taken. Please choose a different one.')
+# def validate_username(self, username):
+#     if username.data != current_user.username:
+#         user = User.query.filter_by(username=username.data).first()
+#         if user:
+#             raise ValidationError('That username is taken. Please choose a different one.')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -172,8 +199,13 @@ def name_click():
             return render_template('index.html', title='Home')
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @app.route('/account', methods=['GET', 'POST'])
-def account1():
+def account():
     form = UpdateAccountForm(request.form)
     if request.method == 'GET':
         if session.get('logged_in') is None:
@@ -183,7 +215,7 @@ def account1():
             conn = mysql.connect()
             cur = conn.cursor()
 
-            cur.execute("SELECT username,email_id,dob,address,phone,work,education,about FROM user WHERE email_id = %s", (session['logged_user_id']))
+            cur.execute("SELECT username,email_id,dob,address,phone,work,education,about,profile_picture FROM user WHERE email_id = %s", (session['logged_user_id']))
             result = cur.fetchall()
             results = [list(i) for i in result]
 
@@ -196,13 +228,16 @@ def account1():
                 form.work.data = item[5]
                 form.education.data = item[6]
                 form.details.data = item[7]
-
-            return render_template('account.html', title='My Profile', posts=results, form=form)
+                # print(item[0])
+                #print(item[7] + " " + item[8])
+                full_profilepic_path = "..\\static\\profile_pics\\" + item[8]
+                # print(full_profilepic_path)
+            return render_template('account.html', title='My Profile', form=form, full_profilepic_path=full_profilepic_path)
         else:
             return render_template('index.html', title='Home')
 
-    if request.method == 'POST' and form.validate():
-
+    if request.method == 'POST':
+        # print("YAY")
         name = form.name.data
         dob = form.dob.data
         address = form.address.data
@@ -210,13 +245,46 @@ def account1():
         work = form.work.data
         education = form.education.data
         details = form.details.data
+        #pic = form.picture.data
+
+        # uploading pic
+        if 'file' not in request.files:
+            flash('No file part')
+        file = request.files['file']
+       # print(file)
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            #print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute("""UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s WHERE email_id = %s""",(name, dob, address, phone, work, education, details, session['logged_user_id']))
+        cur.execute("""UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s""", (name, dob, address, phone, work, education, details, filename, session['logged_user_id']))
         conn.commit()
         cur.close()
     return render_template('account.html', title='Account', form=form)
+
+
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(account)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file', filename=filename))
 
 
 # User login
@@ -440,32 +508,32 @@ def list_admin():
 # route for User Profile
 
 
-@app.route("/account", methods=['POST'])
-def account():
-        form = UpdateAccountForm(request.form)
-        if request.method == 'POST' and form.validate():
-            name = form.name.data
-            email = form.email.data
-            dob = form.dob.data
-            address = form.address.data
-            phone = form.phone.data
-            work = form.work.data
-            education = form.education.data
-            details = form.details.data
+# @app.route("/account", methods=['POST'])
+# def account():
+#     form = UpdateAccountForm(request.form)
+#     if request.method == 'POST' and form.validate():
+#         name = form.name.data
+#         email = form.email.data
+#         dob = form.dob.data
+#         address = form.address.data
+#         phone = form.phone.data
+#         work = form.work.data
+#         education = form.education.data
+#         details = form.details.data
 
-            conn = mysql.connect()
-            cur = conn.cursor()
-            cur.execute(
-                "INSERT INTO user(username, email_id, dob, address, phone, work, education, details)"
-                " VALUES(%s, %s, %s, %s, %s, %s)",
-                (name, email, dob, address, phone, work, education, details))
-            conn.commit()
-            cur.close()
-        return render_template('account.html', title='Account', form=form)
+#         conn = mysql.connect()
+#         cur = conn.cursor()
+#         cur.execute(
+#             "INSERT INTO user(username, email_id, dob, address, phone, work, education, details)"
+#             " VALUES(%s, %s, %s, %s, %s, %s)",
+#             (name, email, dob, address, phone, work, education, details))
+#         conn.commit()
+#         cur.close()
+#     return render_template('account.html', title='Account', form=form)
 
 
 #form = UpdateAccountForm()
-#return render_template('account.html', title='Account')
+# return render_template('account.html', title='Account')
 
 
 # def validate_email(self, email):
@@ -482,6 +550,20 @@ def getCategoryList():
     category_list = [list(i) for i in result]
 
     return category_list
+
+
+# def save_picture(form_picture):
+#     random_hex = secrets.token_hex(8)
+#     _, f_ext = os.path.splitext(form_picture.filename)
+#     picture_fn = random_hex + f_ext
+#     picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
+
+#     output_size = (125, 125)
+#     i = Image.open(form_picture)
+#     i.thumbnail(output_size)
+#     i.save(picture_path)
+
+#     return picture_fn
 
 
 if __name__ == '__main__':
