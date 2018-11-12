@@ -215,6 +215,7 @@ def account():
                 form.work.data = item[5]
                 form.education.data = item[6]
                 form.details.data = item[7]
+                form.picture.data = item[8]
                 if item[8]:
                     full_profilepic_path = "..\\static\\profile_pics\\" + item[8]
                 else:
@@ -233,15 +234,29 @@ def account():
         work = form.work.data
         education = form.education.data
         details = form.details.data
-        #pic = form.picture.data
-        filename = "default.jpg"
+
+        conn = mysql.connect()
+        cur = conn.cursor()
+
+        cur.execute("SELECT profile_picture FROM user WHERE email_id = %s", (session['logged_user_id']))
+        results = cur.fetchall()
+        for item in results:
+            form.picture.data = item[0]
+        conn.commit()
+        cur.close()
+        if form.picture.data is None:
+            full_profilepic_path = "..\\static\\profile_pics\\default.jpg"
+            filename = "default.jpg"
+        else:
+            full_profilepic_path = "..\\static\\profile_pics\\" + form.picture.data
+            filename = form.picture.data
 
         # uploading pic
         if 'file' not in request.files:
             flash('No file part')
         else:
             file = request.files['file']
-            #    print(file)
+
             # if user does not select file, browser also
             # submit a empty part without filename
             if file.filename == '':
@@ -250,18 +265,19 @@ def account():
                 filename = secure_filename(file.filename)
                 #print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                full_profilepic_path = "..\\static\\profile_pics\\" + filename
 
         conn = mysql.connect()
         cur = conn.cursor()
         if len(form.password.data) > 0:
             password = form.password.data
-            cur.execute("""UPDATE user SET username = %s,password = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s""",(name,password, dob, address, phone, work, education, details, filename, session['logged_user_id']))
+            cur.execute("""UPDATE user SET username = %s,password = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s""", (name, password, dob, address, phone, work, education, details, filename, session['logged_user_id']))
             form.password.data = ""
         else:
             cur.execute("""UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s""", (name, dob, address, phone, work, education, details, filename, session['logged_user_id']))
         conn.commit()
         cur.close()
-    return render_template('account.html', title='Account', form=form)
+    return render_template('account.html', title='Account', form=form, full_profilepic_path=full_profilepic_path)
 
 
 def upload_file():
