@@ -4,7 +4,7 @@
 <style>
 /* Basics */
 html, body {
-    width: 122%;
+    width: 100%;
     height: 100%;
     font-family: "Helvetica Neue", Helvetica, sans-serif;
     color: #444;
@@ -14,7 +14,7 @@ html, body {
 label {
     color: #555;
     display: inline-block;
-    margin-left: 10px;
+    margin-left: 18px;
     padding-top: 10px;
     font-size: 14px;
 }
@@ -25,7 +25,8 @@ input {
 }
 input[type=text],
 input[type=password],
- input[type=email]{
+input[type=email],
+input[type=date]{
     color: #777;
     display: inline-block;
     padding-left: 10px;
@@ -34,13 +35,13 @@ input[type=password],
     margin-right: 18px;
     width: 290px;
     height: 35px;
-    border: 1px solid #c7d0d2;
+	border: 1px solid #c7d0d2;
     border-radius: 2px;
     box-shadow: inset 0 1.5px 3px rgba(190, 190, 190, .4), 0 0 0 5px #f5f7f8;
 -webkit-transition: all .4s ease;
     -moz-transition: all .4s ease;
     transition: all .4s ease;
-    }
+	}
 input[type=submit] {
     float: right;
     margin-right: 650px;
@@ -66,84 +67,92 @@ font-size: 14px;
 <div class="col-md-8">
     <div class="content-section">
         <h3>Profile Details</h3>
-    <hr>
+   <hr>
       <div class="media">
         <img class="rounded-circle account-img" src="{{full_profilepic_path}}">
         <div class="media-body">
-          <h2 class="account-heading">{{form.name.data}}</h2>
-          <p class="text-secondary">{{form.email.data}}</p>
-          <p class="textname-secondary">Status - Available </p>
+          <h2 class="account-heading">{{posts[0][0]}}</h2>
+          <p class="text-secondary">{{posts[0][1]}}</p>
+          <p class="text-secondary">Status - Away</p>
         </div>
       </div>
     <hr>
-      <p class="text-secondary">You can update your information here</p>
-
-    <form method="POST" action="" enctype=multipart/form-data>
-
+      {% for item in posts %}
+          <form method="GET" action="">
               <div class="form-group">
 
                   <table>
                       <tr>
                           <td>
-                            {{ render_field(form.name) }}
+                            <label for="name">Full Name: </label>
+                          </td>
+                          <td>
+                            <input type="text" value="{{item[0]}}" class="form-control" id="name" readonly>
                           </td>
                       </tr>
 
                       <tr>
                           <td>
-                            {{ render_field(form.password) }}
+                            <label for="email">Email address: </label>
+                          </td>
+                          <td>
+                              <input type="email" value="{{item[1]}}" class="form-control" id="email" readonly>
                           </td>
                       </tr>
 
                       <tr>
                           <td>
-                              {{ render_field(form.email) }}
+                            <label for="dob">Date of Birth: </label>
                           </td>
-                      </tr>
-
-                      <tr>
                           <td>
-                             {{ render_field(form.dob) }}
+                             <input type="date" value="{{item[2]}}" class="form-control" id="dob" readonly>
                           </td>
                       </tr>
                       <tr>
                           <td>
-                              {{ render_field(form.address) }}
+                            <label for="address">Address:</label>
+                          </td>
+                          <td>
+                              <input type="text" value="{{item[3]}}" class="form-control" id="address" readonly>
                           </td>
                       </tr>
                       <tr>
                           <td>
-                             {{ render_field(form.phone) }}
+                            <label for="phone">Contact Information:</label>
+                          </td>
+                          <td>
+                             <input type="text" value="{{item[4]}}" class="form-control" id="phone" readonly>
                           </td>
                       </tr>
                       <tr>
                           <td>
-                            {{ render_field(form.work) }}
+                            <label for="work">Work:</label>
+                          </td>
+                          <td>
+                            <input type="text" value="{{item[5]}}" class="form-control" id="work" readonly>
                           </td>
                       </tr>
                       <tr>
                           <td>
-                              {{ render_field(form.education) }}
+                            <label for="education">Education:</label>
+                          </td>
+                          <td>
+                              <input type="text" value="{{item[6]}}" class="form-control" id="education" readonly>
                           </td>
                       </tr>
                       <tr>
                           <td>
-                              {{ render_field(form.details) }}
+                            <label for="details">Details about you:</label>
+                          </td>
+                          <td>
+                             <input type="text" value="{{item[7]}}" class="form-control" id="details" readonly>
                           </td>
                       </tr>
                   </table>
                   </div>
-
-
-        <p><input type=file name=file>
-
-   <tr>
-     <td><p><input type="submit" class="btn btn-primary" value="Update"></p>
-     {% extends 'error_layout.html' %}</td>
-   </tr>
- </form>
-
-
+          {% endfor %}
+          </form>
+   </form>
     </div>
 </div>
 {% include 'footer.html' %}
