@@ -214,9 +214,10 @@ def account():
                 form.work.data = item[5]
                 form.education.data = item[6]
                 form.details.data = item[7]
-                # print(item[0])
-                #print(item[7] + " " + item[8])
-                full_profilepic_path = "..\\static\\profile_pics\\" + item[8]
+                if item[8]:
+                    full_profilepic_path = "..\\static\\profile_pics\\" + item[8]
+                else:
+                    full_profilepic_path = "..\\static\\profile_pics\\default.jpg"
                 # print(full_profilepic_path)
             return render_template('account.html', title='My Profile', form=form, full_profilepic_path=full_profilepic_path)
         else:
