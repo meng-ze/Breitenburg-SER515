@@ -104,6 +104,36 @@ def search():
 
         return render_template('search.html', searched_posts=all_posts)  # <- Here you jump away from whatever result you create
 
+
+@app.route('/my_posts', methods=['GET', 'POST'])
+def my_posts():
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
+
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
+        logged_user_id = session[WebsiteLoginStatus.LOGGED_USER_ID]
+        all_posts = WebsiteAPI.get_all_posts(main_website, filter_dict={AccountInfo.USER_ID: logged_user_id})
+
+        return render_template('my_posts.html', title='My Posts', posts=all_posts)
+    else:
+        return render_template('index.html', title='Home')
+
+
+@app.route('/edit_post', methods=['GET', 'POST'])
+def edit_post():
+    if session.get('logged_in') is None:
+        session['logged_in'] = False
+
+    if session['logged_in'] == True:
+        if request.method == 'POST':
+            post_id = request.form[PostInfo.POST_ID]
+            post = WebsiteAPI.get_all_posts(main_website, False, filter_dict={PostInfo.POST_ID: post_id})
+
+        return render_template('edit_post.html', title='Edit Post', post=post)
+    else:
+        return render_template('index.html', title='Home')
+
+
 @app.route('/post')
 def post():
     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
@@ -137,14 +167,10 @@ def createPost():
     else:
         return render_template('index.html', title='Create Post')
 
-if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1')
-    
 ### Admin feature
-
 @app.route('/create_admin', methods=['GET', 'POST'])
 def create_admin():
-    form = CustomForm.CreateAdminForm(request.form)
+    form = CustomForm.RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
         name = form.name_field.data
         email = form.email_field.data
@@ -169,3 +195,6 @@ def create_admin():
             flash('New Admin created successfully')
             return redirect(url_for('create_admin'))
     return render_template('create_admin.html', title='Get Registered', form=form)
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')

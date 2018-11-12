@@ -10,7 +10,6 @@ def is_user_exist(email, website):
         return True
     return False
 
-
 def verify_login_password(email, password, website):
     try:
         connection_handler = website.mysql_server.connect()
@@ -138,7 +137,7 @@ def get_category_list(website):
 #     If the comment_id does exist in our database, and current does have permission to modify this post, then DELETE the Post(post_id) in database, return success -> True
 #     """
 
-def get_all_posts(website, order=None, filter_dict=None):
+def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
     """
     Query database for list(post_id)
     If the our database does NOT exist post_id, return False and return function, print("Error: ERROR_CODE[2]) -> False
@@ -147,8 +146,11 @@ def get_all_posts(website, order=None, filter_dict=None):
         connection_handler = website.mysql.connect()
         cursor = connection_handler.cursor()
 
-        fetch_all_posts_command = 'SELECT * FROM {0} INNER JOIN {1} on {0}.{2} = {1}.{3}'.format(
-            DatabaseModel.POST, DatabaseModel.USER, PostInfo.USER_ID, AccountInfo.USER_ID)
+        fetch_all_posts_command = 'SELECT * FROM {}'.format(DatabaseModel.POST)
+
+        inner_join_command = ''
+        if inner_join:
+            inner_join_command = 'INNER JOIN {1} ON {0}.{2} = {1}.{3}'.format(DatabaseModel.POST, DatabaseModel.USER, PostInfo.USER_ID, AccountInfo.USER_ID)
 
         order_command = ''
         if order != None:
@@ -163,7 +165,8 @@ def get_all_posts(website, order=None, filter_dict=None):
             filter_str = 'WHERE' + 'AND'.join(decompose_arr)
             filter_command = filter_str
 
-        query_command = ' '.join([fetch_all_posts_command, order_command, filter_command])
+        query_command = ' '.join([fetch_all_posts_command, inner_join_command, order_command, filter_command])
+        print('Query command:', query_command)
         cursor.execute(query_command)
         posts = cursor.fetchall()
         posts = [list(post) for post in posts]
@@ -176,6 +179,23 @@ def get_all_posts(website, order=None, filter_dict=None):
     if cursor != None:
         cursor.close()
     return []
+
+def get_user_id(email, website):
+    try:
+        connection_handler = website.mysql.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute('SELECT user_id FROM user WHERE email_id = %s Limit 1', (email))
+        user_id = cursor.fetchone()
+        cursor.close()
+        return user_id
+
+    except Exception as e:
+        print('Error!')
+        print(e)
+
+    if cursor != None:
+        cursor.close()
+    return None
 
 # def get_comments([comment_id: address]) -> list(Post):
 #     """

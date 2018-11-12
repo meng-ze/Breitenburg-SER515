@@ -145,8 +145,6 @@ def login():
         user_role_id = 0
         for (row) in cur:
             user_role_id = row[10] 
-            user_id = row[0]
-            print(row)
             flag = 1
 
         cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
@@ -255,7 +253,7 @@ def post():
         # Not sure if we need to sort by date, so remove comment if we need to
         # comments = sorted(comments, key=lambda comment: comment[4])
         for i, c in enumerate(comments):
-            cur.execute('SELECT * FROM user WHERE user_id = %s', c[2])
+            cur.execute('SELECT * FROM user where user_id = %s', c[2])
             commentUser = cur.fetchone()
             c.append(commentUser[1])
             comments[i] = c
@@ -317,7 +315,7 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-        cur.execute('''SELECT * FROM post inner join user on post.user_id = user.user_id WHERE post_title = %s''', (request.form['search']))
+        cur.execute('''SELECT * FROM post inner join user on post.user_id = user.user_id where post_title = %s''', (request.form['search']))
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
@@ -334,7 +332,7 @@ def search():
 def list_admin():
     conn = mysql.connect()
     cur = conn.cursor()
-    cur.execute('''SELECT * FROM user WHERE user_role = 2''')
+    cur.execute('''SELECT * FROM user where user_role = 2''')
     result = cur.fetchall()
     admins_list = [list(i) for i in result]
     
