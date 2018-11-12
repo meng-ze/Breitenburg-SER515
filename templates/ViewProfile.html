@@ -1,0 +1,158 @@
+{% include 'menu.html' %}
+{% from "includes/_formhelpers.html" import render_field %}
+<br xmlns="http://www.w3.org/1999/html"><br>
+<style>
+/* Basics */
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    color: #444;
+    -webkit-font-smoothing: antialiased;
+    background: #f0f0f0;
+}
+label {
+    color: #555;
+    display: inline-block;
+    margin-left: 18px;
+    padding-top: 10px;
+    font-size: 14px;
+}
+input {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+    outline: none;
+}
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=date]{
+    color: #777;
+    display: inline-block;
+    padding-left: 10px;
+    margin: 10px;
+    margin-top: 12px;
+    margin-right: 18px;
+    width: 290px;
+    height: 35px;
+	border: 1px solid #c7d0d2;
+    border-radius: 2px;
+    box-shadow: inset 0 1.5px 3px rgba(190, 190, 190, .4), 0 0 0 5px #f5f7f8;
+-webkit-transition: all .4s ease;
+    -moz-transition: all .4s ease;
+    transition: all .4s ease;
+	}
+input[type=submit] {
+    float: right;
+    margin-right: 650px;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    width: 80px;
+    height: 30px;
+font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #acd6ef; /*IE fallback*/
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#acd6ef), to(#6ec2e8));
+    background-image: -moz-linear-gradient(top left 90deg, #acd6ef 0%, #6ec2e8 100%);
+    background-image: linear-gradient(top left 90deg, #acd6ef 0%, #6ec2e8 100%);
+    border-radius: 30px;
+    border: 1px solid #66add6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .5);
+    cursor: pointer;
+}
+</style>
+
+
+<div class="col-md-8">
+    <div class="content-section">
+        <h3>Profile Details</h3>
+   <hr>
+      <div class="media">
+        <img class="rounded-circle account-img" src="{{full_profilepic_path}}">
+        <div class="media-body">
+          <h2 class="account-heading">{{posts[0][0]}}</h2>
+          <p class="text-secondary">{{posts[0][1]}}</p>
+          <p class="text-secondary">Status - Away</p>
+        </div>
+      </div>
+    <hr>
+      {% for item in posts %}
+          <form method="GET" action="">
+              <div class="form-group">
+
+                  <table>
+                      <tr>
+                          <td>
+                            <label for="name">Full Name: </label>
+                          </td>
+                          <td>
+                            <input type="text" value="{{item[0]}}" class="form-control" id="name" readonly>
+                          </td>
+                      </tr>
+
+                      <tr>
+                          <td>
+                            <label for="email">Email address: </label>
+                          </td>
+                          <td>
+                              <input type="email" value="{{item[1]}}" class="form-control" id="email" readonly>
+                          </td>
+                      </tr>
+
+                      <tr>
+                          <td>
+                            <label for="dob">Date of Birth: </label>
+                          </td>
+                          <td>
+                             <input type="date" value="{{item[2]}}" class="form-control" id="dob" readonly>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            <label for="address">Address:</label>
+                          </td>
+                          <td>
+                              <input type="text" value="{{item[3]}}" class="form-control" id="address" readonly>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            <label for="phone">Contact Information:</label>
+                          </td>
+                          <td>
+                             <input type="text" value="{{item[4]}}" class="form-control" id="phone" readonly>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            <label for="work">Work:</label>
+                          </td>
+                          <td>
+                            <input type="text" value="{{item[5]}}" class="form-control" id="work" readonly>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            <label for="education">Education:</label>
+                          </td>
+                          <td>
+                              <input type="text" value="{{item[6]}}" class="form-control" id="education" readonly>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            <label for="details">Details about you:</label>
+                          </td>
+                          <td>
+                             <input type="text" value="{{item[7]}}" class="form-control" id="details" readonly>
+                          </td>
+                      </tr>
+                  </table>
+                  </div>
+          {% endfor %}
+          </form>
+   </form>
+    </div>
+</div>
+{% include 'footer.html' %}

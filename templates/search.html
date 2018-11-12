@@ -1,5 +1,7 @@
 {% include 'menu.html' %}
 
+
+
 <main role="main" class="container">
     <div class="jumbotron">
         <h1 class="display-4" align="center">Generic Web Forum</h1>
@@ -7,15 +9,20 @@
         <hr class="my-4">
         <p align="center">Please read the <a href="/">rules</a> before posting</p>
     </div>
+
+      {% include 'search_header.html' %}
+
       <div class="row">
         <div class="col-md-8">
            <!– This will show the registered/unregistered users the posts without registration –>
+
     {% for post in searched_posts %}
+
 
       <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{post[7]}}</a>
+              <a class="mr-2" href="{{ '/name_click?user=' + post[7] }}">{{post[7]}}</a>
               <small class="text-muted" >{{post[5]}}</small><hr>
             </div>
             <h2><a class="article-title" href="#">{{ post[2] }}</a></h2>
