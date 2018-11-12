@@ -1,9 +1,10 @@
-from ConstantTable import DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo, CommentInfo
+from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo, CommentInfo, BlockInfo
 
 def is_user_exist(email, website):
     connection_handler = website.mysql_server.connect()
     cursor = connection_handler.cursor()
-    number_of_rows = cursor.execute("SELECT * FROM user WHERE {} = %s".format(AccountInfo.EMAIL), (email))
+    cursor.execute("SELECT * FROM user WHERE {} = %s".format(AccountInfo.EMAIL), (email))
+    number_of_rows = len(cursor.fetchall())
     cursor.close()
 
     if number_of_rows != 0:
@@ -11,6 +12,8 @@ def is_user_exist(email, website):
     return False
 
 def verify_login_password(email, password, website):
+    if is_user_blocked(email, website):
+        return (False, {ErrorCode.ERROR_CODE: ErrorCode.USER_IS_BLOCKED})
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
@@ -30,7 +33,7 @@ def verify_login_password(email, password, website):
 
     if cursor != None:
         cursor.close()
-    return (False, None)
+    return (False, {ErrorCode.ERROR_CODE: ErrorCode.PASSWORD_INCORRECT})
 
 def create_account(username: str, other_info: {str: None}, website):
     cursor = None
@@ -263,6 +266,57 @@ def get_user_id(email, website):
         cursor.close()
     return None
 
+def is_user_blocked(email, website):
+    connection_handler = website.mysql_server.connect()
+    cursor = connection_handler.cursor()
+    cursor.execute("SELECT * FROM {} WHERE {} = %s".format(DatabaseModel.BLOCK_USER, BlockInfo.EMAIL), (email))
+    number_of_rows = len(cursor.fetchall())
+    cursor.close()
+
+    if number_of_rows != 0:
+        return True
+    return False
+
+def block_user(email, website):
+    cursor = None
+    if is_user_blocked(email, website):
+        return (False, ErrorCode.USER_IS_BLOCKED)
+    if is_user_exist(email, website) == False:
+        return (False, ErrorCode.USER_NOT_EXIST)
+
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute('INSERT INTO {}({}) VALUES(%s);'.format(DatabaseModel.BLOCK_USER, BlockInfo.EMAIL), (email))
+        connection_handler.commit()
+        cursor.close()
+        return (True, ErrorCode.SUCCESS)
+    except Exception as e:
+        print('Error!')
+        print(e)
+
+    if cursor != None:
+        cursor.close()
+
+    return (False, None)
+
+def get_all_blocked_users(website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute('SELECT * FROM {}'.format(DatabaseModel.BLOCK_USER))
+        blocked_email_list = cursor.fetchall()
+
+        return blocked_email_list
+
+    except Exception as e:
+        print('Error!')
+        print(e)
+
+    if cursor != None:
+        cursor.close()
+    return []
 # def get_comments([comment_id: address]) -> list(Post):
 #     """
 #     Query database for list(comment_id)

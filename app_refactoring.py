@@ -5,7 +5,7 @@ from flaskext.mysql import MySQL
 from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 import CustomForm
 import WebsiteAPI
-from ConstantTable import DatabaseModel, AccountInfo, PostInfo, WebsiteLoginStatus 
+from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, WebsiteLoginStatus 
 
 import time, datetime
 
@@ -72,7 +72,10 @@ def login():
 
         login_success = WebsiteAPI.verify_login_password(email, password, main_website)
         if not login_success[0]:
-            flash('Incorrect username/password.')
+            if login_success[1][ErrorCode.ERROR_CODE] == ErrorCode.USER_IS_BLOCKED:
+                flash('Your account has been blocked!')
+            elif login_success[1][ErrorCode.ERROR_CODE] == ErrorCode.PASSWORD_INCORRECT: 
+                flash('Incorrect username/password.')
         else:
             session[WebsiteLoginStatus.LOGGED_IN] = True
             session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = login_success[1][AccountInfo.EMAIL]
@@ -219,11 +222,32 @@ def create_admin():
             return redirect(url_for('create_admin'))
     return render_template('create_admin.html', title='Get Registered', form=form)
 
+@app.route('/block_user', methods=['GET', 'POST'])
+def block_user():
+    form = CustomForm.BlockUserForm(request.form)
+    if request.method == 'POST' and form.validate():
+        email = form.email_field.data
+        block_success = WebsiteAPI.block_user(email, main_website)
+        if not block_success[0]:
+            if block_success[1] == ErrorCode.USER_IS_BLOCKED:
+                flash('User has already been blocked')
+            elif block_success[1] == ErrorCode.USER_NOT_EXIST:
+                flash('User does not exist!')
+        else:
+            return redirect(url_for('block_user'))
+
+    blocked_email_list = WebsiteAPI.get_all_blocked_users(main_website)
+    blocked_user_info_list = []
+    for email in blocked_email_list:
+        user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: email}, main_website)
+        blocked_user_info_list.append(user_info)
+
+    return render_template('block_user.html', title='Block Users', form=form, block_list=blocked_user_info_list)
 
 @app.route('/list_admin', methods=['GET', 'POST'])
 def list_admin():
     admins_list = WebsiteAPI.get_user_info({AccountInfo.USER_ROLE_ID: 2}, main_website, list_mode=True)
-    return render_template('list_admin.html',admins_list=admins_list)  # <- Here you jump away from whatever result you create
+    return render_template('list_admin.html', admins_list=admins_list)  # <- Here you jump away from whatever result you create
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

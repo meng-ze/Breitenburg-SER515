@@ -98,6 +98,16 @@ CREATE TABLE `user` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for `blocked_user`
+-- 
+
+CREATE TABLE `blocked_user` (
+  `email_id` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Dumping data for table `user`
 --

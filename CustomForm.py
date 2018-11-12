@@ -15,3 +15,6 @@ class LoginForm(Form):
 class CreatePostForm(Form):
     title_field = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
     body_field = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
+
+class BlockUserForm(Form):
+    email_field = StringField('Email')

@@ -5,9 +5,13 @@ class WebsiteLoginStatus:
     LOGGED_USER_ROLE_ID = 'role'
     
 class ErrorCode:
-    SUCCESS: "success!"
-    OPERATION_NOT_PERMITTED: "user does not permission to delete this post/comment"
-    POST_NOT_EXIST: "post/comment does not exist!"
+    ERROR_CODE = 'error code'
+    PASSWORD_INCORRECT = 'password incorrect'
+    SUCCESS = 'success!'
+    OPERATION_NOT_PERMITTED = 'user does not permission to delete this post/comment'
+    POST_NOT_EXIST = 'post/comment does not exist!'
+    USER_IS_BLOCKED = 'user is blocked'
+    USER_NOT_EXIST = 'user does not exist'
 
 # Database Model NAME
 class DatabaseModel:
@@ -16,6 +20,7 @@ class DatabaseModel:
     POST = 'post'
     COMMENT = 'comment'
     CATEGORY = 'category'
+    BLOCK_USER = 'blocked_user'
 
 # Database Model related keyword
 class AccountInfo:
@@ -50,3 +55,6 @@ class CommentInfo:
     USER_ID = 'user_id'
     COMMENT_TEXT = 'comment_text'
     TIMESTAMP = 'timestamp'
+
+class BlockInfo:
+    EMAIL = 'email_id'
