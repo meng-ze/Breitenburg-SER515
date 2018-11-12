@@ -10,12 +10,9 @@
     <div id="searchResults">
         {% block content %}
          {% include 'error_layout.html' %}
-        <div class="search">
-            <form action="/search" method="POST">
-                <input type=text name=search value="{{ request.form.search}}"></br>
-                <div class="actions"><input type=submit value="Search"></div>
-        </div>
-
+         
+         {% include 'search_header.html' %}
+		</br>
         {% for item in searched_posts %}
         {#% for i in item %#}
         <!-- <tr>
@@ -31,7 +28,7 @@
         </tr>
         {% endfor %}
 
-        </form>
+        
     </div>
 
 
