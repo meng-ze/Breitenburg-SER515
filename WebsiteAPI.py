@@ -189,12 +189,13 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
         if filter_dict != None:
             decompose_arr = []
             for key in filter_dict:
-                individual_query = '{} = "{}"'.format(key, filter_dict[key])
+                individual_query = '{} {}'.format(key, filter_dict[key])
                 decompose_arr.append(individual_query)
-            filter_str = 'WHERE ' + 'AND'.join(decompose_arr)
+            filter_str = 'WHERE ' + ' AND '.join(decompose_arr)
             filter_command = filter_str
 
         query_command = ' '.join([fetch_all_posts_command, inner_join_command, order_command, filter_command])
+        print(query_command)
         cursor.execute(query_command)
         posts = cursor.fetchall()
         posts = [list(post) for post in posts]

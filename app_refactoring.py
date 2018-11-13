@@ -200,15 +200,40 @@ def view():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    categories = WebsiteAPI.get_category_list(main_website)
     if request.method == "POST":
-
-        search_target = request.form['search']
-        all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_TITLE: search_target})
-        if len(all_posts) == 0:
+        
+        search_text = request.form['search']
+        filter_type = request.form['filter_by']
+        category = request.form['category']
+        less_date = request.form['less_date']
+        great_date = request.form['great_date']
+        
+        where_string = ""
+        filter_dict = {}
+        if len(search_text)>0 :
+            if filter_type == 'text':
+                filter_dict[PostInfo.POST_TITLE] = ' like \'%'+ search_text + '%\''
+            
+            if filter_type == 'user':
+                filter_dict['{}.{}'.format(DatabaseModel.POST, PostInfo.USER_ID)] = ' IN (SELECT user_id from user where username like \'%' + search_text + '%\')'
+        
+        if category!='0' :
+            filter_dict[PostInfo.CATEGORY_ID] = ' = ' + category
+        
+        if len(less_date)>0 :
+            filter_dict['{}.{} <= '.format(DatabaseModel.POST, PostInfo.TIMESTAMP)] = less_date
+        
+        if len(great_date)>0 :
+            filter_dict['{}.{} >= '.format(DatabaseModel.POST, PostInfo.TIMESTAMP)] = great_date
+        
+        all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=True, filter_dict=filter_dict)
+        
+        # print(searched_posts)
+        if len(all_posts) is 0:
             flash('No results Found!')
-
-        return render_template('search.html', searched_posts=all_posts)  # <- Here you jump away from whatever result you create
-
+        return render_template('search.html', searched_posts=all_posts, categories=categories)  # <- Here you jump away from whatever result you create
+   # return render_template('view.html')
 
 @app.route('/my_posts', methods=['GET', 'POST'])
 def my_posts():
@@ -274,10 +299,11 @@ def admin_delete_post():
     post_id = request.form['post_id']
     comment_id = request.form['comment_id']
     view_id = request.form['view_id']
+    post_user_id = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: post_id})[1]
 
     my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: session[WebsiteLoginStatus.LOGGED_USER_EMAIL]}, main_website)
     am_i_admin = my_user_info[3] == 2
-    if not am_i_admin: # If the current user's role is not admin
+    if not am_i_admin and my_user_info[0] != post_user_id: # If the current user's role is not admin
         flash('Unauthorized!')
         return redirect(url_for('view')) # Redirect back to the main page
 
