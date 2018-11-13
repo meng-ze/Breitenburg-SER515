@@ -559,6 +559,7 @@ def list_admin():
 def adminDelete():
     post_id = request.form['post_id']
     comment_id = request.form['comment_id']
+    view_id = request.form['view_id']
 
     conn = mysql.connect()
     cur = conn.cursor()
@@ -577,6 +578,7 @@ def adminDelete():
         print("Deleting Comment")
         cur.execute("DELETE FROM comment WHERE comment_id = %s", comment_id)
         conn.commit()
+        return redirect("/post?id=" + str(view_id))
 
     return redirect(url_for('view'))
 
