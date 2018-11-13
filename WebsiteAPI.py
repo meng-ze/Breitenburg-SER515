@@ -238,19 +238,20 @@ def get_all_comments(post_id, website, filter_dict=None):
         cursor.close()
     return []
 
-def get_user_info(query_dict, website, list_mode=False):
+def get_user_info(filter_dict, website, list_mode=False):
     cursor = None
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
 
-        for key in query_dict:
-            cursor.execute('SELECT * FROM {} WHERE {} = %s'.format(DatabaseModel.USER, key), (query_dict[key]))
+        for key in filter_dict:
+            cursor.execute('SELECT * FROM {} WHERE {} = %s'.format(DatabaseModel.USER, key), (filter_dict[key]))
         if list_mode == False:
             user_info = cursor.fetchone()
         else:
             user_info = cursor.fetchall()
 
+        cursor.close()
         return user_info
 
     except Exception as e:
@@ -260,23 +261,24 @@ def get_user_info(query_dict, website, list_mode=False):
         cursor.close()
     return None
 
-def get_user_id(email, website):
+def delete(datamodel_type, filter_dict, website):
     cursor = None
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute('SELECT user_id FROM user WHERE email_id = %s Limit 1', (email))
-        user_id = cursor.fetchone()
-        cursor.close()
-        return user_id
 
+        for key in filter_dict:
+            cursor.execute("DELETE FROM {} WHERE {} = %s".format(datamodel_type, key), (filter_dict[key]))
+        connection_handler.commit()
+        cursor.close()
+        return True
+        
     except Exception as e:
         print('Error!')
         print(e)
-
     if cursor != None:
         cursor.close()
-    return None
+    return False
 
 def is_user_blocked(email, website):
     connection_handler = website.mysql_server.connect()

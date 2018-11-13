@@ -4,7 +4,7 @@ from Website import Website
 from flaskext.mysql import MySQL
 import CustomForm
 import WebsiteAPI
-from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, WebsiteLoginStatus, DefaultFileInfo
+from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, CommentInfo, WebsiteLoginStatus, DefaultFileInfo
 from werkzeug.utils import secure_filename
 import time, datetime
 
@@ -257,16 +257,38 @@ def post():
         print('Chosen_post: ', chosen_post)
         user_id_of_chosen_post = chosen_post[1]
         user_info = WebsiteAPI.get_user_info({AccountInfo.USER_ID: user_id_of_chosen_post}, main_website)
+        is_admin = user_info[3] == 2
 
         comments = WebsiteAPI.get_all_comments(post_id, main_website, filter_dict={PostInfo.POST_ID: post_id})
         for idx, comment in enumerate(comments):
             comment_user = WebsiteAPI.get_user_info(comment[2], main_website)
             comment.append(comment_user[1])
             comments[idx] = comment
-        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]))
+        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin)
     else:
         return render_template('index.html', title='Post')
 
+
+@app.route('/admin_delete_post', methods=['POST'])
+def admin_delete_post():
+    post_id = request.form['post_id']
+    comment_id = request.form['comment_id']
+    view_id = request.form['view_id']
+
+    my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: session[WebsiteLoginStatus.LOGGED_USER_EMAIL]}, main_website)
+    am_i_admin = my_user_info[3] == 2
+    if not am_i_admin: # If the current user's role is not admin
+        flash('Unauthorized!')
+        return redirect(url_for('view')) # Redirect back to the main page
+
+    if int(comment_id) == -1:
+        WebsiteAPI.delete(DatabaseModel.POST, {PostInfo.POST_ID: post_id}, main_website)
+        WebsiteAPI.delete(DatabaseModel.COMMENT, {PostInfo.POST_ID: post_id}, main_website)
+    elif int(post_id) == -1:
+        WebsiteAPI.delete(DatabaseModel.COMMENT, {CommentInfo.COMMENT_ID: comment_id}, main_website)
+        return redirect("/post?id=" + str(view_id))
+
+    return redirect(url_for('view'))
 
 @app.route('/createPost' , methods=['GET', 'POST'])
 def createPost():
