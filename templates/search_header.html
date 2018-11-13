@@ -1,0 +1,54 @@
+<div class="search">
+	<form action="/search" method="POST" onload="">
+		<table>
+			<tr >
+				<td style="padding-bottom: 5em;width:100px"></td>
+				<td >Search Posts By</td>
+				<td style="padding-left: 10px; padding-right: 10px">
+					<select class="form-control" name="filter_by">
+						<option value="user">User</option>
+						<option value="text">Title Text</option>
+					</select>
+				</td>
+				<td>Having Text&nbsp;&nbsp;</td>
+				<td>
+					<input class="form-control"  style="width:200px"  type=text name=search value="{{ request.form.search}}">
+				</td>
+				<td>&nbsp;&nbsp;In Category</td>
+				
+				<td style="padding-left: 10px; padding-right: 10px">
+					<select class="form-control" id="category" name="category">
+		              <option value="0">All</option>
+		              {% for c in categories %}
+		                <option value="{{ c[0] }}">{{ c[1] }}</option>
+		              {% endfor %}
+		          </select>
+				</td>
+				
+				</tr>
+				
+				<tr>
+				<td>
+				</td>
+				<td>
+					Date Less Than
+				</td>
+				<td>
+					<input class="form-control" style="width:200px" type="date" name="less_date">
+				</td>
+				<td>
+					Greater Than
+				</td>
+				<td>
+					<input class="form-control" style="width:200px" type="date" name="great_date">
+				</td>
+				
+				<td>
+				</td>
+				<td ><input class="btn btn-primary" style="width:200px" type=submit value="Search"></td>
+			</tr>
+			</br>
+		</table>
+		</br>
+	</form>
+</div>

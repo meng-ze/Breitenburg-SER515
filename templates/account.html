@@ -1,0 +1,149 @@
+{% include 'menu.html' %}
+{% from "includes/_formhelpers.html" import render_field %}
+<br xmlns="http://www.w3.org/1999/html"><br>
+<style>
+/* Basics */
+html, body {
+    width: 122%;
+    height: 100%;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    color: #444;
+    -webkit-font-smoothing: antialiased;
+    background: #f0f0f0;
+}
+label {
+    color: #555;
+    display: inline-block;
+    margin-left: 10px;
+    padding-top: 10px;
+    font-size: 14px;
+}
+input {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+    outline: none;
+}
+input[type=text],
+input[type=password],
+ input[type=email]{
+    color: #777;
+    display: inline-block;
+    padding-left: 10px;
+    margin: 10px;
+    margin-top: 12px;
+    margin-right: 18px;
+    width: 290px;
+    height: 35px;
+    border: 1px solid #c7d0d2;
+    border-radius: 2px;
+    box-shadow: inset 0 1.5px 3px rgba(190, 190, 190, .4), 0 0 0 5px #f5f7f8;
+-webkit-transition: all .4s ease;
+    -moz-transition: all .4s ease;
+    transition: all .4s ease;
+    }
+input[type=submit] {
+    float: right;
+    margin-right: 650px;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    width: 80px;
+    height: 30px;
+font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #acd6ef; /*IE fallback*/
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#acd6ef), to(#6ec2e8));
+    background-image: -moz-linear-gradient(top left 90deg, #acd6ef 0%, #6ec2e8 100%);
+    background-image: linear-gradient(top left 90deg, #acd6ef 0%, #6ec2e8 100%);
+    border-radius: 30px;
+    border: 1px solid #66add6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .5);
+    cursor: pointer;
+}
+</style>
+
+
+<div class="col-md-8">
+    <div class="content-section">
+        <h3>Profile Details</h3>
+    <hr>
+      <div class="media">
+        <img class="rounded-circle account-img" src="{{full_profilepic_path}}">
+        <div class="media-body">
+          <h2 class="account-heading">{{form.name.data}}</h2>
+          <p class="text-secondary">{{form.email.data}}</p>
+          <p class="textname-secondary">Status - Available </p>
+        </div>
+      </div>
+    <hr>
+      <p class="text-secondary">You can update your information here</p>
+
+    <form method="POST" action="" enctype=multipart/form-data>
+
+              <div class="form-group">
+
+                  <table>
+                      <tr>
+                          <td>
+                            {{ render_field(form.name) }}
+                          </td>
+                      </tr>
+
+                      <tr>
+                          <td>
+                            {{ render_field(form.password) }}
+                          </td>
+                      </tr>
+
+                      <tr>
+                          <td>
+                              {{ render_field(form.email) }}
+                          </td>
+                      </tr>
+
+                      <tr>
+                          <td>
+                             {{ render_field(form.dob) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              {{ render_field(form.address) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                             {{ render_field(form.phone) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            {{ render_field(form.work) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              {{ render_field(form.education) }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                              {{ render_field(form.details) }}
+                          </td>
+                      </tr>
+                  </table>
+                  </div>
+
+
+        <p><input type=file name=file>
+
+   <tr>
+     <td><p><input type="submit" class="btn btn-primary" value="Update"></p>
+     {% extends 'error_layout.html' %}</td>
+   </tr>
+ </form>
+
+
+    </div>
+</div>
+{% include 'footer.html' %}
