@@ -1,3 +1,5 @@
+from os.path import expanduser
+
 class WebsiteLoginStatus:
     LOGGED_IN = 'logged_in'
     LOGGED_USER_EMAIL   = 'logged_user_email'
@@ -66,4 +68,5 @@ class BlockInfo:
 
 class DefaultFileInfo:
     AVATAR_FILE_NAME =  'default.jpg'
+    HOME = expanduser("~")
     AVATAR_PATH = [-1, ['static', 'profile_pics', 'default.jpg']]

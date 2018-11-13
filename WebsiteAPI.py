@@ -77,6 +77,36 @@ def create_account(username: str, other_info: {str: None}, website):
 
 # ---
 """ Actions below MUST include timestamp """
+def modify_account(target_email, value_dict, website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        if AccountInfo.PASSWORD in value_dict:
+            cursor.execute(
+                'UPDATE user SET username = %s, password = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s',
+                (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.PASSWORD], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.ADDRESS],
+                 value_dict[AccountInfo.PHONE], value_dict[AccountInfo.WORK], value_dict[AccountInfo.EDUCATION], value_dict[AccountInfo.ABOUT],
+                 value_dict[AccountInfo.PROFILE_PICTURE], target_email)
+                )
+        else:
+            cursor.execute(
+                'UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s',
+                (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.ADDRESS],
+                 value_dict[AccountInfo.PHONE], value_dict[AccountInfo.WORK], value_dict[AccountInfo.EDUCATION], value_dict[AccountInfo.ABOUT],
+                 value_dict[AccountInfo.PROFILE_PICTURE], target_email)
+                )        
+        connection_handler.commit()
+        cursor.close()
+
+        return True
+    except Exception as e:
+        print('Error!')
+        print(e)
+
+    if cursor != None:
+        cursor.close()
+    return False
 
 def create_post(email, title, body, category, website):
     """
@@ -134,25 +164,6 @@ def get_category_list(website):
     category_list = [list(i) for i in result]
     
     return category_list
-
-# def modify_post(username: Account, post_id: address, description: str) -> bool:
-#     """
-#     This will first call 'get_posts(post_id)', if it return False -> False
-#     If the post_id does exist in our database, but the user of that post does not have permission (corresponding to current user), print "Error: ERROR_CODE[1]" -> False
-#     If the post_id does exist in our database, and current does have permission to modify this post, then REPLACE the old keyvalue in database with description -> True 
-#     """
-# def delete_post(username: Account, post_id: address):
-#     """
-#     This will first call 'get_posts(post_id)', if it return False -> False
-#     If the post_id does exist in our database, but the user of that post does not have permission (corresponding to current user), print "Error: ERROR_CODE[1]" -> False
-#     If the post_id does exist in our database, and current does have permission to modify this post, then DELETE the Post(post_id) in database, return success -> True
-#     """
-# def delete_comment(username: Account, comment_id: address, description: str):
-#     """
-#     This will first call 'get_comments(comment_id)', if it return False -> False
-#     If the comment_id does exist in our database, but the user of that post does not have permission (corresponding to current user), print("Error: ERROR_CODE[1]") -> False
-#     If the comment_id does exist in our database, and current does have permission to modify this post, then DELETE the Post(post_id) in database, return success -> True
-#     """
 
 def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
     """
@@ -319,6 +330,20 @@ def get_all_blocked_users(website):
         cursor.close()
     return []
 
+def extract_profile_data_from(user_info):
+    return_data = [
+        user_info[1],
+        user_info[2],
+        user_info[6],
+        user_info[9],
+        user_info[4],
+        user_info[10],
+        user_info[11],
+        user_info[12],
+        user_info[13],
+    ]
+    return return_data
+
 def get_relative_path(relative_formatted_path):
     relative_level = relative_formatted_path[0]
     target_path = relative_formatted_path[1]
@@ -326,6 +351,15 @@ def get_relative_path(relative_formatted_path):
         target_path.insert(0, '..')
         relative_level += 1
     return os.path.join(*target_path)
+
+def is_allowed_file(filename, website):
+    basename = os.path.basename(filename)
+    file_extension = os.path.splitext(basename)[-1].replace('.', '')
+    file_extension = file_extension.lower()
+    if file_extension in website.allowed_file_type:
+        return True
+    return False
+    
 
 # def get_comments([comment_id: address]) -> list(Post):
 #     """
@@ -348,3 +382,22 @@ def get_relative_path(relative_formatted_path):
 # non-deterministic yet
 #def upload_file(filepath: str, media_type: str, attached_post: Post)
 
+
+# def modify_post(username: Account, post_id: address, description: str) -> bool:
+#     """
+#     This will first call 'get_posts(post_id)', if it return False -> False
+#     If the post_id does exist in our database, but the user of that post does not have permission (corresponding to current user), print "Error: ERROR_CODE[1]" -> False
+#     If the post_id does exist in our database, and current does have permission to modify this post, then REPLACE the old keyvalue in database with description -> True 
+#     """
+# def delete_post(username: Account, post_id: address):
+#     """
+#     This will first call 'get_posts(post_id)', if it return False -> False
+#     If the post_id does exist in our database, but the user of that post does not have permission (corresponding to current user), print "Error: ERROR_CODE[1]" -> False
+#     If the post_id does exist in our database, and current does have permission to modify this post, then DELETE the Post(post_id) in database, return success -> True
+#     """
+# def delete_comment(username: Account, comment_id: address, description: str):
+#     """
+#     This will first call 'get_comments(comment_id)', if it return False -> False
+#     If the comment_id does exist in our database, but the user of that post does not have permission (corresponding to current user), print("Error: ERROR_CODE[1]") -> False
+#     If the comment_id does exist in our database, and current does have permission to modify this post, then DELETE the Post(post_id) in database, return success -> True
+#     """

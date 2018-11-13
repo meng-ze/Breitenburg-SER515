@@ -2,11 +2,10 @@ from flask import Flask, render_template, redirect, url_for, request, flash, ses
 #from data import Articles
 from Website import Website
 from flaskext.mysql import MySQL
-from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 import CustomForm
 import WebsiteAPI
 from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, WebsiteLoginStatus, DefaultFileInfo
-
+from werkzeug.utils import secure_filename
 import time, datetime
 
 app = Flask(__name__)
@@ -95,17 +94,7 @@ def name_click():
         if session[WebsiteLoginStatus.LOGGED_IN] == True:
             chosen_user_email = request.args['user']
             chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: chosen_user_email}, main_website)
-            required_info = [
-                chosen_user_info[1],
-                chosen_user_info[2],
-                chosen_user_info[6],
-                chosen_user_info[9],
-                chosen_user_info[4],
-                chosen_user_info[10],
-                chosen_user_info[11],
-                chosen_user_info[12],
-                chosen_user_info[13],
-            ]
+            required_info = WebsiteAPI.extract_profile_data_from(chosen_user_info)
 
             if required_info[-1]:
                 full_profilepic_path = WebsiteAPI.get_relative_path([-1, ['static', 'profile_pics', required_info[-1]]])
@@ -115,6 +104,85 @@ def name_click():
         else:
             return render_template('index.html', title='Home')
 
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    form = CustomForm.UpdateAccountForm(request.form)
+    if request.method == 'GET':
+        if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+            session[WebsiteLoginStatus.LOGGED_IN] = False
+
+        if session[WebsiteLoginStatus.LOGGED_IN] == True:
+            my_email_id = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]
+            my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: my_email_id}, main_website)
+            required_info = WebsiteAPI.extract_profile_data_from(my_user_info)
+
+            form.name_field.data = required_info[0]
+            form.email_field.data = required_info[1]
+            form.dob_field.data = required_info[2]
+            form.address_field.data = required_info[3]
+            form.phone_field.data = required_info[4]
+            form.work_field.data = required_info[5]
+            form.education_field.data = required_info[6]
+            form.details_field.data = required_info[7]
+            form.picture_field.data = required_info[8]
+            if required_info[-1]:
+                full_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], required_info[-1]]])
+            else:
+                full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+
+            return render_template('account.html', title='My Profile', form=form, full_profilepic_path=full_profilepic_path)
+        else:
+            return render_template('index.html', title='Home')
+
+    if request.method == 'POST':
+        name = form.name_field.data
+        dob = form.dob_field.data
+        address = form.address_field.data
+        phone = form.phone_field.data
+        work = form.work_field.data
+        education = form.education_field.data
+        details = form.details_field.data
+
+        my_email_id = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]
+        my_profile_file_name = WebsiteAPI.get_user_info({AccountInfo.EMAIL: my_email_id}, main_website)[-1]
+        form.picture_field.data = my_profile_file_name
+        if not form.picture_field.data:
+            full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+            filename = DefaultFileInfo.AVATAR_PATH[-1][-1]
+        else:
+            full_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], form.picture_field.data]])
+            filename = form.picture_field.data
+
+        # uploading pic
+        if 'file' not in request.files:
+            flash('No file part')
+        else:
+            chosen_file = request.files['file']
+
+            if chosen_file.filename == '':
+                flash('No selected file')
+            if chosen_file and WebsiteAPI.is_allowed_file(chosen_file.filename, main_website):
+                filename = secure_filename(chosen_file.filename)
+                chosen_file.save(WebsiteAPI.get_relative_path([0, [main_website.upload_folder, filename]]))
+                full_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], filename]])
+
+        packed_dict = {
+            AccountInfo.USERNAME: name,
+            AccountInfo.DATE_OF_BIRTH: dob,
+            AccountInfo.ADDRESS: address,
+            AccountInfo.PHONE: phone,
+            AccountInfo.WORK: work,
+            AccountInfo.EDUCATION: education,
+            AccountInfo.ABOUT: details,
+            AccountInfo.PROFILE_PICTURE: filename,
+        }
+
+        if len(form.password_field.data) > 0:
+            packed_dict[AccountInfo.PASSWORD] = form.password_field.data
+        WebsiteAPI.modify_account(WebsiteLoginStatus.LOGGED_USER_EMAIL, packed_dict, main_website)
+            
+        form.password_field.data = ""
+    return render_template('account.html', title='Account', form=form, full_profilepic_path=full_profilepic_path)
 
 @app.route('/view')
 def view():
@@ -195,7 +263,7 @@ def post():
             comment_user = WebsiteAPI.get_user_info(comment[2], main_website)
             comment.append(comment_user[1])
             comments[idx] = comment
-        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info, user_info[1]))
+        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]))
     else:
         return render_template('index.html', title='Post')
 
