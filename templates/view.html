@@ -45,8 +45,11 @@
               <a class="mr-2" href="{{ '/name_click?user=' + post[8] }}">{{post[7]}}</a>
               <small class="text-muted" >{{post[5]}}</small><hr>
             </div>
-            <h2><a class="article-title" href="/post">{{ post[2] }}</a></h2>
-            <p class="article-content">{{ post[3] }}</p>
+            <form action="/post">
+                <button type="submit" class="btn btn-link btn-lg"><h1>{{ post[2] }}</h1></button>
+                <input type="hidden" name="id" value="{{ post[0] }}">
+            </form>
+                <p class="article-content">{{ post[3] }}</p>
           </div>
         </article>
 

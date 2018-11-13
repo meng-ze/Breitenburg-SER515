@@ -424,6 +424,11 @@ def post():
         post = cur.fetchone()
         cur.execute('SELECT * FROM user WHERE user_id = %s', post[1])
         user = cur.fetchone()
+        cur.execute('select * from user where user_id = %s', session['logged_user_id_num'])
+        role = cur.fetchone()[3]
+        admin = False
+        if role == 2: # If the current user's role is admin
+            admin = True
 
         cur.execute('SELECT * FROM comment WHERE post_id = %s', post_id)
         result = cur.fetchall()
@@ -435,7 +440,7 @@ def post():
             commentUser = cur.fetchone()
             c.append(commentUser[1])
             comments[i] = c
-        return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]))
+        return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]), admin=admin)
     else:
         return render_template('index.html', title='Post')
 
@@ -550,7 +555,33 @@ def list_admin():
     return render_template('list_admin.html', admins_list=admins_list)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
 
-# route for User Profile
+@app.route('/adminDelete', methods=['POST'])
+def adminDelete():
+    post_id = request.form['post_id']
+    comment_id = request.form['comment_id']
+    view_id = request.form['view_id']
+
+    conn = mysql.connect()
+    cur = conn.cursor()
+    cur.execute('select * from user where user_id = %s', session['logged_user_id_num'])
+    role = cur.fetchone()[3]
+    if role != 2: # If the current user's role is not admin
+        print("Unauthorized")
+        return redirect(url_for('view')) # Redirect back to the main page
+
+    if int(comment_id) == -1:
+        print("Deleting Post")
+        cur.execute("DELETE FROM comment WHERE post_id = %s", post_id)
+        cur.execute("DELETE FROM post WHERE post_id = %s", post_id)
+        conn.commit()
+    elif int(post_id) == -1:
+        print("Deleting Comment")
+        cur.execute("DELETE FROM comment WHERE comment_id = %s", comment_id)
+        conn.commit()
+        return redirect("/post?id=" + str(view_id))
+
+    return redirect(url_for('view'))
+
 
 
 # @app.route("/account", methods=['POST'])
