@@ -209,7 +209,6 @@ def search():
         less_date = request.form['less_date']
         great_date = request.form['great_date']
         
-        where_string = ""
         filter_dict = {}
         if len(search_text)>0 :
             if filter_type == 'text':
