@@ -8,6 +8,8 @@ class Website:
         self.config_app()
 
     def config_app(self):
+        self.allowed_file_type = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
         self.app.config['MYSQL_DATABASE_HOST'] = 'localhost'
         self.app.config['MYSQL_DATABASE_USER'] = 'root'
         self.app.config['MYSQL_DATABASE_PASSWORD'] = ''

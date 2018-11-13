@@ -5,7 +5,7 @@ from flaskext.mysql import MySQL
 from wtforms import Form, StringField, PasswordField, TextAreaField, validators
 import CustomForm
 import WebsiteAPI
-from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, WebsiteLoginStatus 
+from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, WebsiteLoginStatus, DefaultFileInfo
 
 import time, datetime
 
@@ -39,7 +39,8 @@ def register():
                 AccountInfo.PASSWORD: password, 
                 AccountInfo.PHONE: '', 
                 AccountInfo.DATE_OF_BIRTH: '', 
-                AccountInfo.GENDER: 'M'
+                AccountInfo.GENDER: 'M',
+                AccountInfo.PROFILE_PICTURE: DefaultFileInfo.AVATAR_FILE_NAME
             } 
             register_success = WebsiteAPI.create_account(name, info_package, main_website)
         else:
@@ -84,6 +85,35 @@ def login():
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
+
+@app.route('/name_click', methods=['GET', 'POST'])
+def name_click():
+    if request.method == 'GET':
+        if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+            session[WebsiteLoginStatus.LOGGED_IN] = False
+
+        if session[WebsiteLoginStatus.LOGGED_IN] == True:
+            chosen_user_email = request.args['user']
+            chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: chosen_user_email}, main_website)
+            required_info = [
+                chosen_user_info[1],
+                chosen_user_info[2],
+                chosen_user_info[6],
+                chosen_user_info[9],
+                chosen_user_info[4],
+                chosen_user_info[10],
+                chosen_user_info[11],
+                chosen_user_info[12],
+                chosen_user_info[13],
+            ]
+
+            if required_info[-1]:
+                full_profilepic_path = WebsiteAPI.get_relative_path([-1, ['static', 'profile_pics', required_info[-1]]])
+            else:
+                full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+            return render_template('ViewProfile.html', title='Profile', posts=[required_info], full_profilepic_path=full_profilepic_path)
+        else:
+            return render_template('index.html', title='Home')
 
 
 @app.route('/view')

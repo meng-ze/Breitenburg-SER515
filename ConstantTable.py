@@ -32,6 +32,11 @@ class AccountInfo:
     PHONE = 'phone'
     DATE_OF_BIRTH = 'dob'
     GENDER = 'gender'
+    ADDRESS = 'address'
+    WORK = 'work'
+    EDUCATION = 'education'
+    ABOUT = 'about'
+    PROFILE_PICTURE = 'profile_picture'
 
 class AccountRoleInfo:
     ID = 'id'
@@ -58,3 +63,7 @@ class CommentInfo:
 
 class BlockInfo:
     EMAIL = 'email_id'
+
+class DefaultFileInfo:
+    AVATAR_FILE_NAME =  'default.jpg'
+    AVATAR_PATH = [-1, ['static', 'profile_pics', 'default.jpg']]

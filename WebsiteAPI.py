@@ -1,4 +1,5 @@
 from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo, CommentInfo, BlockInfo
+import os
 
 def is_user_exist(email, website):
     connection_handler = website.mysql_server.connect()
@@ -317,6 +318,15 @@ def get_all_blocked_users(website):
     if cursor != None:
         cursor.close()
     return []
+
+def get_relative_path(relative_formatted_path):
+    relative_level = relative_formatted_path[0]
+    target_path = relative_formatted_path[1]
+    while relative_level != 0:
+        target_path.insert(0, '..')
+        relative_level += 1
+    return os.path.join(*target_path)
+
 # def get_comments([comment_id: address]) -> list(Post):
 #     """
 #     Query database for list(comment_id)

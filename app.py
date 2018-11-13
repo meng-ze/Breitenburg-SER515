@@ -352,13 +352,8 @@ def my_posts():
     if session['logged_in'] == True:
         conn = mysql.connect()
         cur = conn.cursor()
-<<<<<<< HEAD
-        
-        cur.execute('''SELECT * FROM post WHERE user_id = (SELECT user_id FROM user WHERE email_id = %s Limit 1)''', (session['logged_user_id']))
-=======
 
         cur.execute('''SELECT * from post where user_id = (Select user_id from user where email_id = %s Limit 1)''', (session['logged_user_id']))
->>>>>>> sprint4
         result = cur.fetchall()
         posts = [list(i) for i in result]
 
@@ -404,7 +399,7 @@ def view():
             flash('No posts to display')
         else:
             print('to check if it working')
-        return render_template('view.html', view_posts=view_posts,categories=categories)
+        return render_template('view.html', view_posts=view_posts, categories=categories)
     else:
         return render_template('index.html', title='View Post',categories=categories)
 
@@ -499,9 +494,6 @@ def search():
     if request.method == "POST":
         conn = mysql.connect()
         cur = conn.cursor()
-<<<<<<< HEAD
-        cur.execute('''SELECT * FROM post inner join user on post.user_id = user.user_id where post_title = %s''', (request.form['search']))
-=======
         
         search_text = request.form['search']
         filter_type = request.form['filter_by']
@@ -536,7 +528,6 @@ def search():
         
         cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id '''+ where_string + '''''')
 
->>>>>>> sprint4
         result = cur.fetchall()
         searched_posts = [list(i) for i in result]
         # print(searched_posts)
