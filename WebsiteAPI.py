@@ -198,8 +198,8 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
         print(query_command)
         cursor.execute(query_command)
         posts = cursor.fetchall()
-        posts = [list(post) for post in posts]
-
+        # posts = [list(post) for post in posts]
+        print('Post_len: ', len(posts))
         return posts
 
     except Exception as e:

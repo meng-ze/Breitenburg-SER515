@@ -241,7 +241,7 @@ def my_posts():
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
         logged_user_id = session[WebsiteLoginStatus.LOGGED_USER_ID]
-        all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={AccountInfo.USER_ID: ' = ' + logged_user_id})
+        all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={AccountInfo.USER_ID: ' = {}'.format(logged_user_id)})
 
         return render_template('my_posts.html', title='My Posts', posts=all_posts)
     else:
@@ -256,7 +256,7 @@ def edit_post():
     if session['logged_in'] == True:
         if request.method == 'POST':
             post_id = request.form[PostInfo.POST_ID]
-            post = WebsiteAPI.get_all_posts(main_website, False, filter_dict={PostInfo.POST_ID: post_id})
+            post = WebsiteAPI.get_all_posts(main_website, False, filter_dict={PostInfo.POST_ID: ' = {}'.format(post_id)})
 
         return render_template('edit_post.html', title='Edit Post', post=post)
     else:
@@ -271,22 +271,25 @@ def post():
         if request.method == 'POST':
             post_id = request.form['id']
             comment_content = request.form['comment']
-            print('post_id:', post_id)
+            print('All comments:\n', WebsiteAPI.get_all_comments(post_id, main_website, filter_dict={PostInfo.POST_ID: post_id}))
+            print('---------------')
             WebsiteAPI.create_comment(post_id, session[WebsiteLoginStatus.LOGGED_USER_ID], comment_content, main_website)
         else:
             post_id = request.args.get('id')
             print('post_id:', post_id)
 
-        chosen_post = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: ' = ' + post_id})[0]
+        chosen_post = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: ' = {}'.format(post_id)})[0]
         print('Chosen_post: ', chosen_post)
         user_id_of_chosen_post = chosen_post[1]
         user_info = WebsiteAPI.get_user_info({AccountInfo.USER_ID: user_id_of_chosen_post}, main_website)
         is_admin = user_info[3] == 2
 
         comments = WebsiteAPI.get_all_comments(post_id, main_website, filter_dict={PostInfo.POST_ID: post_id})
-        for idx, comment in enumerate(comments):
-            comment_user = WebsiteAPI.get_user_info(comment[2], main_website)
-            comments.append(comment_user[1])
+
+        for idx in range(len(comments)):
+            comment = comments[idx]
+            comment_user = WebsiteAPI.get_user_info({AccountInfo.USER_ID: comment[2]}, main_website)
+            comment.append(comment_user[1])
             comments[idx] = comment
         return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin)
     else:
@@ -298,7 +301,7 @@ def admin_delete_post():
     post_id = request.form['post_id']
     comment_id = request.form['comment_id']
     view_id = request.form['view_id']
-    post_user_id = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: post_id})[1]
+    post_user_id = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: ' = {}'.format(post_id)})[1]
 
     my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: session[WebsiteLoginStatus.LOGGED_USER_EMAIL]}, main_website)
     am_i_admin = my_user_info[3] == 2
