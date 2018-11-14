@@ -7,6 +7,9 @@
 -- Server version: 10.1.35-MariaDB
 -- PHP Version: 7.2.9
 
+CREATE DATABASE web_forum;		
+USE web_forum;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
@@ -96,11 +99,21 @@ CREATE TABLE `user` (
   `dob` varchar(20) NOT NULL,
   `gender` char(1) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `address` varchar(150) NOT NULL,
-  `work` varchar(100) NOT NULL,
-  `education` varchar(100) NOT NULL,
-  `about` varchar(100) NOT NULL,
-  `profile_picture` text NOT NULL
+  `address` varchar(150) NOT NULL DEFAULT '',
+  `work` varchar(100) NOT NULL DEFAULT '',
+  `education` varchar(100) NOT NULL DEFAULT '',
+  `about` varchar(100) NOT NULL DEFAULT '',
+  `profile_picture` varchar(128) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for `blocked_user`
+-- 
+
+CREATE TABLE `blocked_user` (
+  `email_id` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

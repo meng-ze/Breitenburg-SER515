@@ -70,8 +70,8 @@ font-size: 14px;
       <div class="media">
         <img class="rounded-circle account-img" src="{{full_profilepic_path}}">
         <div class="media-body">
-          <h2 class="account-heading">{{form.name.data}}</h2>
-          <p class="text-secondary">{{form.email.data}}</p>
+          <h2 class="account-heading">{{form.name_field.data}}</h2>
+          <p class="text-secondary">{{form.email_field.data}}</p>
           <p class="textname-secondary">Status - Available </p>
         </div>
       </div>
@@ -85,50 +85,50 @@ font-size: 14px;
                   <table>
                       <tr>
                           <td>
-                            {{ render_field(form.name) }}
+                            {{ render_field(form.name_field) }}
                           </td>
                       </tr>
 
                       <tr>
                           <td>
-                            {{ render_field(form.password) }}
+                            {{ render_field(form.password_field) }}
                           </td>
                       </tr>
 
                       <tr>
                           <td>
-                              {{ render_field(form.email) }}
+                              {{ render_field(form.email_field) }}
                           </td>
                       </tr>
 
                       <tr>
                           <td>
-                             {{ render_field(form.dob) }}
+                             {{ render_field(form.dob_field) }}
                           </td>
                       </tr>
                       <tr>
                           <td>
-                              {{ render_field(form.address) }}
+                              {{ render_field(form.address_field) }}
                           </td>
                       </tr>
                       <tr>
                           <td>
-                             {{ render_field(form.phone) }}
+                             {{ render_field(form.phone_field) }}
                           </td>
                       </tr>
                       <tr>
                           <td>
-                            {{ render_field(form.work) }}
+                            {{ render_field(form.work_field) }}
                           </td>
                       </tr>
                       <tr>
                           <td>
-                              {{ render_field(form.education) }}
+                              {{ render_field(form.education_field) }}
                           </td>
                       </tr>
                       <tr>
                           <td>
-                              {{ render_field(form.details) }}
+                              {{ render_field(form.details_field) }}
                           </td>
                       </tr>
                   </table>
