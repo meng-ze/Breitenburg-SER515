@@ -241,7 +241,7 @@ def my_posts():
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
         logged_user_id = session[WebsiteLoginStatus.LOGGED_USER_ID]
-        all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={AccountInfo.USER_ID: logged_user_id})
+        all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={AccountInfo.USER_ID: ' = ' + logged_user_id})
 
         return render_template('my_posts.html', title='My Posts', posts=all_posts)
     else:
@@ -277,7 +277,7 @@ def post():
             post_id = request.args.get('id')
             print('post_id:', post_id)
 
-        chosen_post = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: post_id})[0]
+        chosen_post = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: ' = ' + post_id})[0]
         print('Chosen_post: ', chosen_post)
         user_id_of_chosen_post = chosen_post[1]
         user_info = WebsiteAPI.get_user_info({AccountInfo.USER_ID: user_id_of_chosen_post}, main_website)
@@ -286,7 +286,7 @@ def post():
         comments = WebsiteAPI.get_all_comments(post_id, main_website, filter_dict={PostInfo.POST_ID: post_id})
         for idx, comment in enumerate(comments):
             comment_user = WebsiteAPI.get_user_info(comment[2], main_website)
-            comment.append(comment_user[1])
+            comments.append(comment_user[1])
             comments[idx] = comment
         return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin)
     else:
