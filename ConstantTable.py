@@ -5,6 +5,13 @@ class WebsiteLoginStatus:
     LOGGED_USER_EMAIL   = 'logged_user_email'
     LOGGED_USER_ID      = 'logged_user_id'
     LOGGED_USER_ROLE_ID = 'role'
+
+class AppConfigurationKey:
+        UPLOAD_FOLDER = 'UPLOAD_FOLDER'
+        DATABASE_HOST = 'MYSQL_DATABASE_HOST'
+        DATABASE_USER = 'MYSQL_DATABASE_USER'
+        DATABASE_PASSWORD = 'MYSQL_DATABASE_PASSWORD'
+        DATABASE_DB = 'MYSQL_DATABASE_DB'
     
 class ErrorCode:
     ERROR_CODE = 'error code'
