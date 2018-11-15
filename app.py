@@ -153,6 +153,16 @@ def account():
             full_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], form.picture_field.data]])
             filename = form.picture_field.data
 
+        packed_dict = {
+            AccountInfo.USERNAME: name,
+            AccountInfo.DATE_OF_BIRTH: dob,
+            AccountInfo.ADDRESS: address,
+            AccountInfo.PHONE: phone,
+            AccountInfo.WORK: work,
+            AccountInfo.EDUCATION: education,
+            AccountInfo.ABOUT: details,
+        }
+        
         # uploading pic
         if 'file' not in request.files:
             flash('No file part')
@@ -163,26 +173,20 @@ def account():
                 flash('No selected file')
             if chosen_file and WebsiteAPI.is_allowed_file(chosen_file.filename, main_website):
                 filename = secure_filename(chosen_file.filename)
-                chosen_file.save(WebsiteAPI.get_relative_path([0, [main_website.upload_folder, filename]]))
-                full_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], filename]])
+                full_profilepic_path = WebsiteAPI.get_relative_path([0, [main_website.upload_folder, filename]])
+                relative_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], filename]])
+                chosen_file.save(full_profilepic_path)
+                chosen_file.close()
 
-        packed_dict = {
-            AccountInfo.USERNAME: name,
-            AccountInfo.DATE_OF_BIRTH: dob,
-            AccountInfo.ADDRESS: address,
-            AccountInfo.PHONE: phone,
-            AccountInfo.WORK: work,
-            AccountInfo.EDUCATION: education,
-            AccountInfo.ABOUT: details,
-            AccountInfo.PROFILE_PICTURE: filename,
-        }
+                packed_dict[AccountInfo.PROFILE_PICTURE] = filename
 
         if len(form.password_field.data) > 0:
             packed_dict[AccountInfo.PASSWORD] = form.password_field.data
-        WebsiteAPI.modify_account(WebsiteLoginStatus.LOGGED_USER_EMAIL, packed_dict, main_website)
+
+        WebsiteAPI.modify_account(my_email_id, packed_dict, main_website)
             
         form.password_field.data = ""
-    return render_template('account.html', title='Account', form=form, full_profilepic_path=full_profilepic_path)
+    return render_template('account.html', title='Account', form=form, full_profilepic_path=relative_profilepic_path)
 
 @app.route('/view')
 def view():
