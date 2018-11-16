@@ -1,3 +1,7 @@
+from ConstantTable import DefaultFileInfo, AppConfigurationKey
+import WebsiteAPI
+import os
+
 class Website:
     def __init__(self, app, mysql_server):
         self.app = app
@@ -8,9 +12,16 @@ class Website:
         self.config_app()
 
     def config_app(self):
-        self.app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-        self.app.config['MYSQL_DATABASE_USER'] = 'root'
-        self.app.config['MYSQL_DATABASE_PASSWORD'] = ''
-        self.app.config['MYSQL_DATABASE_DB'] = 'web_forum'
+        self.allowed_file_type = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+        app_script_path = os.path.abspath(__file__)
+        app_script_dir_path = os.path.dirname(app_script_path)
+        self.upload_folder = WebsiteAPI.get_relative_path([0, [app_script_dir_path, 'static', 'profile_pics']])
+
+        self.app.config[AppConfigurationKey.UPLOAD_FOLDER] = self.upload_folder
+
+        self.app.config[AppConfigurationKey.DATABASE_HOST] = 'localhost'
+        self.app.config[AppConfigurationKey.DATABASE_USER] = 'root'
+        self.app.config[AppConfigurationKey.DATABASE_PASSWORD] = ''
+        self.app.config[AppConfigurationKey.DATABASE_DB] = 'web_forum'
         self.app.secret_key = 'super secret key'
         self.mysql_server.init_app(self.app)

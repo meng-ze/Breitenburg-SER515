@@ -1,0 +1,61 @@
+{% include 'menu.html' %} 
+{% from "includes/_formhelpers.html" import render_field %}
+<div class="container-fluid" >
+		<div class="row">
+		<table class="table table-borderless table-hover">
+			<thead class="thead-dark">
+				<th><h1>Block User</h1></th>
+				<th></th>
+				<th></th>
+			</thead>
+		</table>	
+		</div>
+	<div class="col-md-8">
+	<div class="row">
+
+        <div class="col-md-7" style="padding-right: 30px;padding-left: 30px;border:1px solid black;">
+            <br>
+            <span></span>
+            <form method="POST" action="">
+                    {{ render_field(form.email_field) }} 
+                    <tr>
+                        <td>
+                            <p>
+                                <input type="submit" class="btn btn-primary" value="Block">
+                            </p> {% include 'error_layout.html' %}
+                        </td>
+                    </tr>
+                </form>
+            <br>
+            <div class="row">
+            <h3>Blocked users</h3>
+            <table class="table" border = "2">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email Id</th>
+                </tr>
+            </thead>
+            <tbody>	
+                {% for list in block_list %}
+                <tr>
+                    <td>
+                        {{list[1]}}
+                    </td>
+                    <td>
+                        {{list[2]}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+                
+            </div>
+        </div>
+		</div>
+	</div>
+	{% include 'side_menu_admin.html' %}
+</div>
+
+{% include 'footer.html' %}
+

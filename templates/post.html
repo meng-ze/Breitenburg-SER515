@@ -2,17 +2,28 @@
 
 <div class="container">
 	<div class="jumbotron">
-		<h1 class="display-4">Post Title</h1>
-		<p class="lead">Post Description</p>
+		<h1 class="display-4">{{ post[2] }}</h1>
+		<p class="lead">{{ post[3] }}</p>
 		<hr class="my-4">
 		<p>Posted by <a href="/">User</a></p>
+		{% if admin %}
+			<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletePostModal">
+				Delete
+			</button>
+		{% endif %}
 	</div>
-
-	<!– Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now –>
+	<!-- Next line will be used to dynamically generate the page based on how many posts are supposed to appear, but is commmented out for now -->
 	{% for c in comments %}
 	<div class="card">
-			<h5 class="card-title">{{ c[5] }}</h5>
-			<h6 class="card-subtitle mb-2 text-muted">{{ c[4] }}</h6>
+			<div class="card-header">
+				<h5 class="card-title">{{ c[5] }}</h5>
+				<h6 class="card-subtitle mb-2 text-muted">{{ c[4] }}</h6>
+				{% if admin %}
+					<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteCommentModal{{ c[0] }}">
+						Delete
+					</button>
+				{% endif %}
+			</div>
 		<div class="card-body">
 			{{ c[3] }}
 		</div>
@@ -25,6 +36,62 @@
 	<button type="button submit" class="btn btn-primary">Comment</button>
 	</form>
 </div>
+
+{% if admin %}
+	<!-- Delete Post Modal -->
+	<div class="modal fade" id="deletePostModal" tabindex="-1" role="dialog" aria-labelledby="deletePostModal" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="deletePostModalTitle">Delete this Post?</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Are you sure you want to delete this post?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+					<form action="/admin_delete_post" method="POST">
+						<button type="button submit" class="btn btn-danger">Yes</button>
+						<input type="hidden" name="post_id" value="{{ post[0] }}">
+						<input type="hidden" name="comment_id" value="-1">
+						<input type="hidden" name="view_id" value="{{ post[0] }}">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% for c in comments %}
+		<!-- Delete Comment Modal -->
+		<div class="modal fade" id="deleteCommentModal{{ c[0] }}" tabindex="-{{ c[0] }}" role="dialog" aria-labelledby="deleteCommentModal{{ c[0] }}" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="deleteCommentModalTitle{{ c[0] }}">Delete this Comment?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						{{ c[3] }}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+						<form action="/admin_delete_post" method="POST">
+							<button type="button submit" class="btn btn-danger">Yes</button>
+							<input type="hidden" name="post_id" value="-1">
+							<input type="hidden" name="comment_id" value="{{ c[0] }}">
+							<input type="hidden" name="view_id" value="{{ post[0] }}">
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+{% endif %}
 
 {% include 'error_layout.html' %}
 {% include 'footer.html' %}

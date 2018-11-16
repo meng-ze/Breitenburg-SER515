@@ -1,186 +1,254 @@
-# pip install python-dateutil
-from dateutil.parser import parse
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 #from data import Articles
+from Website import Website
 from flaskext.mysql import MySQL
-from wtforms import Form, StringField, PasswordField, TextAreaField, validators
-from wtforms.fields.html5 import EmailField
+import CustomForm
+import WebsiteAPI
+from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, CommentInfo, WebsiteLoginStatus, DefaultFileInfo
+from werkzeug.utils import secure_filename
+import time, datetime
 
-import time
-import datetime
-
-
-mysql = MySQL()
-app = Flask(__name__, static_url_path='/static')
-
-# Config MySQL
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = 'web_forum'
-app.secret_key = 'super secret key'
-mysql.init_app(app)
-
+app = Flask(__name__)
+mysql_server = MySQL()
+main_website = Website(app, mysql_server)
 
 @app.route('/')
 def index():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
-
-    conn = mysql.connect()
-    cur = conn.cursor()
-    cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id''')
-    result = cur.fetchall()
-    view_posts = [list(i) for i in result]
-    # print(view_posts)
-    if len(view_posts) is 0:
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
+    all_posts = WebsiteAPI.get_all_posts(main_website)
+    if len(all_posts) == 0:
         flash('No posts to display')
-    else:
-        print('to check if itw working')
-    return render_template('index.html', view_posts=view_posts)
 
-
-# Register Form Class
-class RegisterForm(Form):
-    name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
-    email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
-    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
-    confirm = PasswordField('Confirm Password')
-
-# Login Form Class
-
-
-class LoginForm(Form):
-    email = StringField('Email')
-    password = PasswordField('Password')
-
-# search class
-
-
-class Post(Form):
-    title = StringField('Post Title')
-    desc = StringField('Decription')
-
+    return render_template('index.html', view_posts=all_posts)
 
 # User Register
-
-# Create Admin Form
-class CreateAdminForm(Form):
-    name = StringField('Name', [validators.DataRequired(), validators.Length(min=1, max=50)])
-    email = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
-    password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords do not match')])
-    confirm = PasswordField('Confirm Password')
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm(request.form)
+    form = CustomForm.RegisterForm(request.form, main_website)
     if request.method == 'POST' and form.validate():
-        name = form.name.data
-        email = form.email.data
-        password = form.password.data
-        register_flag = 0
+        name = form.name_field.data
+        email = form.email_field.data
+        password = form.password_field.data
+        register_success = False
 
-        conn = mysql.connect()
-        cur = conn.cursor()
-        cur.execute("INSERT INTO user(username, email_id, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s)", (name, email, password, "", "", 'M'))
-        conn.commit()
-        register_flag = 1
-        cur.close()
-        print(email, password)
+        if WebsiteAPI.is_user_exist(email, main_website) == False:
+            info_package = {
+                AccountInfo.EMAIL: email, 
+                AccountInfo.PASSWORD: password, 
+                AccountInfo.PHONE: '', 
+                AccountInfo.DATE_OF_BIRTH: '', 
+                AccountInfo.GENDER: 'M',
+                AccountInfo.PROFILE_PICTURE: DefaultFileInfo.AVATAR_FILE_NAME
+            } 
+            register_success = WebsiteAPI.create_account(name, info_package, main_website)
+        else:
+            flash('User with this email id exists')
 
-        if register_flag == 1:
+        if register_success:
             flash('You have registered successfully')
             return redirect(url_for('login'))
     return render_template('register.html', title='Get Registered', form=form)
 
-
-@app.route('/create_admin', methods=['GET', 'POST'])
-def create_admin():
-    form = CreateAdminForm(request.form)
-    if request.method == 'POST' and form.validate():
-        name = form.name.data
-        email = form.email.data
-        password = form.password.data
-        register_flag = 0
-
-        conn = mysql.connect()
-        cur = conn.cursor()
-        
-        
-        number_of_rows= cur.execute("SELECT * FROM user WHERE email_id = %s", (email))
-        if(number_of_rows == 0):
-            cur.execute("INSERT INTO user(username, email_id, user_role, password, phone, dob, gender) VALUES(%s, %s, %s, %s, %s, %s, %s)", (name, email, "2", password, "", "", '-'))
-            conn.commit()
-            register_flag = 1
-            cur.close()
-        else:
-            flash('User with the following email id exists')
-
-        if register_flag == 1:
-            flash('New Admin created successfully')
-            return redirect(url_for('create_admin'))
-    return render_template('create_admin.html', title='Get Registered', form=form)
-
-
 # User login
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    session['logged_in'] = False
-    session['logged_user_id'] = ""
+    session[WebsiteLoginStatus.LOGGED_IN] = False
+    session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = ""
+    session[WebsiteLoginStatus.LOGGED_USER_ID] = 0
+    session[WebsiteLoginStatus.LOGGED_USER_ROLE_ID] = 0
     return render_template('index.html')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm(request.form)
+    form = CustomForm.LoginForm(request.form, main_website)
     if request.method == 'POST' and form.validate():
-        email = form.email.data
-        password = form.password.data
-        flag = 0
+        email = form.email_field.data
+        password = form.password_field.data
 
-        conn = mysql.connect()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM user inner join user_role on user.user_role = user_role.id WHERE email_id = %s and password = %s", (email, password))
-        user_role_id = 0
-        for (row) in cur:
-            user_role_id = row[10] 
-            flag = 1
-
-        cur.execute("SELECT * FROM user WHERE email_id = %s and password = %s", (email, password))
-
-        for (emailid) in cur:
-            print("{}".format(emailid))
-            flag = 1
-            user_id = emailid[0]
-
-        cur.close()
-        if flag == 0:
-            flash('Incorrect username/password.')
+        login_success = WebsiteAPI.verify_login_password(email, password, main_website)
+        if not login_success[0]:
+            if login_success[1][ErrorCode.ERROR_CODE] == ErrorCode.USER_IS_BLOCKED:
+                flash('Your account has been blocked!')
+            elif login_success[1][ErrorCode.ERROR_CODE] == ErrorCode.PASSWORD_INCORRECT: 
+                flash('Incorrect username/password.')
         else:
-            session['role'] = user_role_id
-            session['logged_in'] = True
-            session['logged_user_id'] = form.email.data
-            session['logged_user_id_num'] = user_id
+            session[WebsiteLoginStatus.LOGGED_IN] = True
+            session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = login_success[1][AccountInfo.EMAIL]
+            session[WebsiteLoginStatus.LOGGED_USER_ID] = login_success[1][AccountInfo.USER_ID]
+            session[WebsiteLoginStatus.LOGGED_USER_ROLE_ID] = login_success[1][AccountInfo.USER_ROLE_ID]
             flash('You were successfully logged in')
             return redirect(url_for('view'))
     return render_template('login.html', title='Login', form=form)
 
+@app.route('/name_click', methods=['GET', 'POST'])
+def name_click():
+    if request.method == 'GET':
+        if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+            session[WebsiteLoginStatus.LOGGED_IN] = False
+
+        if session[WebsiteLoginStatus.LOGGED_IN] == True:
+            chosen_user_email = request.args['user']
+            chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: chosen_user_email}, main_website)
+            required_info = WebsiteAPI.extract_profile_data_from(chosen_user_info)
+
+            if required_info[-1]:
+                full_profilepic_path = WebsiteAPI.get_relative_path([-1, ['static', 'profile_pics', required_info[-1]]])
+            else:
+                full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+            return render_template('ViewProfile.html', title='Profile', posts=[required_info], full_profilepic_path=full_profilepic_path)
+        else:
+            return render_template('index.html', title='Home')
+
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    form = CustomForm.UpdateAccountForm(request.form)
+    if request.method == 'GET':
+        if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+            session[WebsiteLoginStatus.LOGGED_IN] = False
+
+        if session[WebsiteLoginStatus.LOGGED_IN] == True:
+            my_email_id = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]
+            my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: my_email_id}, main_website)
+            required_info = WebsiteAPI.extract_profile_data_from(my_user_info)
+
+            form.name_field.data = required_info[0]
+            form.email_field.data = required_info[1]
+            form.dob_field.data = required_info[2]
+            form.address_field.data = required_info[3]
+            form.phone_field.data = required_info[4]
+            form.work_field.data = required_info[5]
+            form.education_field.data = required_info[6]
+            form.details_field.data = required_info[7]
+            form.picture_field.data = required_info[8]
+            if required_info[-1]:
+                full_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], required_info[-1]]])
+            else:
+                full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+
+            return render_template('account.html', title='My Profile', form=form, full_profilepic_path=full_profilepic_path)
+        else:
+            return render_template('index.html', title='Home')
+
+    if request.method == 'POST':
+        name = form.name_field.data
+        dob = form.dob_field.data
+        address = form.address_field.data
+        phone = form.phone_field.data
+        work = form.work_field.data
+        education = form.education_field.data
+        details = form.details_field.data
+
+        my_email_id = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]
+        my_profile_file_name = WebsiteAPI.get_user_info({AccountInfo.EMAIL: my_email_id}, main_website)[-1]
+        form.picture_field.data = my_profile_file_name
+        if not form.picture_field.data:
+            full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+            filename = DefaultFileInfo.AVATAR_PATH[-1][-1]
+        else:
+            full_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], form.picture_field.data]])
+            filename = form.picture_field.data
+
+        packed_dict = {
+            AccountInfo.USERNAME: name,
+            AccountInfo.DATE_OF_BIRTH: dob,
+            AccountInfo.ADDRESS: address,
+            AccountInfo.PHONE: phone,
+            AccountInfo.WORK: work,
+            AccountInfo.EDUCATION: education,
+            AccountInfo.ABOUT: details,
+            AccountInfo.PROFILE_PICTURE: my_profile_file_name
+        }
+        
+        # uploading pic
+        if 'file' not in request.files:
+            flash('No file part')
+        else:
+            chosen_file = request.files['file']
+
+            if chosen_file.filename == '':
+                flash('No selected file')
+            if chosen_file and WebsiteAPI.is_allowed_file(chosen_file.filename, main_website):
+                filename = secure_filename(chosen_file.filename)
+                full_profilepic_path = WebsiteAPI.get_relative_path([0, [main_website.upload_folder, filename]])
+                relative_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], filename]])
+                chosen_file.save(full_profilepic_path)
+                chosen_file.close()
+
+                packed_dict[AccountInfo.PROFILE_PICTURE] = filename
+
+        if len(form.password_field.data) > 0:
+            packed_dict[AccountInfo.PASSWORD] = form.password_field.data
+
+        WebsiteAPI.modify_account(my_email_id, packed_dict, main_website)
+            
+        form.password_field.data = ""
+    return render_template('account.html', title='Account', form=form, full_profilepic_path=relative_profilepic_path)
+
+@app.route('/view')
+def view():
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
+
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
+        all_posts = WebsiteAPI.get_all_posts(main_website, order='{}.{}'.format(DatabaseModel.POST, PostInfo.TIMESTAMP))
+        if len(all_posts) == 0:
+            flash('No posts to display')
+        return render_template('view.html', view_posts=all_posts)
+    else:
+        return render_template('index.html', title='View Post')
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    categories = WebsiteAPI.get_category_list(main_website)
+    if request.method == "POST":
+        
+        search_text = request.form['search']
+        filter_type = request.form['filter_by']
+        category = request.form['category']
+        less_date = request.form['less_date']
+        great_date = request.form['great_date']
+        
+        filter_dict = {}
+        if len(search_text)>0 :
+            if filter_type == 'text':
+                filter_dict[PostInfo.POST_TITLE] = ' like \'%'+ search_text + '%\''
+            
+            if filter_type == 'user':
+                filter_dict['{}.{}'.format(DatabaseModel.POST, PostInfo.USER_ID)] = ' IN (SELECT user_id from user where username like \'%' + search_text + '%\')'
+        
+        if category!='0' :
+            filter_dict[PostInfo.CATEGORY_ID] = ' = ' + category
+        
+        if len(less_date)>0 :
+            filter_dict['{}.{} <= '.format(DatabaseModel.POST, PostInfo.TIMESTAMP)] = less_date
+        
+        if len(great_date)>0 :
+            filter_dict['{}.{} >= '.format(DatabaseModel.POST, PostInfo.TIMESTAMP)] = great_date
+        
+        all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=True, filter_dict=filter_dict)
+        
+        # print(searched_posts)
+        if len(all_posts) is 0:
+            flash('No results Found!')
+        return render_template('search.html', searched_posts=all_posts, categories=categories)  # <- Here you jump away from whatever result you create
+   # return render_template('view.html')
+
 @app.route('/my_posts', methods=['GET', 'POST'])
 def my_posts():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    if session['logged_in'] == True:
-        conn = mysql.connect()
-        cur = conn.cursor()
-        
-        cur.execute('''SELECT * from post where user_id = (Select user_id from user where email_id = %s Limit 1)''', (session['logged_user_id']))
-        result = cur.fetchall()
-        posts = [list(i) for i in result]
-        
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
+        logged_user_id = session[WebsiteLoginStatus.LOGGED_USER_ID]
+        all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={AccountInfo.USER_ID: ' = {}'.format(logged_user_id)})
 
-        return render_template('my_posts.html', title='My Posts', posts=posts)
+        return render_template('my_posts.html', title='My Posts', posts=all_posts)
     else:
         return render_template('index.html', title='Home')
 
@@ -192,165 +260,147 @@ def edit_post():
 
     if session['logged_in'] == True:
         if request.method == 'POST':
-            post_id = request.form['post_id']
-            print(post_id)
-            conn = mysql.connect()
-            cur = conn.cursor()
-            cur.execute('''SELECT * from post where post_id = %s''', (post_id))
-            result = cur.fetchone()
-            post = result
+            post_id = request.form[PostInfo.POST_ID]
+            post = WebsiteAPI.get_all_posts(main_website, False, filter_dict={PostInfo.POST_ID: ' = {}'.format(post_id)})
 
         return render_template('edit_post.html', title='Edit Post', post=post)
     else:
         return render_template('index.html', title='Home')
 
-
-@app.route('/view', methods=['GET', 'POST'])
-def view():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
-
-    if session['logged_in'] == True:
-        conn = mysql.connect()
-        cur = conn.cursor()
-        cur.execute('''select * from post inner join user on post.user_id = user.user_id order by post.timestamp desc''')
-        result = cur.fetchall()
-        view_posts = [list(i) for i in result]
-        # print(view_posts)
-        if len(view_posts) is 0:
-            flash('No posts to display')
-        else:
-            print('to check if it working')
-        return render_template('view.html', view_posts=view_posts)
-    else:
-        return render_template('index.html', title='View Post')
-
-
 @app.route('/post', methods=['GET', 'POST'])
 def post():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    if session['logged_in'] == True:
-        conn = mysql.connect()
-        cur = conn.cursor()
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
         if request.method == 'POST':
             post_id = request.form['id']
-            c = request.form['comment']
-            cur.execute("INSERT INTO comment(post_id, user_id, comment_text) VALUES(%s, %s, %s)", (post_id, session['logged_user_id_num'], c))
-            conn.commit()
+            comment_content = request.form['comment']
+            print('All comments:\n', WebsiteAPI.get_all_comments(post_id, main_website, filter_dict={PostInfo.POST_ID: post_id}))
+            print('---------------')
+            WebsiteAPI.create_comment(post_id, session[WebsiteLoginStatus.LOGGED_USER_ID], comment_content, main_website)
         else:
             post_id = request.args.get('id')
+            print('post_id:', post_id)
 
-        cur.execute('select * from post where post_id = %s', post_id)
-        post = cur.fetchone()
-        cur.execute('select * from user where user_id = %s', post[1])
-        user = cur.fetchone()
+        chosen_post = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: ' = {}'.format(post_id)})[0]
+        print('Chosen_post: ', chosen_post)
+        user_id_of_chosen_post = chosen_post[1]
+        user_info = WebsiteAPI.get_user_info({AccountInfo.USER_ID: user_id_of_chosen_post}, main_website)
+        is_admin = user_info[3] == 2
 
-        cur.execute('select * from comment where post_id = %s', post_id)
-        result = cur.fetchall()
-        comments = [list(i) for i in result]
-        # Not sure if we need to sort by date, so remove comment if we need to
-        # comments = sorted(comments, key=lambda comment: comment[4])
-        for i, c in enumerate(comments):
-            cur.execute('select * from user where user_id = %s', c[2])
-            commentUser = cur.fetchone()
-            c.append(commentUser[1])
-            comments[i] = c
-        return render_template('post.html', post=post, comments=comments, user=(user[0], user[1]))
+        comments = WebsiteAPI.get_all_comments(post_id, main_website, filter_dict={PostInfo.POST_ID: post_id})
+
+        for idx in range(len(comments)):
+            comment = comments[idx]
+            comment_user = WebsiteAPI.get_user_info({AccountInfo.USER_ID: comment[2]}, main_website)
+            comment.append(comment_user[1])
+            comments[idx] = comment
+        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin)
     else:
         return render_template('index.html', title='Post')
 
 
-class CreatePostForm(Form):
-    title = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
-    body = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
+@app.route('/admin_delete_post', methods=['POST'])
+def admin_delete_post():
+    post_id = request.form['post_id']
+    comment_id = request.form['comment_id']
+    view_id = request.form['view_id']
+    post_user_id = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: ' = {}'.format(post_id)})[1]
 
+    my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: session[WebsiteLoginStatus.LOGGED_USER_EMAIL]}, main_website)
+    am_i_admin = my_user_info[3] == 2
+    if not am_i_admin and my_user_info[0] != post_user_id: # If the current user's role is not admin
+        flash('Unauthorized!')
+        return redirect(url_for('view')) # Redirect back to the main page
 
-@app.route('/createPost', methods=['GET', 'POST'])
+    if int(comment_id) == -1:
+        WebsiteAPI.delete(DatabaseModel.POST, {PostInfo.POST_ID: post_id}, main_website)
+        WebsiteAPI.delete(DatabaseModel.COMMENT, {PostInfo.POST_ID: post_id}, main_website)
+    elif int(post_id) == -1:
+        WebsiteAPI.delete(DatabaseModel.COMMENT, {CommentInfo.COMMENT_ID: comment_id}, main_website)
+        return redirect("/post?id=" + str(view_id))
+
+    return redirect(url_for('view'))
+
+@app.route('/createPost' , methods=['GET', 'POST'])
 def createPost():
-    if session.get('logged_in') is None:
-        session['logged_in'] = False
+    if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+        session[WebsiteLoginStatus.LOGGED_IN] = False
 
-    if session['logged_in'] == True:
-        form = CreatePostForm(request.form)
+    if session[WebsiteLoginStatus.LOGGED_IN] == True:
+        form = CustomForm.CreatePostForm(request.form, main_website)
         if request.method == 'POST' and form.validate():
-
-            # timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-            title = form.title.data
-            body = form.body.data
-            category = request.form["category"]
-            user_email = session['logged_user_id']
-
-            conn = mysql.connect()
-            cur = conn.cursor()
-            cur.execute("SELECT * FROM user WHERE email_id = %s", (user_email))
-            for (user) in cur:
-                user_id = str(user[0])
             
-            cur.execute("INSERT INTO post(category_id, post_text, post_title, user_id) VALUES(%s, %s, %s, %s)", (category, body, title, user_id))
-            id = cur.lastrowid
-            conn.commit()
+            title = form.title_field.data
+            body = form.body_field.data
+            category = request.form[DatabaseModel.CATEGORY]
+            email = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]
 
-            return redirect('/post?id=' + str(id))
-
-        conn = mysql.connect()
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM category")
-        categories = []
-        for (category) in cur:
-            categories.append(category)
-        cur.close()
-
+            create_post_status = WebsiteAPI.create_post(email, title, body, category, main_website)
+            if create_post_status[0]:
+                return redirect('/post?id=' + str(create_post_status[1]))
+        
+        categories = WebsiteAPI.get_category_list(main_website)
         return render_template('createPost.html', categories=categories, form=form)
     else:
         return render_template('index.html', title='Create Post')
 
+### Admin feature
+@app.route('/create_admin', methods=['GET', 'POST'])
+def create_admin():
+    form = CustomForm.RegisterForm(request.form)
+    if request.method == 'POST' and form.validate():
+        name = form.name_field.data
+        email = form.email_field.data
+        password = form.password_field.data
+        admin_create_success = False
 
-# new changes -- aneesh to work on this.
+        if WebsiteAPI.is_user_exist(email, main_website) == False:
+            info_package = {
+                AccountInfo.EMAIL: email, 
+                AccountInfo.PASSWORD: password, 
+                AccountInfo.USER_ROLE_ID: 2,
+                AccountInfo.PHONE: '', 
+                AccountInfo.DATE_OF_BIRTH: '', 
+                AccountInfo.GENDER: '-'
+            } 
+            admin_create_success = WebsiteAPI.create_account(name, info_package, main_website)
 
-
-@app.route('/search', methods=['GET', 'POST'])
-def search():
-    if request.method == "POST":
-        conn = mysql.connect()
-        cur = conn.cursor()
-        cur.execute('''SELECT * from post inner join user on post.user_id = user.user_id where post_title = %s''', (request.form['search']))
-        result = cur.fetchall()
-        searched_posts = [list(i) for i in result]
-        # print(searched_posts)
-        if len(searched_posts) is 0:
-            flash('No results Found!')
         else:
-            print
-        return render_template('search.html', searched_posts=searched_posts)  # <- Here you jump away from whatever result you create
-   # return render_template('view.html')
+            flash('User with this email id exists')
 
+        if admin_create_success:
+            flash('New Admin created successfully')
+            return redirect(url_for('create_admin'))
+    return render_template('create_admin.html', title='Get Registered', form=form)
 
+@app.route('/block_user', methods=['GET', 'POST'])
+def block_user():
+    form = CustomForm.BlockUserForm(request.form)
+    if request.method == 'POST' and form.validate():
+        email = form.email_field.data
+        block_success = WebsiteAPI.block_user(email, main_website)
+        if not block_success[0]:
+            if block_success[1] == ErrorCode.USER_IS_BLOCKED:
+                flash('User has already been blocked')
+            elif block_success[1] == ErrorCode.USER_NOT_EXIST:
+                flash('User does not exist!')
+        else:
+            return redirect(url_for('block_user'))
+
+    blocked_email_list = WebsiteAPI.get_all_blocked_users(main_website)
+    blocked_user_info_list = []
+    for email in blocked_email_list:
+        user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: email}, main_website)
+        blocked_user_info_list.append(user_info)
+
+    return render_template('block_user.html', title='Block Users', form=form, block_list=blocked_user_info_list)
 
 @app.route('/list_admin', methods=['GET', 'POST'])
 def list_admin():
-    conn = mysql.connect()
-    cur = conn.cursor()
-    cur.execute('''SELECT * from user where user_role = 2''')
-    result = cur.fetchall()
-    admins_list = [list(i) for i in result]
-    
-    return render_template('list_admin.html',admins_list=admins_list)  # <- Here you jump away from whatever result you create
-   # return render_template('view.html')
-
-
-
-def getCategoryList():
-    conn = mysql.connect()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM category")
-    result = cur.fetchall()
-    category_list = [list(i) for i in result]
-
-    return category_list
-
+    admins_list = WebsiteAPI.get_user_info({AccountInfo.USER_ROLE_ID: 2}, main_website, list_mode=True)
+    return render_template('list_admin.html', admins_list=admins_list)  # <- Here you jump away from whatever result you create
 
 if __name__ == '__main__':
-
     app.run(debug=True, host='0.0.0.0')

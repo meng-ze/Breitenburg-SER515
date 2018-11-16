@@ -1,15 +1,18 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.4
+-- version 4.8.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 24, 2018 at 05:19 AM
--- Server version: 5.7.14
--- PHP Version: 5.6.25
-CREATE DATABASE web_forum;
+-- Generation Time: Nov 12, 2018 at 02:44 AM
+-- Server version: 10.1.35-MariaDB
+-- PHP Version: 7.2.9
+
+CREATE DATABASE web_forum;		
 USE web_forum;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -93,18 +96,34 @@ CREATE TABLE `user` (
   `user_role` int(11) NOT NULL DEFAULT '1',
   `phone` varchar(20) DEFAULT NULL,
   `password` varchar(50) NOT NULL,
-  `dob` varchar(10) NOT NULL,
+  `dob` varchar(20) NOT NULL,
   `gender` char(1) NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `address` varchar(150) NOT NULL DEFAULT '',
+  `work` varchar(100) NOT NULL DEFAULT '',
+  `education` varchar(100) NOT NULL DEFAULT '',
+  `about` varchar(100) NOT NULL DEFAULT '',
+  `profile_picture` varchar(128) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for `blocked_user`
+-- 
+
+CREATE TABLE `blocked_user` (
+  `email_id` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `username`, `email_id`, `user_role`, `phone`, `password`, `dob`, `gender`, `timestamp`) VALUES
-(1, 'Viraj Hemant Talaty', 'virajtalaty@gmail.com', 1, '', '123', '', 'M', '2018-09-27 02:10:59'),
-(5, 'Viraj Talaty', 'vtalaty@asu.edu', 2, '', '1234', '', 'M', '2018-10-15 04:30:52');
+INSERT INTO `user` (`user_id`, `username`, `email_id`, `user_role`, `phone`, `password`, `dob`, `gender`, `timestamp`, `address`, `work`, `education`, `about`, `profile_picture`) VALUES
+(1, 'Viraj Hemant Talaty', 'virajtalaty@gmail.com', 1, '', '123', '1994/03/17', 'M', '2018-09-27 02:10:59', '', '', '', '', 'viraj.jpg'),
+(5, 'Viraj Talaty', 'vtalaty@asu.edu', 2, '', '1234', '', 'M', '2018-10-15 04:30:52', '', '', '', '', ''),
+(6, 'Aneesh Dalvi', 'aneeshdalvi143@gmail.com', 1, '', '123', '1994/05/30', 'M', '2018-11-11 22:30:17', '', '', '', '', 'Aneesh_Dalvi_12.jpg');
 
 -- --------------------------------------------------------
 
@@ -173,26 +192,31 @@ ALTER TABLE `user_role`
 --
 ALTER TABLE `category`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
 --
 -- AUTO_INCREMENT for table `comment`
 --
 ALTER TABLE `comment`
   MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `post`
 --
 ALTER TABLE `post`
   MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
 --
 -- AUTO_INCREMENT for table `user_role`
 --
 ALTER TABLE `user_role`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
 --
 -- Constraints for dumped tables
 --
@@ -216,6 +240,7 @@ ALTER TABLE `post`
 --
 ALTER TABLE `user`
   ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`user_role`) REFERENCES `user_role` (`id`) ON UPDATE CASCADE;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
