@@ -80,6 +80,7 @@ def create_account(username: str, other_info: {str: None}, website):
 def modify_account(target_email, value_dict, website):
     cursor = None
     try:
+        print('Modifying_account')
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
         if AccountInfo.PASSWORD in value_dict:
@@ -198,8 +199,8 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
         print(query_command)
         cursor.execute(query_command)
         posts = cursor.fetchall()
-        posts = [list(post) for post in posts]
-
+        # posts = [list(post) for post in posts]
+        print('Post_len: ', len(posts))
         return posts
 
     except Exception as e:
@@ -349,7 +350,7 @@ def extract_profile_data_from(user_info):
 
 def get_relative_path(relative_formatted_path):
     relative_level = relative_formatted_path[0]
-    target_path = relative_formatted_path[1]
+    target_path = list(relative_formatted_path[1])
     while relative_level != 0:
         target_path.insert(0, '..')
         relative_level += 1
