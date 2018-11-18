@@ -16,7 +16,7 @@ main_website = Website(app, mysql_server)
 def index():
     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
         session[WebsiteLoginStatus.LOGGED_IN] = False
-    all_posts = WebsiteAPI.get_all_posts(main_website)
+    all_posts = WebsiteAPI.get_all_posts(main_website, order = True)
     if len(all_posts) == 0:
         flash('No posts to display')
 
