@@ -5,14 +5,14 @@
         <h1 class="display-4">Generic Web Fourm</h1>
         <p class="lead">Create posts and discuss with other users</p>
         <hr class="my-4">
-        <p>Please read the <a href="">rules</a> before posting</p>
+        Please read the rules before posting : <button type="button" class="btn btn-info" data-toggle="modal" data-target="#rulesModal">Rules</button>
     </div>
     <div id="searchResults">
         {% block content %}
          {% include 'error_layout.html' %}
          
          {% include 'search_header.html' %}
-		</br>
+		<br>
         {% for item in searched_posts %}
         {#% for i in item %#}
         <!-- <tr>
@@ -62,5 +62,5 @@
     <a class="btn btn-primary" href="/createPost" role="button">Create a Post</a>
 </div>
 
-
+{% include 'rules.html' %}
 {% include 'footer.html' %}
