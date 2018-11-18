@@ -13,8 +13,8 @@
 </head>
 <body>
 
-<nav class="navbar-expand-lg navbar-dark bg-dark navbar-default" role="navigation">
-   
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-default" role="navigation">
+
    {% if session['logged_in'] %}
    	<a class="navbar-brand" href="/view">Web Forum</a>
    {% else %}
@@ -28,15 +28,15 @@
    <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
          <li class="nav-item">
-            
+
          {% if session['logged_in'] %}
   			<a class="nav-link" href="/view">Home</a>
    		{% else %}
    			<a class="nav-link" href="/">Home</a>
    		{% endif %}
-            
-            
-            
+
+
+
          </li>
          {% block body %}
          {% if session['logged_in'] %}
