@@ -1,5 +1,6 @@
 from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo, CommentInfo, BlockInfo
 import os
+from _operator import pos
 
 def is_user_exist(email, website):
     connection_handler = website.mysql_server.connect()
@@ -167,7 +168,7 @@ def get_category_list(website):
     
     return category_list
 
-def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
+def get_all_posts(website, inner_join=True, order=None, filter_dict=None, post_category=None):
     """
     Query database for list(post_id)
     If the our database does NOT exist post_id, return False and return function, print("Error: ERROR_CODE[2]) -> False
@@ -196,7 +197,12 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
             filter_str = 'WHERE ' + ' AND '.join(decompose_arr)
             filter_command = filter_str
 
-        query_command = ' '.join([fetch_all_posts_command, inner_join_command, order_command, filter_command])
+        category_command = ''
+        if post_category != None:
+            category_command = " WHERE category_id IN (SELECT category_id from category where value = '" + post_category + "' )"
+            print(category_command)
+
+        query_command = ' '.join([fetch_all_posts_command, inner_join_command, category_command, order_command, filter_command])
         print(query_command)
         cursor.execute(query_command)
         posts = cursor.fetchall()
