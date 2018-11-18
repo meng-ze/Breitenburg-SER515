@@ -60,7 +60,7 @@ def logout():
     session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = ""
     session[WebsiteLoginStatus.LOGGED_USER_ID] = 0
     session[WebsiteLoginStatus.LOGGED_USER_ROLE_ID] = 0
-    return render_template('index.html')
+    return redirect(url_for('index'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
