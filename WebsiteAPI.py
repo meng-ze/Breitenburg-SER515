@@ -254,6 +254,8 @@ def get_user_info(filter_dict, website, list_mode=False):
         else:
             user_info = cursor.fetchall()
 
+
+
         cursor.close()
         return user_info
 

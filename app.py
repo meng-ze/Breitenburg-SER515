@@ -20,7 +20,22 @@ def index():
     if len(all_posts) == 0:
         flash('No posts to display')
 
-    return render_template('index.html', view_posts=all_posts)
+    lst = list(all_posts)
+    new_lst = list()
+    for element in lst:
+        my_email_id = element[8]
+        my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: my_email_id}, main_website)
+        required_info = WebsiteAPI.extract_profile_data_from(my_user_info)
+        if required_info[-1]:
+            full_profilepic_path = WebsiteAPI.get_relative_path(
+                [-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], required_info[-1]]])
+        else:
+            full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+        element = element + (full_profilepic_path,)
+        print(element)
+        new_lst.append(element)
+
+    return render_template('index.html', view_posts=new_lst)
 
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
@@ -198,7 +213,23 @@ def view():
         all_posts = WebsiteAPI.get_all_posts(main_website, order='{}.{}'.format(DatabaseModel.POST, PostInfo.TIMESTAMP))
         if len(all_posts) == 0:
             flash('No posts to display')
-        return render_template('view.html', view_posts=all_posts)
+
+        lst = list(all_posts)
+        new_lst = list()
+        for element in lst:
+            my_email_id = element[8]
+            my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: my_email_id}, main_website)
+            required_info = WebsiteAPI.extract_profile_data_from(my_user_info)
+            if required_info[-1]:
+                full_profilepic_path = WebsiteAPI.get_relative_path(
+                    [-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], required_info[-1]]])
+            else:
+                full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+            element = element + (full_profilepic_path,)
+            print(element)
+            new_lst.append(element)
+
+        return render_template('view.html', view_posts=new_lst)
     else:
         return render_template('index.html', title='View Post')
 
