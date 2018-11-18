@@ -16,6 +16,10 @@ main_website = Website(app, mysql_server)
 def index():
     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
         session[WebsiteLoginStatus.LOGGED_IN] = False
+    
+    category = None
+    if 'category' in request.args:
+        category = request.args['category']
         
     all_posts = WebsiteAPI.get_all_posts(main_website, order = True, post_category = category)
     if len(all_posts) == 0:
