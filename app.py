@@ -28,9 +28,9 @@ def index():
 # Data Analystics
 @app.route('/analysis', methods=['GET', 'POST'])
 def analysis():
-    print("here")
+    # print("here")
     results1 = WebsiteAPI.getDataForBarGraph(main_website)
-    # print(results)
+    # print(results1)
     months = []
     years = []
     no_of_posts = []
@@ -40,6 +40,10 @@ def analysis():
         years.append(i[1])
         no_of_posts.append(i[2])
 
+    labels = months
+    values = no_of_posts
+    # print(labels)
+    # print(no_of_posts)
 
     results2 = WebsiteAPI.getDataForLineGraph(main_website)
     # print(results)
@@ -51,7 +55,8 @@ def analysis():
         category.append(i[0])
         noOfPosts.append(i[1])
 
-
+    labels2 = category
+    values2 = noOfPosts
 
     results3 = WebsiteAPI.get_registered_users(main_website)
     # print(registered_users)
@@ -73,10 +78,8 @@ def analysis():
     colors_pie = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
     # font = '16'
     # font_color = 'White'
-    labels = months
-    values = no_of_posts
-    labels2 = category
-    values2 = noOfPosts
+
+
     return render_template('analysis.html', values=values, labels=labels,values2=values2, labels2=labels2, set=zip(values_pie, labels_pie, colors_pie) , results1=results1, results2=results2 , registered_users= registered_users, no_of_posts=no_of_posts)
 
 
