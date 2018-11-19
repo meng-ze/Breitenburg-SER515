@@ -26,14 +26,58 @@ def index():
 
 
 # Data Analystics
-@app.route('/analysis')
+@app.route('/analysis', methods=['GET', 'POST'])
 def analysis():
+    print("here")
+    results1 = WebsiteAPI.getDataForBarGraph(main_website)
+    # print(results)
+    months = []
+    years = []
+    no_of_posts = []
+
+    for i in results1:
+        months.append(i[0])
+        years.append(i[1])
+        no_of_posts.append(i[2])
+
+
+    results2 = WebsiteAPI.getDataForLineGraph(main_website)
+    # print(results)
+    category = []
+    noOfPosts = []
+
+
+    for i in results2:
+        category.append(i[0])
+        noOfPosts.append(i[1])
+
+
+
+    results3 = WebsiteAPI.get_registered_users(main_website)
+    # print(registered_users)
+
+    registered_users = []
+    for i in results3:
+        registered_users.append(i[0])
+
+
+    results4 = WebsiteAPI.get_total_posts(main_website)
+    # print(registered_users)
+
+    no_of_posts = []
+    for i in results4:
+        no_of_posts.append(i[0])
+
     labels_pie = ["January","February","March","April","May","June","July","August"]
     values_pie = [10,9,8,7,6,4,7,8]
     colors_pie = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
-    labels = ["January","February","March","April","May","June","July","August"]
-    values = [10,9,8,7,6,4,7,8]
-    return render_template('analysis.html', values=values, labels=labels, set=zip(values_pie, labels_pie, colors_pie))
+    # font = '16'
+    # font_color = 'White'
+    labels = months
+    values = no_of_posts
+    labels2 = category
+    values2 = noOfPosts
+    return render_template('analysis.html', values=values, labels=labels,values2=values2, labels2=labels2, set=zip(values_pie, labels_pie, colors_pie) , results1=results1, results2=results2 , registered_users= registered_users, no_of_posts=no_of_posts)
 
 
 # User Register

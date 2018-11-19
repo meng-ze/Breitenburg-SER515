@@ -1,167 +1,53 @@
 {% include 'menu.html' %}
 
 
-<!-- <div class="container">
-    <div class="jumbotron">
-<h1>Forum Analysis</h1>
+<div class="container">
+    <div class="bg-light">
+     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+      <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.js'></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+
+<h1 align="center">Forum Analysis</h1>
 <br> <br>
 <ol>
+  <h2 align="center">No. of posts posted each month</h2><br>
+  <div align="center">{% include 'bar_graph.html' %}</div>
 
-  <h2><li><a href="/analysis">Catagory vs No. of posts</a></li></h2>
-  <h2><li><a href="url">Catagory vs No. of posts</a></li></h2>
+  <br><br><br>
+  <h2 align="center">No. of posts posted with different categories</h2><br>
+  <div align="center">{% include 'line_graph.html' %}</div>
+
+  <br><br><br>
+
+  <div class="container" align="center">
+    <div class="row">
+      <div class="col-md-6">
+
+    <h2 class= "count-text">Registered Users As Of Today</h2><br>
+    <i class="fa fa-book"><h1 class="timer count-title count-number" data-to="200" data-speed="1500">{{ registered_users[0] }}</h1></i>
+      </div>
+
+      <div class="col-md-6">
+
+    <h2 class= "count-text">Total Number Posts</h2><br>
+    <i class="fa fa-book"><h1 class="timer count-title count-number" data-to="200" data-speed="1500">{{ no_of_posts[0] }}</h1></i>
+      </div>
+    </div>
+
+  </div>
+
+
+  <br><br><br>
+
+  <h2 align="center">Type of Users</h2><br>
+  <div align="center">{% include 'pie_chart.html' %}</div>
+
+<br><br><br>
 </ol>
 </div>
-</div> -->
-
-
-<h2>Bar Graph</h2>
-<div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
- <!-- bar chart canvas element --><canvas id="chart1" width="600" height="400"></canvas>
-
-
-
-<script>
-   // bar chart data
-   var barData = {
-   labels : [{% for item in labels %}
-                  "{{item}}",
-              {% endfor %}],
-   datasets : [
-      {
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-         data : [{% for item in values %}
-                      {{item}},
-                    {% endfor %}]
-      }
-      ]
-   }
-
-   // get bar chart canvas
-   var mychart = document.getElementById("chart1").getContext("2d");
-
-   steps = 10
-   max = 10
-   // draw bar chart
-   new Chart(mychart).Bar(barData, {
-        scaleOverride: true,
-        scaleSteps: steps,
-        scaleStepWidth: Math.ceil(max / steps),
-        scaleStartValue: 0,
-        scaleShowVerticalLines: true,
-        scaleShowGridLines : true,
-        barShowStroke : true,
-        scaleShowLabels: true
-   });
-
-</script>
 </div>
-<br><br><br>
-
-
-<div>
-
-<h2>Line Graph</h2>
-<!-- bar chart canvas element -->
-<canvas id="chart2" width="600" height="400"></canvas>
-
-<script>
-
-   // bar chart data
-   var barData = {
-   labels : [{% for item in labels %}
-                  "{{item}}",
-              {% endfor %}],
-   datasets : [
-      {
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            bezierCurve : false,
-            data : [{% for item in values %}
-                      {{item}},
-                    {% endfor %}]
-      }]
-   }
-
-    Chart.defaults.global.animationSteps = 50;
-    Chart.defaults.global.tooltipYPadding = 16;
-    Chart.defaults.global.tooltipCornerRadius = 0;
-    Chart.defaults.global.tooltipTitleFontStyle = "normal";
-    Chart.defaults.global.tooltipFillColor = "rgba(0,0,0,0.8)";
-    Chart.defaults.global.animationEasing = "easeOutBounce";
-    Chart.defaults.global.responsive = false;
-    Chart.defaults.global.scaleLineColor = "black";
-    Chart.defaults.global.scaleFontSize = 16;
-
-   // get bar chart canvas
-   var mychart = document.getElementById("chart2").getContext("2d");
-
-   steps = 10
-   max = 10
-   // draw bar chart
-   var LineChartDemo = new Chart(mychart).Line(barData, {
-        scaleOverride: true,
-        scaleSteps: steps,
-        scaleStepWidth: Math.ceil(max / steps),
-        scaleStartValue: 0,
-        scaleShowVerticalLines: true,
-        scaleShowGridLines : true,
-        barShowStroke : true,
-        scaleShowLabels: true,
-        bezierCurve: false,
-
-   });
-
-
-</script>
-
-<br><br><br>
-</div>
-
-<div>
-
-<h2>Pie Chart</h2>
-<!-- bar chart canvas element -->
-<canvas id="chart3" width="600" height="400"></canvas>
-<script>
-  var pieData = [
-            {% for item,label,colors in set %}
-                {
-                    value: {{item}},
-                    label: "{{label}}",
-                    color : "{{colors}}"
-                },
-                {% endfor %}
-
-
-         ];
-
-   // get bar chart canvas
-   var mychart = document.getElementById("chart3").getContext("2d");
-
-   steps = 10
-   max = 10
-   // draw pie chart
-   new Chart(document.getElementById("chart3").getContext("2d")).Pie(pieData);
-
-</script>
-
-
-
-
-
-</div>
-
-
-<br><br><br>
-
-<hr>
 
 
 {% include 'footer.html' %}
+
+
