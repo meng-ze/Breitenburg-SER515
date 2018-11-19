@@ -286,7 +286,7 @@ def get_registered_users(website):
         # results = [list(i) for i in result]
         connection_handler.commit()
         cursor.close()
-        print(result3)
+        # print(result3)
         return result3
     except Exception as e:
         print('Error!')
@@ -306,8 +306,31 @@ def get_total_posts(website):
         # results = [list(i) for i in result]
         connection_handler.commit()
         cursor.close()
-        print(result3)
+        # print(result3)
         return result3
+    except Exception as e:
+        print('Error!')
+        print(e)
+    if cursor != None:
+        cursor.close()
+    return None
+
+
+def get_typeof_users(website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute("SELECT role_user , count(role_user) as count FROM (SELECT user.username, user.email_id, IF(blocked_user.email_id IS NULL,\
+            user_role.user_role,'blocked') as role_user FROM `user` inner join user_role on user.user_role = user_role.id \
+            left join blocked_user ON user.email_id = blocked_user.email_id ) user_det group by role_user")
+
+        result5 = cursor.fetchall()
+        # results = [list(i) for i in result]
+        connection_handler.commit()
+        cursor.close()
+        # print(result5)
+        return result5
     except Exception as e:
         print('Error!')
         print(e)
@@ -402,7 +425,7 @@ def getDataForLineGraph(website):
         # results = [list(i) for i in result]
         connection_handler.commit()
         cursor.close()
-        print(result2)
+        # print(result2)
         return result2
     except Exception as e:
         print('Error!')

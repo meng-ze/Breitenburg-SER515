@@ -42,14 +42,32 @@ def analysis():
 
     labels = months
     values = no_of_posts
-    # print(labels)
-    # print(no_of_posts)
 
+    results5 = WebsiteAPI.get_typeof_users(main_website)
+    # print(results5)
+
+    typeof_users = []
+    noof_users = []
+
+    for i in results5:
+        typeof_users.append(i[0])
+        noof_users.append(i[1])
+
+    # typeof_users.append('MAd people')
+    # print(typeof_users)
+    # print(noof_users)
+
+    labels_pie = typeof_users
+    values_pie = noof_users
+    colors_pie = ["#F34353", "#F38630", "#FEDCBA", "#46BFBD", "#FDB45C", "#ABCDEF", "#DDDDDD", "#ABCABC"]
+
+    colors = ["Red", "Orange"]
+    dict1 = dict(zip(typeof_users, colors))
+    # print(dict1)
     results2 = WebsiteAPI.getDataForLineGraph(main_website)
     # print(results)
     category = []
     noOfPosts = []
-
 
     for i in results2:
         category.append(i[0])
@@ -65,7 +83,6 @@ def analysis():
     for i in results3:
         registered_users.append(i[0])
 
-
     results4 = WebsiteAPI.get_total_posts(main_website)
     # print(registered_users)
 
@@ -73,14 +90,7 @@ def analysis():
     for i in results4:
         no_of_posts.append(i[0])
 
-    labels_pie = ["January","February","March","April","May","June","July","August"]
-    values_pie = [10,9,8,7,6,4,7,8]
-    colors_pie = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA","#ABCDEF", "#DDDDDD", "#ABCABC"  ]
-    # font = '16'
-    # font_color = 'White'
-
-
-    return render_template('analysis.html', values=values, labels=labels,values2=values2, labels2=labels2, set=zip(values_pie, labels_pie, colors_pie) , results1=results1, results2=results2 , registered_users= registered_users, no_of_posts=no_of_posts)
+    return render_template('analysis.html', values=values, labels=labels, values2=values2, labels2=labels2, set=zip(values_pie, labels_pie, colors_pie), results1=results1, results2=results2, registered_users=registered_users, no_of_posts=no_of_posts, dict1=dict1)
 
 
 # User Register
