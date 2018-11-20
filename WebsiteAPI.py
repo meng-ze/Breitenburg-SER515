@@ -167,6 +167,14 @@ def get_category_list(website):
     
     return category_list
 
+def get_category_by_id(website, category_id):
+    connection_handler = website.mysql_server.connect()
+    cursor = connection_handler.cursor()
+    cursor.execute("SELECT * FROM {} WHERE CATEGORY_ID = %s".format(DatabaseModel.CATEGORY), (category_id))
+    category = cursor.fetchone()
+    
+    return category
+
 def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
     """
     Query database for list(post_id)
@@ -188,7 +196,7 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
             order_command = 'ORDER BY {} DESC'.format(order)
 
         filter_command = ''
-        if filter_dict != None:
+        if filter_dict != None and filter_dict != {}:
             decompose_arr = []
             for key in filter_dict:
                 individual_query = '{} {}'.format(key, filter_dict[key])

@@ -195,10 +195,11 @@ def view():
         session[WebsiteLoginStatus.LOGGED_IN] = False
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
+        categories = WebsiteAPI.get_category_list(main_website)
         all_posts = WebsiteAPI.get_all_posts(main_website, order='{}.{}'.format(DatabaseModel.POST, PostInfo.TIMESTAMP))
         if len(all_posts) == 0:
             flash('No posts to display')
-        return render_template('view.html', view_posts=all_posts)
+        return render_template('view.html', view_posts=all_posts, categories=categories)
     else:
         return render_template('index.html', title='View Post')
 
@@ -206,37 +207,49 @@ def view():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     categories = WebsiteAPI.get_category_list(main_website)
-    if request.method == "POST":
+    if request.method == "GET":
         
-        search_text = request.form['search']
-        filter_type = request.form['filter_by']
-        category = request.form['category']
-        less_date = request.form['less_date']
-        great_date = request.form['great_date']
+        #search_text = request.form['search']
+        #filter_type = request.form['filter_by']
+        #category = request.form['category']
+        #less_date = request.form['less_date']
+        #great_date = request.form['great_date']
+
+        search_text = request.args.get('search')
+        filter_type = request.args.get('filter_by')
+        category = request.args.get('category')
+        less_date = request.args.get('less_date')
+        great_date = request.args.get('great_date')
         
         filter_dict = {}
-        if len(search_text)>0 :
+        if len(search_text) > 0 :
             if filter_type == 'text':
                 filter_dict[PostInfo.POST_TITLE] = ' like \'%'+ search_text + '%\''
             
             if filter_type == 'user':
                 filter_dict['{}.{}'.format(DatabaseModel.POST, PostInfo.USER_ID)] = ' IN (SELECT user_id from user where username like \'%' + search_text + '%\')'
         
-        if category!='0' :
+        if int(category) != 0:
             filter_dict[PostInfo.CATEGORY_ID] = ' = ' + category
         
-        if len(less_date)>0 :
+        if len(less_date) > 0 :
             filter_dict['{}.{} <= '.format(DatabaseModel.POST, PostInfo.TIMESTAMP)] = less_date
         
-        if len(great_date)>0 :
+        if len(great_date) > 0 :
             filter_dict['{}.{} >= '.format(DatabaseModel.POST, PostInfo.TIMESTAMP)] = great_date
         
         all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=True, filter_dict=filter_dict)
         
-        # print(searched_posts)
+        if filter_dict == {}:
+            #If nothing to search for, just go back to the search page
+            return redirect(url_for('view'))
+
         if len(all_posts) is 0:
             flash('No results Found!')
-        return render_template('search.html', searched_posts=all_posts, categories=categories)  # <- Here you jump away from whatever result you create
+        return render_template('view.html', view_posts=all_posts, categories=categories,
+                                            category_selected=category, filter_by_selected=filter_type,
+                                            search_selected=search_text, date_less_selected=less_date,
+                                            date_greater_selected=great_date, searching=True)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
 
 @app.route('/my_posts', methods=['GET', 'POST'])
@@ -296,7 +309,10 @@ def post():
             comment_user = WebsiteAPI.get_user_info({AccountInfo.USER_ID: comment[2]}, main_website)
             comment.append(comment_user[1])
             comments[idx] = comment
-        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin)
+
+        category = WebsiteAPI.get_category_by_id(main_website, chosen_post[4])
+       
+        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin, category=category)
     else:
         return render_template('index.html', title='Post')
 
