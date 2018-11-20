@@ -436,5 +436,10 @@ def list_admin():
     admins_list = WebsiteAPI.get_user_info({AccountInfo.USER_ROLE_ID: 2}, main_website, list_mode=True)
     return render_template('list_admin.html', admins_list=admins_list)  # <- Here you jump away from whatever result you create
 
+class DebugableApp():
+    def __init__(self):
+        self.website = main_website
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    debugable_app = DebugableApp()
+    debugable_app.website.app.run(debug=True, host='0.0.0.0')
