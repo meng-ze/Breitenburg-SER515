@@ -18,15 +18,15 @@ def verify_login_password(email, password, website):
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute("SELECT user_id,user_role.user_role, email_id FROM user inner join user_role on user.user_role = user_role.id WHERE email_id = %s and password = %s", (email, password))
+        cursor.execute("SELECT user_id, user_role.user_role, email_id FROM user inner join user_role on user.user_role = user_role.id WHERE email_id = %s and password = %s", (email, password))
         for content in cursor:
             cursor.close()
-            print(content)
             content_dict = {
                 AccountInfo.EMAIL: email,
                 AccountInfo.USER_ID: content[0],
                 AccountInfo.USER_ROLE_ID: content[1]
             }
+            print(content_dict)
             return (True, content_dict)
         
     except Exception as e:

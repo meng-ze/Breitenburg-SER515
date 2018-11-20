@@ -4,7 +4,7 @@ from Website import Website
 from flaskext.mysql import MySQL
 import CustomForm
 import WebsiteAPI
-from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, CommentInfo, WebsiteLoginStatus, DefaultFileInfo
+from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, PostInfo, CommentInfo, WebsiteLoginStatus, DefaultFileInfo, RoleType
 from werkzeug.utils import secure_filename
 import time, datetime
 
@@ -318,7 +318,9 @@ def post():
         print('Chosen_post: ', chosen_post)
         user_id_of_chosen_post = chosen_post[1]
         user_info = WebsiteAPI.get_user_info({AccountInfo.USER_ID: user_id_of_chosen_post}, main_website)
-        is_admin = user_info[3] == 2
+        is_admin = session[WebsiteLoginStatus.LOGGED_USER_ROLE_ID] == RoleType.ADMIN
+        is_post_owner = user_id_of_chosen_post == session[WebsiteLoginStatus.LOGGED_USER_ID]
+        is_admin_of_this_post = is_admin or is_post_owner
 
         comments = WebsiteAPI.get_all_comments(post_id, main_website, filter_dict={PostInfo.POST_ID: post_id})
 
@@ -327,7 +329,7 @@ def post():
             comment_user = WebsiteAPI.get_user_info({AccountInfo.USER_ID: comment[2]}, main_website)
             comment.append(comment_user[1])
             comments[idx] = comment
-        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin)
+        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin_of_this_post)
     else:
         return render_template('index.html', title='Post')
 
@@ -336,11 +338,12 @@ def post():
 def admin_delete_post():
     post_id = request.form['post_id']
     comment_id = request.form['comment_id']
+
     view_id = request.form['view_id']
-    post_user_id = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: ' = {}'.format(post_id)})[1]
+    post_user_id = WebsiteAPI.get_all_posts(main_website, inner_join=False, filter_dict={PostInfo.POST_ID: ' = {}'.format(view_id)})[0][1]
 
     my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: session[WebsiteLoginStatus.LOGGED_USER_EMAIL]}, main_website)
-    am_i_admin = my_user_info[3] == 2
+    am_i_admin = session[WebsiteLoginStatus.LOGGED_USER_ROLE_ID] == RoleType.ADMIN 
     if not am_i_admin and my_user_info[0] != post_user_id: # If the current user's role is not admin
         flash('Unauthorized!')
         return redirect(url_for('view')) # Redirect back to the main page
