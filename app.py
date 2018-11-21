@@ -61,7 +61,10 @@ def analysis():
     values_pie = noof_users
     colors_pie = ["#F34353", "#F38630", "#FEDCBA", "#46BFBD", "#FDB45C", "#ABCDEF", "#DDDDDD", "#ABCABC"]
 
-    colors = ["Red", "Orange"]
+    if len(labels_pie) == 2:
+        colors = ["Red", "Orange"]
+    else:
+        colors = ["Red", "Orange", "Pink"]
     dict1 = dict(zip(typeof_users, colors))
     # print(dict1)
     results2 = WebsiteAPI.getDataForLineGraph(main_website)
