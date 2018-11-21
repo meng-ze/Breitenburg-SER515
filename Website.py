@@ -21,7 +21,7 @@ class Website:
 
         self.app.config[AppConfigurationKey.DATABASE_HOST] = 'localhost'
         self.app.config[AppConfigurationKey.DATABASE_USER] = 'root'
-        self.app.config[AppConfigurationKey.DATABASE_PASSWORD] = 'root123'
+        self.app.config[AppConfigurationKey.DATABASE_PASSWORD] = ''
         self.app.config[AppConfigurationKey.DATABASE_DB] = 'web_forum'
         self.app.secret_key = 'super secret key'
         self.mysql_server.init_app(self.app)

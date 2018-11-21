@@ -379,8 +379,26 @@ def search():
         
         if len(all_posts) is 0:
             flash('No results Found!')
+        
+        
+        lst = list(all_posts)
+        new_lst = list()
+        for element in lst:
+            my_email_id = element[8]
+            my_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: my_email_id}, main_website)
+            required_info = WebsiteAPI.extract_profile_data_from(my_user_info)
+            if required_info[-1]:
+                full_profilepic_path = WebsiteAPI.get_relative_path(
+                    [-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], required_info[-1]]])
+            else:
+                full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+            element = element + (full_profilepic_path,)
+            print(element)
+            new_lst.append(element)
+        
+        
                     
-        return render_template('search.html', searched_posts=all_posts, categories=categories, category_selected=category, filter_by_selected=filter_type,
+        return render_template('search.html', searched_posts=new_lst, categories=categories, category_selected=category, filter_by_selected=filter_type,
                                             search_selected=search_text, date_less_selected=less_date,
                                             date_greater_selected=great_date)
 
