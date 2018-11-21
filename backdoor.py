@@ -29,8 +29,8 @@ Thank you for your response and we are looking forward to talking to you''',
         'gmatti1@asu.edu', 
         'Software Engineer Internship (Northbrook, IL)',
         '''The Opportunity
-Consumer connectivity is growing every day—across our cars, smartphones, homes, and in virtually every aspect of our lives. We recognized this trend when we launched Drivewise in 2010, and we haven’t stopped accelerating since. When you join our technology team, you’ll have the freedom to dream up amazing innovations and explore new technologies. We’re looking for technology visionaries who aren’t afraid to rethink the way things work.
-Today, our telematics sensors now connect more than 1,000,000 consumers, and our mobile user experiences are helping to make our customers’ driving experiences more informative, engaging, and fun. So we’re not overpromising when we say that at Allstate, you can make an impact on the future of the driving experience and in how consumers connect across the Internet of Things.''',
+Consumer connectivity is growing every day-across our cars, smartphones, homes, and in virtually every aspect of our lives. We recognized this trend when we launched Drivewise in 2010, and we haven't stopped accelerating since. When you join our technology team, you’ll have the freedom to dream up amazing innovations and explore new technologies. We're looking for technology visionaries who aren't afraid to rethink the way things work.
+Today, our telematics sensors now connect more than 1,000,000 consumers, and our mobile user experiences are helping to make our customer's driving experiences more informative, engaging, and fun. So we're not overpromising when we say that at Allstate, you can make an impact on the future of the driving experience and in how consumers connect across the Internet of Things.''',
         1, debugable_app.website)
 
     WebsiteAPI.create_post(
@@ -48,7 +48,7 @@ Today, our telematics sensors now connect more than 1,000,000 consumers, and our
     WebsiteAPI.create_post(
         'virajtalaty@gmail.com', 
         'Software Engineer - New Grad - San Francisco',
-        '''Dropbox is a leading global collaboration platform that's transforming the way people work together, from the smallest business to the largest enterprise. With more than 500 million registered users across more than 180 countries, our mission is to unleash the world’s creative energy by designing a more enlightened way of working.''',
+        '''Dropbox is a leading global collaboration platform that's transforming the way people work together, from the smallest business to the largest enterprise. With more than 500 million registered users across more than 180 countries, our mission is to unleash the world's creative energy by designing a more enlightened way of working.''',
         1, debugable_app.website)
 
 

@@ -4,6 +4,7 @@
 img {
   border-radius: 50%;
 }
+
 </style>
 
 <div class="container">
@@ -34,10 +35,8 @@ img {
             </div>
         </tr>
         {% endfor %}
-
-
     </div>
-
+</div>
 
     {% endblock %}
     <div style="width:80%; margin:0 auto;">
@@ -59,7 +58,7 @@ img {
               <small class="text-muted" >{{post[5]}}</small>
             </div>
             <form action="/post">
-                <button type="submit" class="btn btn-link btn-lg"><h1>{{ post[2] }}</h1></button>
+                <button type="submit" class="btn btn-link btn-lg" style="white-space:normal"><h3>{{ post[2] }}</h3></button>
                 <input type="hidden" name="id" value="{{ post[0] }}">
             </form>
                 <p class="article-content">{{ post[3] }}</p>
@@ -75,7 +74,6 @@ img {
     <a class="btn btn-primary"  style="width:100%" href="/createPost" role="button">Create a Post</a>
     </div>
     <br>
-</div>
 
 
 {% include 'footer.html' %}
