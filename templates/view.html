@@ -16,7 +16,7 @@ img {
     <div id="searchResults">
         {% block content %}
          {% include 'error_layout.html' %}
-         
+
          {% include 'search_header.html' %}
 		</br>
         {% for item in searched_posts %}
@@ -34,7 +34,7 @@ img {
         </tr>
         {% endfor %}
 
-        
+
     </div>
 
 
@@ -50,7 +50,7 @@ img {
             <div class="article-metadata">
               <img src={{ post[20] }}  style="width:50px">
               <a class="mr-2" href="{{ '/name_click?user=' + post[8] }}">{{post[7]}}</a>
-              <small class="text-muted" >{{post[5]}}</small><hr>
+              <small class="text-muted" >{{post[5]}}</small>
             </div>
             <form action="/post">
                 <button type="submit" class="btn btn-link btn-lg"><h1>{{ post[2] }}</h1></button>

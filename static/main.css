@@ -2,6 +2,14 @@
     background-image:url('https://image.freepik.com/free-vector/abstract-background-with-a-watercolor-texture_1048-2144.jpg');
 }*/
 
+
+.fake-div {
+  width:100%;
+  height: 1280px;
+  position:relative;
+}
+
+
 .navbar-nav > li{
   padding-left:10px;
   padding-right:10px;
