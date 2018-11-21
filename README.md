@@ -7,7 +7,7 @@ If you haven't joined our forum yet, register today! We are waiting for your ide
 
 Our website is live at ser515.meng-server.com:5000
 
-We have refracted our code by adding abstraction for the user data and dedicatedly followed a sprint of 2 weeks. 
+We have refracted our code by adding abstraction for the user data and dedicatedly followed a sprint of 2 weeks for the last 3 months. 
 
 Major Technologies used : 
 1. Python Flask Framework 
