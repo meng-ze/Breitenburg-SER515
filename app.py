@@ -262,10 +262,18 @@ def edit_post():
         if request.method == 'POST':
             post_id = request.form[PostInfo.POST_ID]
             post = WebsiteAPI.get_all_posts(main_website, False, filter_dict={PostInfo.POST_ID: ' = {}'.format(post_id)})
-
-        return render_template('edit_post.html', title='Edit Post', post=post)
+            print(post)
+            return render_template('edit_post.html', title='Edit Post', post=post)
+        if request.method == 'GET':
+            post_id = request.args['new']
+            post_title = request.args['title']
+            post_text = request.args['text']
+            email = session[WebsiteLoginStatus.LOGGED_USER_EMAIL]    
+            edit_post_status = WebsiteAPI.edit_post(email, post_id, post_title, post_text, main_website)
+            return render_template('view.html', title='Home')
     else:
         return render_template('index.html', title='Home')
+    form = CustomForm.CreatePostForm(request.form, main_website)
 
 @app.route('/post', methods=['GET', 'POST'])
 def post():

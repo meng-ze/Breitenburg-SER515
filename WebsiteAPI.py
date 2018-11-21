@@ -110,6 +110,26 @@ def modify_account(target_email, value_dict, website):
         cursor.close()
     return False
 
+def edit_post(email, post_id, post_title, post_text, website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute(
+                'UPDATE post SET post_title = %s, post_text = %s WHERE post_id = %s',(
+            post_title, post_text, post_id))
+        connection_handler.commit()
+        cursor.close()
+        
+        return True
+    except Exception as e:
+        print('Error!')
+        print(e)
+
+    if cursor != None:
+        cursor.close()
+    return False
+
 def create_post(email, title, body, category, website):
     """
     Create a post for username 

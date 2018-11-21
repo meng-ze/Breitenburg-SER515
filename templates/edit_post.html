@@ -2,19 +2,22 @@
 
 <div class="container">
   <div class="jumbotron">
-  
-    
+
+
     <h1 class="display-4">Edit Post</h1>
-    
+
     <br>
     <h2>Already added value to update. Make it editable</h2>
     <br>
-    <h5 class="display-5"><b>ID - {{post[1]}}</b></h5>
-    <span><b>Title</b><span> &nbsp;<textarea class="display-5" rows="1">{{post[2]}}</textarea><br/>
-    <span><b>Desc</b></span>&nbsp;<textarea class="display-5" rows="7">{{post[3]}}</textarea><br/>
-    <button type="submit" class="btn btn-primary">
-          <span class="glyphicon glyphicon-pencil"></span> Edit
-    </button>
+    <form method="GET" action="/edit_post">
+      <h5 class="display-5" id="id" name="id"><b>ID - {{post[0][0]}}</b></h5>
+      <input type="hidden" id="new" name="new" value="{{post[0][0]}}">
+      <span><b>Title</b><span> &nbsp;<textarea class="display-5" rows="1" id="title" name="title">{{post[0][2]}}</textarea><br/>
+      <span><b>Desc</b></span>&nbsp;<textarea class="display-5" rows="7" id="text" name="text">{{post[0][3]}}</textarea><br/>
+      <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-pencil"></span> Edit
+      </button>
+    </form>
 </div>
 
 {% include 'error_layout.html' %}
