@@ -185,22 +185,28 @@ def login():
 @app.route('/name_click', methods=['GET', 'POST'])
 def name_click():
     if request.method == 'GET':
-        if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
-            session[WebsiteLoginStatus.LOGGED_IN] = False
+        if session.get('logged_in') is None:
+            session['logged_in'] = False
 
-        if session[WebsiteLoginStatus.LOGGED_IN] == True:
-            chosen_user_email = request.args['user']
-            chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: chosen_user_email}, main_website)
-            required_info = WebsiteAPI.extract_profile_data_from(chosen_user_info)
-
-            if required_info[-1]:
-                full_profilepic_path = WebsiteAPI.get_relative_path([-1, ['static', 'profile_pics', required_info[-1]]])
+        if session['logged_in'] == True:
+            if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
+                session[WebsiteLoginStatus.LOGGED_IN] = False
+        
+            if session[WebsiteLoginStatus.LOGGED_IN] == True:
+                chosen_user_email = request.args['user']
+                chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: chosen_user_email}, main_website)
+                required_info = WebsiteAPI.extract_profile_data_from(chosen_user_info)
+        
+                if required_info[-1]:
+                    full_profilepic_path = WebsiteAPI.get_relative_path([-1, ['static', 'profile_pics', required_info[-1]]])
+                else:
+                    full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
+                return render_template('ViewProfile.html', title='Profile', posts=[required_info], full_profilepic_path=full_profilepic_path)
             else:
-                full_profilepic_path = WebsiteAPI.get_relative_path(DefaultFileInfo.AVATAR_PATH)
-            return render_template('ViewProfile.html', title='Profile', posts=[required_info], full_profilepic_path=full_profilepic_path)
+                return redirect(url_for('view'))
         else:
-            return render_template('index.html', title='Home')
-
+            flash('Login to see user profile')
+            return redirect(url_for('index'))
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():

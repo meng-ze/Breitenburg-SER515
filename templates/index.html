@@ -37,6 +37,7 @@ img {
       <div class="row">
         <div class="col-md-8">
            <!– This will show the registered/unregistered users the posts without registration –>
+           {% include 'error_layout.html' %}
     {% for post in view_posts %}
 
       <article class="media content-section">
