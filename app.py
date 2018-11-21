@@ -319,8 +319,9 @@ def view():
             element = element + (full_profilepic_path,)
             print(element)
             new_lst.append(element)
-
-        return render_template('view.html', view_posts=new_lst)
+        
+        categories = WebsiteAPI.get_category_list(main_website)        
+        return render_template('view.html', view_posts=new_lst, categories = categories )
     else:
         return render_template('index.html', title='View Post')
 
@@ -348,9 +349,11 @@ def search():
             filter_dict[PostInfo.CATEGORY_ID] = ' = ' + category
 
         if len(less_date) > 0:
+            less_date = "'" + less_date + "'"
             filter_dict['{}.{} <= '.format(DatabaseModel.POST, PostInfo.TIMESTAMP)] = less_date
 
         if len(great_date) > 0:
+            great_date = "'" + great_date + "'"
             filter_dict['{}.{} >= '.format(DatabaseModel.POST, PostInfo.TIMESTAMP)] = great_date
 
         all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=True, filter_dict=filter_dict)
@@ -358,6 +361,7 @@ def search():
         # print(searched_posts)
         if len(all_posts) is 0:
             flash('No results Found!')
+            
         return render_template('search.html', searched_posts=all_posts, categories=categories)  # <- Here you jump away from whatever result you create
    # return render_template('view.html')
 

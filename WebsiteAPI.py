@@ -173,7 +173,6 @@ def get_category_list(website):
     cursor.execute("SELECT * FROM {}".format(DatabaseModel.CATEGORY))
     result = cursor.fetchall()
     category_list = [list(i) for i in result]
-
     return category_list
 
 def get_all_posts(website, inner_join=True, order=None, filter_dict=None, post_category=None):
