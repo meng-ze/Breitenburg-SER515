@@ -421,7 +421,7 @@ def post():
             comment_user = WebsiteAPI.get_user_info({AccountInfo.USER_ID: comment[2]}, main_website)
             comment.append(comment_user[1])
             comments[idx] = comment
-        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1]), admin=is_admin_of_this_post)
+        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1], user_info[2]), admin=is_admin_of_this_post)
     else:
         return render_template('index.html', title='Post')
 
