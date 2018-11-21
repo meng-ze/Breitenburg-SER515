@@ -196,7 +196,7 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None, post_c
             order_command = 'ORDER BY {} DESC'.format(order)
 
         filter_command = ''
-        if filter_dict != None:
+        if filter_dict != None and filter_dict != {}:
             decompose_arr = []
             for key in filter_dict:
                 individual_query = '{} {}'.format(key, filter_dict[key])

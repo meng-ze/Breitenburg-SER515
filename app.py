@@ -295,7 +295,6 @@ def view():
         session[WebsiteLoginStatus.LOGGED_IN] = False
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
-
         category = None
         if 'category' in request.args:
             category = request.args['category']
@@ -329,22 +328,28 @@ def view():
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     categories = WebsiteAPI.get_category_list(main_website)
-    if request.method == "POST":
+    if request.method == "GET":
+        
+        #search_text = request.form['search']
+        #filter_type = request.form['filter_by']
+        #category = request.form['category']
+        #less_date = request.form['less_date']
+        #great_date = request.form['great_date']
 
-        search_text = request.form['search']
-        filter_type = request.form['filter_by']
-        category = request.form['category']
-        less_date = request.form['less_date']
-        great_date = request.form['great_date']
-
+        search_text = request.args.get('search')
+        filter_type = request.args.get('filter_by')
+        category = request.args.get('category')
+        less_date = request.args.get('less_date')
+        great_date = request.args.get('great_date')
+        
         filter_dict = {}
-        if len(search_text) > 0:
+        if len(search_text) > 0 :
+
             if filter_type == 'text':
                 filter_dict[PostInfo.POST_TITLE] = ' like \'%' + search_text + '%\''
 
             if filter_type == 'user':
                 filter_dict['{}.{}'.format(DatabaseModel.POST, PostInfo.USER_ID)] = ' IN (SELECT user_id from user where username like \'%' + search_text + '%\')'
-
         if category != '0':
             filter_dict[PostInfo.CATEGORY_ID] = ' = ' + category
 
@@ -358,12 +363,26 @@ def search():
 
         all_posts = WebsiteAPI.get_all_posts(main_website, inner_join=True, filter_dict=filter_dict)
 
-        # print(searched_posts)
+        
+        '''
+                # print(searched_posts)
+                if len(all_posts) is 0:
+                    flash('No results Found!')
+                    
+                return render_template('search.html', searched_posts=all_posts, categories=categories)  # <- Here you jump away from whatever result you create
+        =======
+        '''        
+        if filter_dict == {}:
+            #If nothing to search for, just go back to the search page
+            return redirect(url_for('view'))
+
+        
         if len(all_posts) is 0:
             flash('No results Found!')
-            
-        return render_template('search.html', searched_posts=all_posts, categories=categories)  # <- Here you jump away from whatever result you create
-   # return render_template('view.html')
+                    
+        return render_template('search.html', searched_posts=all_posts, categories=categories, category_selected=category, filter_by_selected=filter_type,
+                                            search_selected=search_text, date_less_selected=less_date,
+                                            date_greater_selected=great_date)
 
 
 @app.route('/my_posts', methods=['GET', 'POST'])

@@ -7,8 +7,9 @@
     <h1 class="display-4">Create a Post</h1>
     <p class="lead">Tell the world anything</p>
     <hr class="my-4">
-    <p>Please read the <a href="/">rules</a> before posting</p>
-    
+    Please read the rules before posting : <button type="button" class="btn btn-info" data-toggle="modal" data-target="#rulesModal">Rules</button>
+    <br>
+    <br>
     <form method="POST" action="">
       <div class="form-group row">
         <label for="category" class="col-sm-2 col-form-label">Category:</label>
@@ -34,5 +35,6 @@
     </form>
   </div>
 </div>
+{% include 'rules.html' %}
 {% include 'error_layout.html' %}
 {% include 'footer.html' %}

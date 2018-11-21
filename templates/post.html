@@ -6,6 +6,7 @@
 		<p class="lead">{{ post[3] }}</p>
 		<hr class="my-4">
 		<p>Posted by <a href="{{ '/name_click?user=' + user[2] }}">{{user[1]}}</a></p>
+
 		{% if admin %}
 			<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletePostModal">
 				Delete
