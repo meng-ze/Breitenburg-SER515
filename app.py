@@ -92,8 +92,8 @@ def name_click():
             session[WebsiteLoginStatus.LOGGED_IN] = False
 
         if session[WebsiteLoginStatus.LOGGED_IN] == True:
-            chosen_user_email = request.args['user']
-            chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: chosen_user_email}, main_website)
+            chosen_user_id = request.args['user']
+            chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.USER_ID: chosen_user_id}, main_website)
             required_info = WebsiteAPI.extract_profile_data_from(chosen_user_info)
 
             if required_info[-1]:
