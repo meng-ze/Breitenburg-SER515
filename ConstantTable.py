@@ -77,3 +77,7 @@ class DefaultFileInfo:
     AVATAR_FILE_NAME =  'default.jpg'
     HOME = expanduser("~")
     AVATAR_PATH = [-1, ['static', 'profile_pics', 'default.jpg']]
+
+class RoleType:
+    ADMIN = 'admin'
+    NORMAL = 'normal'

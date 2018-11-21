@@ -1,5 +1,12 @@
 {% include 'menu.html' %}
 
+<style>
+img {
+  border-radius: 50%;
+}
+
+</style>
+
 
 <div class="container">
     {% block body %}
@@ -30,15 +37,20 @@
       <div class="row">
         <div class="col-md-8">
            <!– This will show the registered/unregistered users the posts without registration –>
+           {% include 'error_layout.html' %}
     {% for post in view_posts %}
 
       <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{post[7]}}</a>
-              <small class="text-muted" >{{post[5]}}</small><hr>
+              <img src={{ post[20] }}  style="width:50px">
+              <a class="mr-2" href="{{ '/name_click?user=' + post[8] }}">{{post[7]}}</a>
+              <small class="text-muted" >{{post[5]}}</small>
             </div>
-            <h2><a class="article-title" href="#">{{ post[2] }}</a></h2>
+            <form action="/post">
+                <button type="submit" class="btn btn-link btn-lg" style="white-space:normal"><h3>{{ post[2] }}</h3></button>
+                <input type="hidden" name="id" value="{{ post[0] }}">
+            </form>
             <p class="article-content">{{ post[3] }}</p>
           </div>
         </article>

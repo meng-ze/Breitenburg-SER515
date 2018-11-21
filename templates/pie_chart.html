@@ -1,0 +1,51 @@
+<div id="area3">
+<!-- <h2>Pie Chart</h2> -->
+<!-- bar chart canvas element -->
+
+<canvas id="chart3" width="600" height="400"></canvas>
+
+<script>
+
+  //get the pie chart canvas
+
+  var pieData = [
+            {% for item,label,colors in set %}
+                {
+                    value: {{item}},
+                    label: "{{label}}",
+                    color : "{{colors}}",
+                    labelColor : 'White',
+                    labelFontSize : '16'
+                },
+                {% endfor %}
+
+
+         ];
+
+
+
+   // get bar chart canvas
+   var mychart = document.getElementById("chart3").getContext("2d");
+
+   steps = 10
+   max = 10
+   // draw pie chart
+   new Chart(document.getElementById("chart3").getContext("2d")).Pie(pieData);
+
+  </script>
+  <br><br>
+  <table class="table col-md-3">
+  <tr>
+    <th scope="col">Users</th>
+    <th scope="col">No. of users</th>
+  </tr>
+  {% for key, values in dict1.items() %}
+    <tr>
+        <td>{{key}}</td>
+        <td>{{values}}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</div>
+

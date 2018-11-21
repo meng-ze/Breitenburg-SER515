@@ -1,8 +1,16 @@
 {% include 'menu.html' %}
 
+<style>
+img {
+  border-radius: 50%;
+}
+
+</style>
+
 <div class="container">
+
     <div class="jumbotron">
-        <h1 class="display-4">Generic Web Fourm</h1>
+        <h1 class="display-4">Generic Web Forum</h1>
         <p class="lead">Create posts and discuss with other users</p>
         <hr class="my-4">
         Please read the rules before posting : <button type="button" class="btn btn-info" data-toggle="modal" data-target="#rulesModal">Rules</button>
@@ -10,7 +18,7 @@
     <div id="searchResults">
         {% block content %}
          {% include 'error_layout.html' %}
-         
+
          {% include 'search_header.html' %}
 		<br>
         {% for item in searched_posts %}
@@ -27,12 +35,15 @@
             </div>
         </tr>
         {% endfor %}
-
-        
     </div>
-
+</div>
 
     {% endblock %}
+    <div style="width:80%; margin:0 auto;">
+    <a class="btn btn-primary" style="width:100%" href="/createPost" role="button">Create a Post</a>
+    </div>
+    <br>
+    <br>
     <main role="main" class="container">
       <div class="row">
         <div class="col-md-8">
@@ -42,11 +53,12 @@
       <article class="media content-section">
           <div class="media-body">
             <div class="article-metadata">
+              <img src={{ post[20] }}  style="width:50px">
               <a class="mr-2" href="/name_click?user={{ post[1] }}">{{post[7]}}</a>
               <small class="text-muted" >{{post[5]}}</small><hr>
             </div>
             <form action="/post">
-                <button type="submit" class="btn btn-link btn-lg"><h1>{{ post[2] }}</h1></button>
+                <button type="submit" class="btn btn-link btn-lg" style="white-space:normal"><h3>{{ post[2] }}</h3></button>
                 <input type="hidden" name="id" value="{{ post[0] }}">
             </form>
                 <p class="article-content">{{ post[3] }}</p>
@@ -58,9 +70,10 @@
        {% include 'sidebar.html' %}
       </div>
     </main>
-
-    <a class="btn btn-primary" href="/createPost" role="button">Create a Post</a>
-</div>
+	<div style="width:80%; margin:0 auto;">
+    <a class="btn btn-primary"  style="width:100%" href="/createPost" role="button">Create a Post</a>
+    </div>
+    <br>
 
 {% include 'rules.html' %}
 {% include 'footer.html' %}

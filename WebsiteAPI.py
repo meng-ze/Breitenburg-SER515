@@ -1,5 +1,7 @@
 from ConstantTable import ErrorCode, DatabaseModel, AccountInfo, AccountRoleInfo, PostInfo, CommentInfo, BlockInfo
 import os
+from _operator import pos
+
 
 def is_user_exist(email, website):
     connection_handler = website.mysql_server.connect()
@@ -12,23 +14,24 @@ def is_user_exist(email, website):
         return True
     return False
 
+
 def verify_login_password(email, password, website):
     if is_user_blocked(email, website):
         return (False, {ErrorCode.ERROR_CODE: ErrorCode.USER_IS_BLOCKED})
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute("SELECT user_id,user_role.user_role, email_id FROM user inner join user_role on user.user_role = user_role.id WHERE email_id = %s and password = %s", (email, password))
+        cursor.execute("SELECT user_id, user_role.user_role, email_id FROM user inner join user_role on user.user_role = user_role.id WHERE email_id = %s and password = %s", (email, password))
         for content in cursor:
             cursor.close()
-            print(content)
             content_dict = {
                 AccountInfo.EMAIL: email,
                 AccountInfo.USER_ID: content[0],
                 AccountInfo.USER_ROLE_ID: content[1]
             }
+            print(content_dict)
             return (True, content_dict)
-        
+
     except Exception as e:
         print('Error!')
         print(e)
@@ -37,6 +40,7 @@ def verify_login_password(email, password, website):
         cursor.close()
     return (False, {ErrorCode.ERROR_CODE: ErrorCode.PASSWORD_INCORRECT})
 
+
 def create_account(username: str, other_info: {str: None}, website):
     cursor = None
     try:
@@ -44,20 +48,20 @@ def create_account(username: str, other_info: {str: None}, website):
         cursor = connection_handler.cursor()
         if AccountInfo.USER_ROLE_ID in other_info:
             cursor.execute('INSERT INTO {}({}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s);'.format(DatabaseModel.USER,
-                AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.USER_ROLE_ID, AccountInfo.PASSWORD,
-                AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER),(
+                                                                                                                   AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.USER_ROLE_ID, AccountInfo.PASSWORD,
+                                                                                                                   AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER), (
 
                 username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.USER_ROLE_ID], other_info[AccountInfo.PASSWORD],
                 other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER])
-                )
+            )
         else:
             cursor.execute('INSERT INTO {}({}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s);'.format(DatabaseModel.USER,
-                AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD,
-                AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER),(
+                                                                                                           AccountInfo.USERNAME, AccountInfo.EMAIL, AccountInfo.PASSWORD,
+                                                                                                           AccountInfo.PHONE, AccountInfo.DATE_OF_BIRTH, AccountInfo.GENDER), (
 
                 username, other_info[AccountInfo.EMAIL], other_info[AccountInfo.PASSWORD],
                 other_info[AccountInfo.PHONE], other_info[AccountInfo.DATE_OF_BIRTH], other_info[AccountInfo.GENDER])
-                )
+            )
         connection_handler.commit()
         cursor.close()
 
@@ -78,6 +82,8 @@ def create_account(username: str, other_info: {str: None}, website):
 
 # ---
 """ Actions below MUST include timestamp """
+
+
 def modify_account(target_email, value_dict, website):
     cursor = None
     try:
@@ -90,14 +96,14 @@ def modify_account(target_email, value_dict, website):
                 (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.PASSWORD], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.ADDRESS],
                  value_dict[AccountInfo.PHONE], value_dict[AccountInfo.WORK], value_dict[AccountInfo.EDUCATION], value_dict[AccountInfo.ABOUT],
                  value_dict[AccountInfo.PROFILE_PICTURE], target_email)
-                )
+            )
         else:
             cursor.execute(
                 'UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s',
                 (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.ADDRESS],
                  value_dict[AccountInfo.PHONE], value_dict[AccountInfo.WORK], value_dict[AccountInfo.EDUCATION], value_dict[AccountInfo.ABOUT],
                  value_dict[AccountInfo.PROFILE_PICTURE], target_email)
-                )        
+            )
         connection_handler.commit()
         cursor.close()
 
@@ -110,9 +116,10 @@ def modify_account(target_email, value_dict, website):
         cursor.close()
     return False
 
+
 def create_post(email, title, body, category, website):
     """
-    Create a post for username 
+    Create a post for username
     This function will create a post for 'username' and insert this post into our database.
     """
     cursor = None
@@ -124,8 +131,8 @@ def create_post(email, title, body, category, website):
             user_id = str(user[0])
 
         cursor.execute('INSERT INTO {}({}, {}, {}, {}) VALUES(%s, %s, %s, %s);'.format(DatabaseModel.POST,
-            PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID), 
-            (category, body, title, user_id))
+                                                                                       PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID),
+                       (category, body, title, user_id))
         post_id = cursor.lastrowid
         connection_handler.commit()
         cursor.close()
@@ -139,13 +146,14 @@ def create_post(email, title, body, category, website):
         cursor.close()
     return (False, None)
 
+
 def create_comment(post_id, user_id, comment_content, website):
     cursor = None
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute('INSERT INTO {}({}, {}, {}) VALUES(%s, %s, %s)'.format(DatabaseModel.COMMENT, 
-        PostInfo.POST_ID, PostInfo.USER_ID, CommentInfo.COMMENT_TEXT), (post_id, user_id, comment_content))
+        cursor.execute('INSERT INTO {}({}, {}, {}) VALUES(%s, %s, %s)'.format(DatabaseModel.COMMENT,
+                                                                              PostInfo.POST_ID, PostInfo.USER_ID, CommentInfo.COMMENT_TEXT), (post_id, user_id, comment_content))
         connection_handler.commit()
         cursor.close()
 
@@ -158,13 +166,13 @@ def create_comment(post_id, user_id, comment_content, website):
         cursor.close()
     return False
 
+
 def get_category_list(website):
     connection_handler = website.mysql_server.connect()
     cursor = connection_handler.cursor()
     cursor.execute("SELECT * FROM {}".format(DatabaseModel.CATEGORY))
     result = cursor.fetchall()
     category_list = [list(i) for i in result]
-    
     return category_list
 
 def get_category_by_id(website, category_id):
@@ -175,7 +183,7 @@ def get_category_by_id(website, category_id):
     
     return category
 
-def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
+def get_all_posts(website, inner_join=True, order=None, filter_dict=None, post_category=None):
     """
     Query database for list(post_id)
     If the our database does NOT exist post_id, return False and return function, print("Error: ERROR_CODE[2]) -> False
@@ -204,7 +212,12 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
             filter_str = 'WHERE ' + ' AND '.join(decompose_arr)
             filter_command = filter_str
 
-        query_command = ' '.join([fetch_all_posts_command, inner_join_command, order_command, filter_command])
+        category_command = ''
+        if post_category != None:
+            category_command = " WHERE category_id IN (SELECT category_id from category where value = '" + post_category + "' )"
+            print(category_command)
+
+        query_command = ' '.join([fetch_all_posts_command, inner_join_command, category_command, order_command, filter_command])
         print(query_command)
         cursor.execute(query_command)
         posts = cursor.fetchall()
@@ -219,13 +232,14 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
         cursor.close()
     return []
 
+
 def get_all_comments(post_id, website, filter_dict=None):
     cursor = None
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
         fetch_all_comments_command = 'SELECT * FROM {}'.format(DatabaseModel.COMMENT)
-        
+
         filter_command = ''
         if filter_dict != None:
             decompose_arr = []
@@ -249,6 +263,7 @@ def get_all_comments(post_id, website, filter_dict=None):
         cursor.close()
     return []
 
+
 def get_user_info(filter_dict, website, list_mode=False):
     cursor = None
     try:
@@ -262,6 +277,8 @@ def get_user_info(filter_dict, website, list_mode=False):
         else:
             user_info = cursor.fetchall()
 
+
+
         cursor.close()
         return user_info
 
@@ -271,6 +288,70 @@ def get_user_info(filter_dict, website, list_mode=False):
     if cursor != None:
         cursor.close()
     return None
+
+
+def get_registered_users(website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute('SELECT COUNT(*) FROM user')
+        result3 = cursor.fetchall()
+        # results = [list(i) for i in result]
+        connection_handler.commit()
+        cursor.close()
+        # print(result3)
+        return result3
+    except Exception as e:
+        print('Error!')
+        print(e)
+    if cursor != None:
+        cursor.close()
+    return None
+
+
+def get_total_posts(website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute('SELECT COUNT(*) FROM post')
+        result3 = cursor.fetchall()
+        # results = [list(i) for i in result]
+        connection_handler.commit()
+        cursor.close()
+        # print(result3)
+        return result3
+    except Exception as e:
+        print('Error!')
+        print(e)
+    if cursor != None:
+        cursor.close()
+    return None
+
+
+def get_typeof_users(website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute("SELECT role_user , count(role_user) as count FROM (SELECT user.username, user.email_id, IF(blocked_user.email_id IS NULL,\
+            user_role.user_role,'blocked') as role_user FROM `user` inner join user_role on user.user_role = user_role.id \
+            left join blocked_user ON user.email_id = blocked_user.email_id ) user_det group by role_user")
+
+        result5 = cursor.fetchall()
+        # results = [list(i) for i in result]
+        connection_handler.commit()
+        cursor.close()
+        # print(result5)
+        return result5
+    except Exception as e:
+        print('Error!')
+        print(e)
+    if cursor != None:
+        cursor.close()
+    return None
+
 
 def delete(datamodel_type, filter_dict, website):
     cursor = None
@@ -283,13 +364,14 @@ def delete(datamodel_type, filter_dict, website):
         connection_handler.commit()
         cursor.close()
         return True
-        
+
     except Exception as e:
         print('Error!')
         print(e)
     if cursor != None:
         cursor.close()
     return False
+
 
 def is_user_blocked(email, website):
     connection_handler = website.mysql_server.connect()
@@ -301,6 +383,7 @@ def is_user_blocked(email, website):
     if number_of_rows != 0:
         return True
     return False
+
 
 def block_user(email, website):
     cursor = None
@@ -325,6 +408,47 @@ def block_user(email, website):
 
     return (False, None)
 
+
+def getDataForBarGraph(website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute('SELECT MONTHNAME(timestamp) AS Month, Year(timestamp) AS Year,count(timestamp) AS count FROM `post` group by Year(timestamp), MONTHNAME(timestamp)')
+        result1 = cursor.fetchall()
+        # results = [list(i) for i in result]
+        connection_handler.commit()
+        cursor.close()
+        # print(result)
+        return result1
+    except Exception as e:
+        print('Error!')
+        print(e)
+    if cursor != None:
+        cursor.close()
+    return None
+
+
+def getDataForLineGraph(website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute('SELECT category.value, count(category.value) FROM `post` INNER join category on category.category_id = post.category_id GROUP BY category.value')
+        result2 = cursor.fetchall()
+        # results = [list(i) for i in result]
+        connection_handler.commit()
+        cursor.close()
+        # print(result2)
+        return result2
+    except Exception as e:
+        print('Error!')
+        print(e)
+    if cursor != None:
+        cursor.close()
+    return None
+
+
 def get_all_blocked_users(website):
     cursor = None
     try:
@@ -343,6 +467,7 @@ def get_all_blocked_users(website):
         cursor.close()
     return []
 
+
 def extract_profile_data_from(user_info):
     return_data = [
         user_info[1],
@@ -357,6 +482,7 @@ def extract_profile_data_from(user_info):
     ]
     return return_data
 
+
 def get_relative_path(relative_formatted_path):
     relative_level = relative_formatted_path[0]
     target_path = list(relative_formatted_path[1])
@@ -365,6 +491,7 @@ def get_relative_path(relative_formatted_path):
         relative_level += 1
     return os.path.join(*target_path)
 
+
 def is_allowed_file(filename, website):
     basename = os.path.basename(filename)
     file_extension = os.path.splitext(basename)[-1].replace('.', '')
@@ -372,7 +499,7 @@ def is_allowed_file(filename, website):
     if file_extension in website.allowed_file_type:
         return True
     return False
-    
+
 
 # def get_comments([comment_id: address]) -> list(Post):
 #     """
@@ -393,14 +520,14 @@ def is_allowed_file(filename, website):
 #     """
 
 # non-deterministic yet
-#def upload_file(filepath: str, media_type: str, attached_post: Post)
+# def upload_file(filepath: str, media_type: str, attached_post: Post)
 
 
 # def modify_post(username: Account, post_id: address, description: str) -> bool:
 #     """
 #     This will first call 'get_posts(post_id)', if it return False -> False
 #     If the post_id does exist in our database, but the user of that post does not have permission (corresponding to current user), print "Error: ERROR_CODE[1]" -> False
-#     If the post_id does exist in our database, and current does have permission to modify this post, then REPLACE the old keyvalue in database with description -> True 
+#     If the post_id does exist in our database, and current does have permission to modify this post, then REPLACE the old keyvalue in database with description -> True
 #     """
 # def delete_post(username: Account, post_id: address):
 #     """
