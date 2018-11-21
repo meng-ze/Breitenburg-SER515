@@ -18,11 +18,11 @@ main_website = Website(app, mysql_server)
 def index():
     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
         session[WebsiteLoginStatus.LOGGED_IN] = False
-    
+
     category = None
     if 'category' in request.args:
         category = request.args['category']
-        
+
     all_posts = WebsiteAPI.get_all_posts(main_website, order = True, post_category = category)
     if len(all_posts) == 0:
         flash('No posts to display')
@@ -265,6 +265,7 @@ def account():
         # uploading pic
         if 'file' not in request.files:
             flash('No file part')
+            relative_profilepic_path = full_profilepic_path
         else:
             chosen_file = request.files['file']
 
@@ -294,12 +295,12 @@ def view():
         session[WebsiteLoginStatus.LOGGED_IN] = False
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
-        
+
         category = None
         if 'category' in request.args:
             category = request.args['category']
-        
-        
+
+
         all_posts = WebsiteAPI.get_all_posts(main_website, order='{}.{}'.format(DatabaseModel.POST, PostInfo.TIMESTAMP), post_category = category)
         if len(all_posts) == 0:
             flash('No posts to display')
