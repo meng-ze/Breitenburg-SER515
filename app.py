@@ -18,7 +18,12 @@ main_website = Website(app, mysql_server)
 def index():
     if session.get(WebsiteLoginStatus.LOGGED_IN) is None:
         session[WebsiteLoginStatus.LOGGED_IN] = False
-    all_posts = WebsiteAPI.get_all_posts(main_website)
+    
+    category = None
+    if 'category' in request.args:
+        category = request.args['category']
+        
+    all_posts = WebsiteAPI.get_all_posts(main_website, order = True, post_category = category)
     if len(all_posts) == 0:
         flash('No posts to display')
 
@@ -151,7 +156,7 @@ def logout():
     session[WebsiteLoginStatus.LOGGED_USER_EMAIL] = ""
     session[WebsiteLoginStatus.LOGGED_USER_ID] = 0
     session[WebsiteLoginStatus.LOGGED_USER_ROLE_ID] = 0
-    return render_template('index.html')
+    return redirect(url_for('index'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -289,7 +294,13 @@ def view():
         session[WebsiteLoginStatus.LOGGED_IN] = False
 
     if session[WebsiteLoginStatus.LOGGED_IN] == True:
-        all_posts = WebsiteAPI.get_all_posts(main_website, order='{}.{}'.format(DatabaseModel.POST, PostInfo.TIMESTAMP))
+        
+        category = None
+        if 'category' in request.args:
+            category = request.args['category']
+        
+        
+        all_posts = WebsiteAPI.get_all_posts(main_website, order='{}.{}'.format(DatabaseModel.POST, PostInfo.TIMESTAMP), post_category = category)
         if len(all_posts) == 0:
             flash('No posts to display')
 
