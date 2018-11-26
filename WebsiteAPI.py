@@ -92,15 +92,15 @@ def modify_account(target_email, value_dict, website):
         cursor = connection_handler.cursor()
         if AccountInfo.PASSWORD in value_dict:
             cursor.execute(
-                'UPDATE user SET username = %s, password = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s',
-                (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.PASSWORD], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.ADDRESS],
+                'UPDATE user SET username = %s, password = %s, dob = %s,gender=%s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s',
+                (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.PASSWORD], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.GENDER], value_dict[AccountInfo.ADDRESS],
                  value_dict[AccountInfo.PHONE], value_dict[AccountInfo.WORK], value_dict[AccountInfo.EDUCATION], value_dict[AccountInfo.ABOUT],
                  value_dict[AccountInfo.PROFILE_PICTURE], target_email)
             )
         else:
             cursor.execute(
-                'UPDATE user SET username = %s, dob = %s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s',
-                (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.ADDRESS],
+                'UPDATE user SET username = %s, dob = %s, gender=%s, address = %s, phone = %s, work = %s, education = %s, about = %s, profile_picture = %s WHERE email_id = %s',
+                (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.GENDER], value_dict[AccountInfo.ADDRESS],
                  value_dict[AccountInfo.PHONE], value_dict[AccountInfo.WORK], value_dict[AccountInfo.EDUCATION], value_dict[AccountInfo.ABOUT],
                  value_dict[AccountInfo.PROFILE_PICTURE], target_email)
             )
@@ -465,6 +465,7 @@ def extract_profile_data_from(user_info):
         user_info[1],
         user_info[2],
         user_info[6],
+        user_info[7],
         user_info[9],
         user_info[4],
         user_info[10],

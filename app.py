@@ -234,12 +234,13 @@ def account():
             form.name_field.data = required_info[0]
             form.email_field.data = required_info[1]
             form.dob_field.data = required_info[2]
-            form.address_field.data = required_info[3]
-            form.phone_field.data = required_info[4]
-            form.work_field.data = required_info[5]
-            form.education_field.data = required_info[6]
-            form.details_field.data = required_info[7]
-            form.picture_field.data = required_info[8]
+            form.gender.data = required_info[3]
+            form.address_field.data = required_info[4]
+            form.phone_field.data = required_info[5]
+            form.work_field.data = required_info[6]
+            form.education_field.data = required_info[7]
+            form.details_field.data = required_info[8]
+            form.picture_field.data = required_info[9]
             if required_info[-1]:
                 full_profilepic_path = WebsiteAPI.get_relative_path([-1, [DefaultFileInfo.AVATAR_PATH[1][0], DefaultFileInfo.AVATAR_PATH[1][1], required_info[-1]]])
             else:
@@ -252,6 +253,7 @@ def account():
     if request.method == 'POST':
         name = form.name_field.data
         dob = form.dob_field.data
+        gender = form.gender.data
         address = form.address_field.data
         phone = form.phone_field.data
         work = form.work_field.data
@@ -271,6 +273,7 @@ def account():
         packed_dict = {
             AccountInfo.USERNAME: name,
             AccountInfo.DATE_OF_BIRTH: dob,
+            AccountInfo.GENDER: gender,
             AccountInfo.ADDRESS: address,
             AccountInfo.PHONE: phone,
             AccountInfo.WORK: work,

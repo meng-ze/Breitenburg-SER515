@@ -24,6 +24,7 @@ class UpdateAccountForm(Form):
     password_field = PasswordField('Password')
     email_field = EmailField('Email', [validators.DataRequired(), validators.Length(min=6, max=50), validators.Email()])
     dob_field = StringField('Date of birth')
+    gender = StringField('Gender')
     address_field = StringField('Address', [validators.DataRequired(), validators.Length(min=6, max=150)])
     phone_field = StringField('Phone', [validators.Length(min=10, max=10)])
     work_field = StringField('Work', [validators.Length(min=6, max=100)])
