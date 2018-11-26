@@ -116,6 +116,15 @@ def analysis():
     return render_template('analysis.html', values=values, labels=labels, values2=values2, labels2=labels2, set=zip(values_pie, labels_pie, colors_pie), results1=results1, results2=results2, registered_users=registered_users, no_of_posts=no_of_posts, dict1=dict1)
 
 
+def encrypt(user_input):
+    cipher_text = ''
+    for char in user_input:
+        cipher_num = (ord(char)) + 13
+        cipher = chr(cipher_num)
+        cipher_text = cipher_text + cipher
+    return cipher_text
+
+
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -124,6 +133,7 @@ def register():
         name = form.name_field.data
         email = form.email_field.data
         password = form.password_field.data
+        password = encrypt(password)
         register_success = False
 
         if WebsiteAPI.is_user_exist(email, main_website) == False:
@@ -165,6 +175,7 @@ def login():
     if request.method == 'POST' and form.validate():
         email = form.email_field.data
         password = form.password_field.data
+        password = encrypt(password)
 
         login_success = WebsiteAPI.verify_login_password(email, password, main_website)
         if not login_success[0]:
