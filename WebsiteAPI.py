@@ -229,6 +229,7 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
         print(e)
     if cursor != None:
         cursor.close()
+        print ('''<h1 class="display-4">You have no posts yet! Create new posts to edit!</h1>''')
     return []
 
 def get_all_comments(post_id, website, filter_dict=None):
