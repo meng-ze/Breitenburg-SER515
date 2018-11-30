@@ -124,6 +124,7 @@ INSERT INTO `user` (`user_id`, `username`, `email_id`, `user_role`, `phone`, `pa
 (1, 'Viraj Hemant Talaty', 'virajtalaty@gmail.com', 1, '', '123', '1994/03/17', 'M', '2018-09-27 02:10:59', '', '', '', '', 'viraj.jpg'),
 (5, 'Viraj Talaty', 'vtalaty@asu.edu', 2, '', '1234', '', 'M', '2018-10-15 04:30:52', '', '', '', '', ''),
 (6, 'Aneesh Dalvi', 'aneeshdalvi143@gmail.com', 1, '', '123', '1994/05/30', 'M', '2018-11-11 22:30:17', '', '', '', '', 'Aneesh_Dalvi_12.jpg');
+(69, 'Joshua Drumm', 'jkdrumm@asu.edu', 2, '', '1234', '1996/04/27', 'M', '2018-11-21 02:28:09', '', '', '', '', '');
 
 -- --------------------------------------------------------
 

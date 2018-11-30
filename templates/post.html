@@ -5,8 +5,8 @@
 		<h1 class="display-4">{{ post[2] }}</h1>
 		<p class="lead">{{ post[3] }}</p>
 		<hr class="my-4">
-		<p>Posted by <a href="{{ '/name_click?user=' + user[2] }}">{{user[1]}}</a></p>
-
+		<p>Posted by <a href="/name_click?user={{ user[0] }}">{{ user[1] }}</a> in <a href="/search?filter_by=user&search=&category={{ category[0] }}&less_date=&great_date=">{{ category[1] }}</a></p>
+		<p>{{ post[5] }}</p>
 		{% if admin %}
 			<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deletePostModal">
 				Delete
@@ -17,7 +17,7 @@
 	{% for c in comments %}
 	<div class="card">
 			<div class="card-header">
-				<h5 class="card-title">{{ c[5] }}</h5>
+				<h5 class="card-title"><a href="/name_click?user={{ c[2] }}">{{ c[5] }}</a></h5>
 				<h6 class="card-subtitle mb-2 text-muted">{{ c[4] }}</h6>
 				{% if admin %}
 					<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteCommentModal{{ c[0] }}">

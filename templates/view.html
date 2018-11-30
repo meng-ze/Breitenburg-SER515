@@ -54,8 +54,8 @@ img {
           <div class="media-body">
             <div class="article-metadata">
               <img src={{ post[20] }}  style="width:50px">
-              <a class="mr-2" href="{{ '/name_click?user=' + post[8] }}">{{post[7]}}</a>
-              <small class="text-muted" >{{post[5]}}</small>
+              <a class="mr-2" href="/name_click?user={{ post[1] }}">{{post[7]}}</a>
+              <small class="text-muted" >{{post[5]}}</small><hr>
             </div>
             <form action="/post">
                 <button type="submit" class="btn btn-link btn-lg" style="white-space:normal"><h3>{{ post[2] }}</h3></button>

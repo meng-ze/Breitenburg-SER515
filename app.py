@@ -204,8 +204,8 @@ def name_click():
                 session[WebsiteLoginStatus.LOGGED_IN] = False
         
             if session[WebsiteLoginStatus.LOGGED_IN] == True:
-                chosen_user_email = request.args['user']
-                chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.EMAIL: chosen_user_email}, main_website)
+                chosen_user_id = request.args['user']
+                chosen_user_info = WebsiteAPI.get_user_info({AccountInfo.USER_ID: chosen_user_id}, main_website)
                 required_info = WebsiteAPI.extract_profile_data_from(chosen_user_info)
         
                 if required_info[-1]:
@@ -418,9 +418,9 @@ def search():
         
         
                     
-        return render_template('search.html', searched_posts=new_lst, categories=categories, category_selected=category, filter_by_selected=filter_type,
+        return render_template('view.html', searched_posts=new_lst, categories=categories, category_selected=category, filter_by_selected=filter_type,
                                             search_selected=search_text, date_less_selected=less_date,
-                                            date_greater_selected=great_date)
+                                            date_greater_selected=great_date, searching=True)
 
 
 @app.route('/my_posts', methods=['GET', 'POST'])
@@ -491,7 +491,10 @@ def post():
             comment_user = WebsiteAPI.get_user_info({AccountInfo.USER_ID: comment[2]}, main_website)
             comment.append(comment_user[1])
             comments[idx] = comment
-        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1], user_info[2]), admin=is_admin_of_this_post)
+        
+        category = WebsiteAPI.get_category_by_id(main_website, chosen_post[4])
+
+        return render_template('post.html', post=chosen_post, comments=comments, user=(user_info[0], user_info[1], user_info[2]), admin=is_admin_of_this_post, category=category)
     else:
         return render_template('index.html', title='Post')
 
