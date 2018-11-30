@@ -104,6 +104,27 @@ def modify_account(target_email, value_dict, website):
                  value_dict[AccountInfo.PHONE], value_dict[AccountInfo.WORK], value_dict[AccountInfo.EDUCATION], value_dict[AccountInfo.ABOUT],
                  value_dict[AccountInfo.PROFILE_PICTURE], target_email)
             )
+                )
+        connection_handler.commit()
+        cursor.close()
+
+        return True
+    except Exception as e:
+        print('Error!')
+        print(e)
+
+    if cursor != None:
+        cursor.close()
+    return False
+
+def edit_post(email, post_id, post_title, post_text, website):
+    cursor = None
+    try:
+        connection_handler = website.mysql_server.connect()
+        cursor = connection_handler.cursor()
+        cursor.execute(
+                'UPDATE post SET post_title = %s, post_text = %s WHERE post_id = %s',(
+            post_title, post_text, post_id))
         connection_handler.commit()
         cursor.close()
 
@@ -133,6 +154,8 @@ def create_post(email, title, body, category, website):
         cursor.execute('INSERT INTO {}({}, {}, {}, {}) VALUES(%s, %s, %s, %s);'.format(DatabaseModel.POST,
                                                                                        PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID),
                        (category, body, title, user_id))
+            PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID),
+            (category, body, title, user_id))
         post_id = cursor.lastrowid
         connection_handler.commit()
         cursor.close()
@@ -154,6 +177,7 @@ def create_comment(post_id, user_id, comment_content, website):
         cursor = connection_handler.cursor()
         cursor.execute('INSERT INTO {}({}, {}, {}) VALUES(%s, %s, %s)'.format(DatabaseModel.COMMENT,
                                                                               PostInfo.POST_ID, PostInfo.USER_ID, CommentInfo.COMMENT_TEXT), (post_id, user_id, comment_content))
+        PostInfo.POST_ID, PostInfo.USER_ID, CommentInfo.COMMENT_TEXT), (post_id, user_id, comment_content))
         connection_handler.commit()
         cursor.close()
 

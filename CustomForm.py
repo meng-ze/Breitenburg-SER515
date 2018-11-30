@@ -16,6 +16,9 @@ class CreatePostForm(Form):
     title_field = StringField('Title', [validators.DataRequired(), validators.Length(min=1, max=50)])
     body_field = TextAreaField('Body', [validators.DataRequired(), validators.Length(min=1, max=5000)])
 
+class EditPostForum(Form):
+    post_field = StringField('Post_id', [validators.DataRequired(), validators.Length(min=1, max=50)])
+
 class BlockUserForm(Form):
     email_field = StringField('Email')
 
