@@ -28,7 +28,7 @@ def verify_login_password(email, password, website):
                 AccountInfo.USER_ROLE_ID: content[1]
             }
             return (True, content_dict)
-        
+
     except Exception as e:
         print('Error!')
         print(e)
@@ -97,7 +97,7 @@ def modify_account(target_email, value_dict, website):
                 (value_dict[AccountInfo.USERNAME], value_dict[AccountInfo.DATE_OF_BIRTH], value_dict[AccountInfo.ADDRESS],
                  value_dict[AccountInfo.PHONE], value_dict[AccountInfo.WORK], value_dict[AccountInfo.EDUCATION], value_dict[AccountInfo.ABOUT],
                  value_dict[AccountInfo.PROFILE_PICTURE], target_email)
-                )        
+                )
         connection_handler.commit()
         cursor.close()
 
@@ -120,7 +120,7 @@ def edit_post(email, post_id, post_title, post_text, website):
             post_title, post_text, post_id))
         connection_handler.commit()
         cursor.close()
-        
+
         return True
     except Exception as e:
         print('Error!')
@@ -132,7 +132,7 @@ def edit_post(email, post_id, post_title, post_text, website):
 
 def create_post(email, title, body, category, website):
     """
-    Create a post for username 
+    Create a post for username
     This function will create a post for 'username' and insert this post into our database.
     """
     cursor = None
@@ -144,7 +144,7 @@ def create_post(email, title, body, category, website):
             user_id = str(user[0])
 
         cursor.execute('INSERT INTO {}({}, {}, {}, {}) VALUES(%s, %s, %s, %s);'.format(DatabaseModel.POST,
-            PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID), 
+            PostInfo.CATEGORY_ID, PostInfo.POST_TEXT, PostInfo.POST_TITLE, PostInfo.USER_ID),
             (category, body, title, user_id))
         post_id = cursor.lastrowid
         connection_handler.commit()
@@ -164,7 +164,7 @@ def create_comment(post_id, user_id, comment_content, website):
     try:
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
-        cursor.execute('INSERT INTO {}({}, {}, {}) VALUES(%s, %s, %s)'.format(DatabaseModel.COMMENT, 
+        cursor.execute('INSERT INTO {}({}, {}, {}) VALUES(%s, %s, %s)'.format(DatabaseModel.COMMENT,
         PostInfo.POST_ID, PostInfo.USER_ID, CommentInfo.COMMENT_TEXT), (post_id, user_id, comment_content))
         connection_handler.commit()
         cursor.close()
@@ -184,7 +184,7 @@ def get_category_list(website):
     cursor.execute("SELECT * FROM {}".format(DatabaseModel.CATEGORY))
     result = cursor.fetchall()
     category_list = [list(i) for i in result]
-    
+
     return category_list
 
 def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
@@ -229,7 +229,6 @@ def get_all_posts(website, inner_join=True, order=None, filter_dict=None):
         print(e)
     if cursor != None:
         cursor.close()
-        print ('''<h1 class="display-4">You have no posts yet! Create new posts to edit!</h1>''')
     return []
 
 def get_all_comments(post_id, website, filter_dict=None):
@@ -238,7 +237,7 @@ def get_all_comments(post_id, website, filter_dict=None):
         connection_handler = website.mysql_server.connect()
         cursor = connection_handler.cursor()
         fetch_all_comments_command = 'SELECT * FROM {}'.format(DatabaseModel.COMMENT)
-        
+
         filter_command = ''
         if filter_dict != None:
             decompose_arr = []
@@ -296,7 +295,7 @@ def delete(datamodel_type, filter_dict, website):
         connection_handler.commit()
         cursor.close()
         return True
-        
+
     except Exception as e:
         print('Error!')
         print(e)
@@ -385,7 +384,7 @@ def is_allowed_file(filename, website):
     if file_extension in website.allowed_file_type:
         return True
     return False
-    
+
 
 # def get_comments([comment_id: address]) -> list(Post):
 #     """
@@ -413,7 +412,7 @@ def is_allowed_file(filename, website):
 #     """
 #     This will first call 'get_posts(post_id)', if it return False -> False
 #     If the post_id does exist in our database, but the user of that post does not have permission (corresponding to current user), print "Error: ERROR_CODE[1]" -> False
-#     If the post_id does exist in our database, and current does have permission to modify this post, then REPLACE the old keyvalue in database with description -> True 
+#     If the post_id does exist in our database, and current does have permission to modify this post, then REPLACE the old keyvalue in database with description -> True
 #     """
 # def delete_post(username: Account, post_id: address):
 #     """
