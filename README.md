@@ -11,19 +11,20 @@ We have refracted our code by adding abstraction for the user data and dedicated
 
 Major Technologies used :
 
-Python Flask Framework
-Google Cloud Platform
-MySQL database
-Taiga Scrum Software
-Languages used: Python, SQL, HTML, CSS, JavaScript
+1. Python Flask Framework
+2. Google Cloud Platform
+3. MySQL database
+4. Taiga Scrum Software
+5. Languages used: Python, SQL, HTML, CSS, JavaScript
 
 Creators:
-Aneesh Dalvi
-Viraj Talaty
-Gangadhara Matti
-Meng-Ze Chen
-Abhishek Haskar
-Joshua Drumm
+
+1. Aneesh Dalvi
+2. Viraj Talaty
+3. Gangadhara Matti
+4. Meng-Ze Chen
+5. Abhishek Haskar
+6. Joshua Drumm
 
 If you have reached reading till here, go up there click on the website URL and get started! 
 
