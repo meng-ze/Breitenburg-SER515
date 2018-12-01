@@ -5,7 +5,7 @@ We are building a Web Forum for users to post their interests and share their th
 
 If you haven't joined our forum yet, register today! We are waiting for your ideas to be discussed.
 
-Our website is live at ./ser515.meng-server.com:5000
+Our website is live at http://ser515.meng-server.com:5000
 
 We have refracted our code by adding abstraction for the user data and dedicatedly followed a sprint of 2 weeks for the last 3 months.
 
@@ -25,6 +25,8 @@ We have refracted our code by adding abstraction for the user data and dedicated
 4. Meng-Ze Chen
 5. Abhishek Haskar
 6. Joshua Drumm
+
+We followed scrum and used Taiga software to keep track of our userstories. You can find each member's contributions on [this](https://www.youtube.com/channel/UCwif_LFQGJqHl14Cts6MbCQ) Youtube Channel 
 
 If you have reached reading till here, go up there click on the website URL and get started! 
 
