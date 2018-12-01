@@ -5,11 +5,11 @@ We are building a Web Forum for users to post their interests and share their th
 
 If you haven't joined our forum yet, register today! We are waiting for your ideas to be discussed.
 
-Our website is live at ser515.meng-server.com:5000
+Our website is live at ./ser515.meng-server.com:5000
 
 We have refracted our code by adding abstraction for the user data and dedicatedly followed a sprint of 2 weeks for the last 3 months.
 
-Major Technologies used :
+# Major Technologies used :
 
 1. Python Flask Framework
 2. Google Cloud Platform
@@ -17,7 +17,7 @@ Major Technologies used :
 4. Taiga Scrum Software
 5. Languages used: Python, SQL, HTML, CSS, JavaScript
 
-Creators:
+# Creators:
 
 1. Aneesh Dalvi
 2. Viraj Talaty
